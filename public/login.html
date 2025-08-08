@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - HEALTHTRACK</title>
+
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Ícones do RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Fonte Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            /* Adiciona um respiro nas laterais */
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+            color: black;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            /* Tamanho máximo para desktop */
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-area img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+        }
+
+        .logo-area span {
+            font-size: 22px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn-login {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark mode */
+        .dark-mode {
+            background-color: #000000;
+            color: white;
+        }
+
+        .dark-mode .login-container {
+            background-color: #222;
+            color: white;
+        }
+
+        .dark-mode input[type="text"],
+        .dark-mode input[type="password"] {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        .dark-mode .btn-login {
+            background-color: #444;
+        }
+
+        /* Responsividade extra */
+        @media (max-width: 480px) {
+            .logo-area span {
+                font-size: 20px;
+            }
+
+            .logo-area img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .btn-login {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="logo-area">
+            <img src="./img/logo.png" alt="Logo">
+
+            <span>HEALTHTRACK</span>
+        </div>
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" placeholder="Digite seu email" required>
+            </div>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <!-- Caixa de permanecer conectado -->
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="remember" name="remember" style="width: auto;">
+                <label for="remember" style="margin: 0; font-size: 14px;">Permanecer conectado</label>
+            </div>
+
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+
+        <div class="footer">
+            <p><a href="#">Esqueceu sua senha?</a></p>
+            <p>Não tem uma conta? <a href="cadastro.html">Crie uma agora</a></p>
+        </div>
+    </div>
+
+    <script>
+const form = document.querySelector("form");
+form.addEventListener("submit", async function (event) {
+    event.preventDefault(); // Evita que o formulário seja enviado da maneira tradicional
+
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const remember = document.getElementById("remember").checked; // Verifica se o usuário marcou "Permanecer conectado"
+
+    const data = {
+        email: email,
+        senha: senha
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.status === 200) {
+            // Salva o usuário no localStorage se o "Permanecer conectado" estiver marcado
+            if (remember) {
+                localStorage.setItem('usuario', JSON.stringify(result.usuario)); 
+            } else {
+                sessionStorage.setItem('usuario', JSON.stringify(result.usuario)); 
+            }
+
+            // Exibe a mensagem de sucesso
+            alert(result.message);  
+
+            // Redireciona para a página principal
+            window.location.href = '/';
+        } else {
+            alert(result.error);  // Exibe o erro caso haja
+        }
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        alert('Erro ao tentar fazer login.');
+    }
+});
+
+
+
+    </script>
+
+</body>
+
+</html>

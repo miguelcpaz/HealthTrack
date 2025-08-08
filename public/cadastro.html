@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - HEALTHTRACK</title>
+    <link rel="stylesheet" href="./css/cadastro.css">
+
+    <!-- Ícones e Fontes -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+            color: black;
+        }
+
+        .register-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-area img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+        }
+
+        .logo-area span {
+            font-size: 22px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .form-area {
+            display: none;
+            text-align: left;
+        }
+
+        .form-area.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .terms {
+            font-size: 13px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-register {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #0056b3;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .logo-area span {
+                font-size: 20px;
+            }
+
+            .tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-container">
+        <div class="logo-area">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showForm('tecnico')">Técnico</div>
+            <div class="tab" onclick="showForm('enfermeiro')">Enfermeiro</div>
+            <div class="tab" onclick="showForm('medico')">Médico</div>
+            <div class="tab" onclick="showForm('hospital')">Hospital</div>
+        </div>
+
+        <!-- Formulário Técnico -->
+        <form id="tecnico" class="form-area active" action="#" method="POST">
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="nome_tecnico" required>
+            </div>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" name="cpf_tecnico" required placeholder="000.000.000-00">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email_tecnico" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="senha_tecnico" required>
+            </div>
+            <div class="form-group">
+                <label>Hospital</label>
+                <select name="hospital_tecnico" required></select>
+            </div>
+
+            <div class="terms">
+                <input type="checkbox" required>
+                <span>Eu aceito os <a href="#">termos e condições</a>.</span>
+            </div>
+
+            <button type="submit" class="btn-register">Cadastrar Técnico</button>
+        </form>
+
+        <!-- Formulário Enfermeiro -->
+        <form id="enfermeiro" class="form-area" action="#" method="POST">
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="nome_enfermeiro" required>
+            </div>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" name="cpf_enfermeiro" required placeholder="000.000.000-00">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email_enfermeiro" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="senha_enfermeiro" required>
+            </div>
+            <div class="form-group">
+                <label>Hospital</label>
+                <select name="hospital_enfermeiro" required></select>
+            </div>
+            <div class="terms">
+                <input type="checkbox" required>
+                <span>Eu aceito os <a href="#">termos e condições</a>.</span>
+            </div>
+            <button type="submit" class="btn-register">Cadastrar Enfermeiro</button>
+        </form>
+
+        <!-- Formulário Médico -->
+        <form id="medico" class="form-area" action="#" method="POST">
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="nome_medico" required>
+            </div>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" name="cpf_medico" required placeholder="000.000.000-00">
+            </div>
+            <div class="form-group">
+                <label>CRM</label>
+                <input type="text" name="crm_medico" required placeholder="Ex: 123456/SP">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email_medico" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="senha_medico" required>
+            </div>
+            <div class="form-group">
+                <label>Hospital</label>
+                <select name="hospital_medico" required></select>
+            </div>
+            <div class="terms">
+                <input type="checkbox" required>
+                <span>Eu aceito os <a href="#">termos e condições</a>.</span>
+            </div>
+            <button type="submit" class="btn-register">Cadastrar Médico</button>
+        </form>
+
+
+        <!-- Formulário Hospital -->
+        <!-- Formulário Hospital -->
+        <!-- FORMULÁRIO HOSPITAL -->
+        <form id="hospital" class="form-area" action="#" method="POST">
+            <div class="form-group">
+                <label>Nome do Hospital</label>
+                <input type="text" name="nome_hospital" required>
+            </div>
+            <div class="form-group">
+                <label>CNPJ</label>
+                <input type="text" name="cnpj_hospital" required placeholder="00.000.000/0000-00">
+            </div>
+            <div class="form-group">
+                <label>CNES</label>
+                <input type="text" name="cnes_hospital" required placeholder="Ex: 1234567">
+            </div>
+            <div class="form-group">
+                <label>CEP</label>
+                <input type="text" name="cep_hospital" required placeholder="00000-000">
+            </div>
+            <div class="form-group">
+                <label>Número</label>
+                <input type="text" name="numero_hospital" required placeholder="Ex: 123">
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="text" name="telefone_hospital" required placeholder="(00) 0000-0000">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email_hospital" required>
+            </div>
+            <div class="form-group">
+                <label>Website</label>
+                <input type="text" name="website_hospital" placeholder="https://www.exemplo.com">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Estabelecimento</label>
+                <input type="text" name="tipoEstabelecimento_hospital" required placeholder="Ex: Hospital Geral">
+            </div>
+            <div class="terms">
+                <input type="checkbox" required>
+                <span>Eu aceito os <a href="#">termos e condições</a>.</span>
+            </div>
+            <button type="submit" class="btn-register">Cadastrar Hospital</button>
+        </form>
+
+
+
+        <div class="login-link">
+            Já possui uma conta? <a href="login.html">Faça login</a>
+        </div>
+    </div>
+
+    <script>
+        function showForm(formId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.form-area').forEach(form => form.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(formId).classList.add('active');
+        }
+        // Carregar hospitais no select
+        async function carregarHospitais() {
+            try {
+                const response = await fetch("http://localhost:3000/api/hospital/listar");
+                const hospitais = await response.json();
+
+                
+
+                const selects = document.querySelectorAll('select[name^="hospital_"]');
+                selects.forEach(select => {
+                    select.innerHTML = ""; // limpa
+                    hospitais.forEach(hospital => {
+                        const option = document.createElement("option");
+                        option.value = hospital.id;
+                        option.textContent = hospital.nomeFormatado;
+                        select.appendChild(option);
+                    });
+                });
+            } catch (error) {
+                console.error("Erro ao carregar hospitais:", error);
+                alert("Não foi possível carregar os hospitais.");
+            }
+        }
+        carregarHospitais();
+
+
+        // Captura todos os formulários
+        const forms = document.querySelectorAll("form");
+
+        forms.forEach(form => {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                let tipo_user;
+                if (form.id === "tecnico") tipo_user = 1;
+                else if (form.id === "enfermeiro") tipo_user = 2;
+                else if (form.id === "medico") tipo_user = 3;
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                // Caso seja cadastro de hospital
+                if (form.id === "hospital") {
+                    const hospital = {
+                        nome: data["nome_hospital"],
+                        cnpj: data["cnpj_hospital"],
+                        cnes: data["cnes_hospital"],
+                        cep: data["cep_hospital"],
+                        numero: data["numero_hospital"],
+                        telefone: data["telefone_hospital"],
+                        email: data["email_hospital"],
+                        website: data["website_hospital"] || null,
+                        tipoEstabelecimento: data["tipoEstabelecimento_hospital"]
+                    };
+
+                    try {
+                        const response = await fetch("http://localhost:3000/api/hospital/register", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(hospital)
+                        });
+
+                        if (response.ok) {
+                            alert("Hospital cadastrado! Uma senha temporária foi enviada para o email informado.");
+                            window.location.href = "//localhost:3000";
+                            form.reset();
+                        } else {
+                            const errorData = await response.json();
+                            alert(errorData.error || "Erro ao cadastrar hospital.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Erro ao conectar com o servidor.");
+                    }
+                }
+
+                else {
+                    const hospitalId = data[`hospital_${form.id}`];
+
+                    const user = {
+                        nome: data[`nome_${form.id}`],
+                        cpf: data[`cpf_${form.id}`],
+                        email: data[`email_${form.id}`],
+                        senha: data[`senha_${form.id}`],
+                        crm: data[`crm_medico`] ? data[`crm_medico`] : null,
+                        tipo_user,
+                        hospitalId: parseInt(hospitalId)
+                    };
+
+                    try {
+                        const response = await fetch("http://localhost:3000/api/usuarios/register", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(user)
+                        });
+
+                        if (response.ok) {
+                            alert("Usuário cadastrado com sucesso!");
+                            form.reset();
+                            window.location.href = "//localhost:3000";
+                        } else {
+                            const errorData = await response.json();
+                            alert(errorData.error || "Erro ao cadastrar usuário.");
+                        } SVGAElement
+                    } catch (error) {
+                        console.error(error);
+                        alert("Erro ao conectar com o servidor.");
+                    }
+                }
+            });
+        });
+    </script>
+
+
+
+</body>
+
+</html>

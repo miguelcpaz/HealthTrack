@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK</title>
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: white;
+      transition: background-color 0.3s, color 0.3s;
+      color: black;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      background: white;
+      position: relative;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-area img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+
+    .logo-area span {
+      font-size: 20px;
+      font-weight: bold;
+      color: black;
+      transition: color 0.3s;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    nav button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      color: black;
+      padding: 6px 8px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    nav button:hover {
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    .intro-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70vh;
+      padding: 0 30px;
+    }
+
+    .intro-content {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .intro-content img {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .text-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .text-block h1.title-main {
+      font-size: 48px;
+      font-weight: bold;
+      color: black;
+      margin: 0;
+    }
+
+    .text-block h3.title-sub {
+      font-size: 22px;
+      font-weight: 400;
+      color: black;
+      margin-top: 10px;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: black;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      color: black;
+    }
+
+    .dropdown-content button:hover {
+      background-color: #eee;
+    }
+
+    .show {
+      display: block;
+    }
+
+    .dark-mode {
+      background-color: #000000;
+      color: white;
+    }
+
+    .dark-mode .intro-content h1.title-main,
+    .dark-mode .intro-content h3.title-sub {
+      color: white;
+    }
+
+    .dark-mode header {
+      background-color: #000000;
+    }
+
+    .dark-mode nav button,
+    .dark-mode .logo-area span,
+    .dark-mode .hamburger {
+      color: white;
+    }
+
+    .dark-mode nav button:hover {
+      background-color: #222222;
+    }
+
+    .dark-mode .dropdown-content {
+      background-color: #111111;
+      border-color: #333333;
+    }
+
+    .dark-mode .dropdown-content button {
+      color: white;
+    }
+
+    .dark-mode .dropdown-content button:hover {
+      background-color: #222222;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        width: 200px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+      }
+
+      nav.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .dark-mode nav {
+        background-color: #000000;
+        border-color: #333333;
+      }
+
+      .intro-section {
+        padding: 20px;
+        height: auto;
+      }
+
+      .intro-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .text-block {
+        align-items: center;
+      }
+
+      .text-block h1.title-main {
+        font-size: 36px;
+      }
+
+      .text-block h3.title-sub {
+        font-size: 18px;
+      }
+
+      .intro-content img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <div class="dropdown">
+        <button onclick="toggleDropdown()">
+          <i class="ri-moon-clear-line"></i> Tema
+        </button>
+        <div id="dropdown-content" class="dropdown-content">
+          <button onclick="setLightMode()"><i class="ri-sun-line"></i> Claro</button>
+          <button onclick="setDarkMode()"><i class="ri-moon-line"></i> Escuro</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main class="intro-section">
+    <div class="intro-content">
+      <img src="./img/logo.png" alt="Logo HEALTHTRACK">
+      <div class="text-block">
+        <h1 class="title-main">HEALTHTRACK</h1>
+        <h3 class="title-sub">Sistema de Suporte para Enfermeiros </h3>
+      </div>
+    </div>
+  </main>
+  <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+
+    if (!usuario) {
+      window.location.href = 'login.html';
+    }
+
+    const tipoUsuario = usuario ? usuario.tipo_user : null;
+
+    const botoesPorTipo = {
+      1: [
+        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+      ],
+      2: [
+        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+        { nome: 'Remédios', icone: 'ri-capsule-line' },
+        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+      ],
+      3: [
+        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+        { nome: 'Remédios', icone: 'ri-capsule-line' },
+        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+      ]
+    };
+
+    const nav = document.getElementById('nav-buttons');
+
+    if (tipoUsuario) {
+      let sairBotao = null;
+
+      botoesPorTipo[tipoUsuario].forEach(item => {
+        if (item.nome === 'Pacientes') {
+          const dropdownPacientes = document.createElement('div');
+          dropdownPacientes.classList.add('dropdown');
+
+          const botaoPacientes = document.createElement('button');
+          botaoPacientes.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+          botaoPacientes.onclick = () => toggleDropdownPacientes();
+          dropdownPacientes.appendChild(botaoPacientes);
+
+          const dropdownContentPacientes = document.createElement('div');
+          dropdownContentPacientes.classList.add('dropdown-content');
+          dropdownContentPacientes.id = 'dropdown-pacientes-content';
+
+          const visualizar = document.createElement('button');
+          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Pacientes`;
+          visualizar.onclick = visualizar_pacientes;
+          dropdownContentPacientes.appendChild(visualizar);
+
+          if (tipoUsuario >= 2) {
+            const gerenciar = document.createElement('button');
+            gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Pacientes`;
+            gerenciar.onclick = gerenciar_paciente;
+            dropdownContentPacientes.appendChild(gerenciar);
+          }
+
+          if (tipoUsuario === 3) {
+            const adicionar = document.createElement('button');
+            adicionar.innerHTML = `<i class="ri-user-add-line"></i> Adicionar Paciente`;
+            adicionar.onclick = cadastro_paciente;
+            dropdownContentPacientes.appendChild(adicionar);
+          }
+
+          dropdownPacientes.appendChild(dropdownContentPacientes);
+          nav.insertBefore(dropdownPacientes, nav.querySelector('.dropdown'));
+
+        } else if (item.nome === 'Quartos') {
+          const dropdownQuartos = document.createElement('div');
+          dropdownQuartos.classList.add('dropdown');
+
+          const botaoQuartos = document.createElement('button');
+          botaoQuartos.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+          botaoQuartos.onclick = () => toggleDropdownQuartos();
+          dropdownQuartos.appendChild(botaoQuartos);
+
+          const dropdownContentQuartos = document.createElement('div');
+          dropdownContentQuartos.classList.add('dropdown-content');
+          dropdownContentQuartos.id = 'dropdown-quartos-content';
+
+          const visualizar = document.createElement('button');
+          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Quartos`;
+          visualizar.onclick = visualizar_quartos; // Aqui está a adição da função
+          dropdownContentQuartos.appendChild(visualizar);
+
+
+          if (tipoUsuario >= 2) {
+            const gerenciar = document.createElement('button');
+            gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Quartos`;
+            dropdownContentQuartos.appendChild(gerenciar);
+          }
+
+          dropdownQuartos.appendChild(dropdownContentQuartos);
+          nav.insertBefore(dropdownQuartos, nav.querySelector('.dropdown'));
+
+        } else if (item.nome === 'Sair') {
+          sairBotao = document.createElement('button');
+          sairBotao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+          sairBotao.addEventListener('click', item.funcao);
+        } else {
+          const botao = document.createElement('button');
+          botao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+          if (item.funcao) {
+            botao.addEventListener('click', item.funcao);
+          }
+          nav.insertBefore(botao, nav.querySelector('.dropdown'));
+        }
+      });
+
+      if (sairBotao) {
+        nav.appendChild(sairBotao);
+      }
+    }
+
+    function sair() {
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('theme');
+      sessionStorage.removeItem('usuario');
+      sessionStorage.removeItem('theme');
+      window.location.href = 'login.html';
+    }
+
+    function cadastro_paciente() {
+      window.location.href = 'cadastro_paciente.html';
+    }
+
+    function gerenciar_paciente() {
+      window.location.href = 'paciente.html';
+    }
+
+
+    function visualizar_pacientes() {
+      window.location.href = 'mostrar_pacientes.html';
+    }
+
+    function visualizar_quartos() {
+      window.location.href = 'mostrar_quartos.html';
+    }
+
+    function toggleDropdown() {
+      closeDropdown();
+      document.getElementById('dropdown-content').classList.toggle('show');
+    }
+
+    function toggleDropdownPacientes() {
+      closeDropdown();
+      const dropdown = document.getElementById('dropdown-pacientes-content');
+      if (dropdown) dropdown.classList.toggle('show');
+    }
+
+    function toggleDropdownQuartos() {
+      closeDropdown();
+      const dropdown = document.getElementById('dropdown-quartos-content');
+      if (dropdown) dropdown.classList.toggle('show');
+    }
+
+    function setDarkMode() {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+      sessionStorage.setItem('theme', 'dark');
+      closeDropdown();
+    }
+
+    function setLightMode() {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+      sessionStorage.setItem('theme', 'light');
+      closeDropdown();
+    }
+
+    const savedThemeSession = sessionStorage.getItem('theme');
+    if (savedThemeSession) {
+      if (savedThemeSession === 'dark') {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    } else {
+      const savedThemeLocal = localStorage.getItem('theme');
+      if (savedThemeLocal) {
+        if (savedThemeLocal === 'dark') {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      }
+    }
+
+    function closeDropdown() {
+      const tema = document.getElementById('dropdown-content');
+      const pacientes = document.getElementById('dropdown-pacientes-content');
+      const quartos = document.getElementById('dropdown-quartos-content');
+
+      if (tema) tema.classList.remove('show');
+      if (pacientes) pacientes.classList.remove('show');
+      if (quartos) quartos.classList.remove('show');
+    }
+
+    function toggleMenu() {
+      nav.classList.toggle('show');
+    }
+
+    window.onclick = function (event) {
+      if (!event.target.closest('.dropdown') && !event.target.closest('.hamburger')) {
+        closeDropdown();
+        if (window.innerWidth <= 768) {
+          nav.classList.remove('show');
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
