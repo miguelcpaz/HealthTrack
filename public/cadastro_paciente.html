@@ -381,6 +381,8 @@
 
     <script>
         const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+        console.log(usuario.hospitalId);
+        const hospitalId = usuario.hospitalId;
 
         if (!usuario) {
             window.location.href = 'login.html';
@@ -508,6 +510,8 @@
             const prescricao = document.getElementById('prescricao').value;
             const estadia = parseInt(document.getElementById('estadia').value);
             const quarto = parseInt(document.getElementById('quarto').value);
+            
+
 
             if (isNaN(estadia) || estadia <= 1) {
                 alert('A estadia deve ser maior que 1 dia.');
@@ -527,7 +531,8 @@
                         relatorio,
                         prescricao,
                         estadia,
-                        quarto
+                        quarto,
+                        hospitalId
                     })
 
                 });

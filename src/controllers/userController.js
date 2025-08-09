@@ -1,9 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require("bcrypt");
 
 // Cadastro de usuário
 async function registerUser(req, res) {
-  const { nome, cpf, email, senha, crm, tipo_user } = req.body;
+  const { nome, cpf, email, senha, crm, tipo_user, hospitalId } = req.body;
+  const senhaHash = await bcrypt.hash(senha, 10);
 
   try {
     // Verifica se o email já existe
@@ -24,7 +26,7 @@ async function registerUser(req, res) {
 
     // Se tudo certo, cria usuário
     const newUser = await prisma.user.create({
-      data: { nome, cpf, email, senha, crm, tipo_user }
+      data: { nome, cpf, email, senha: senhaHash, crm, tipo_user, hospitalId}
     });
 
     return res.status(201).json({ message: 'Usuário cadastrado com sucesso!', usuario: newUser });

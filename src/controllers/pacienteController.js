@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 // Cadastro de paciente
 async function registerPaciente(req, res) {
-  const { nome, idade, sexo, relatorio, prescricao, estadia, quarto } = req.body;
+  const { nome, idade, sexo, relatorio, prescricao, estadia, quarto, hospitalId } = req.body;
 
   try {
     await prisma.paciente.create({
@@ -14,7 +14,8 @@ async function registerPaciente(req, res) {
         relatorio,
         prescricao,
         estadia,
-        quarto
+        quarto,
+        hospitalId
       }
     });
 
