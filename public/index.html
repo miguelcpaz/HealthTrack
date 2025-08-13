@@ -288,38 +288,54 @@
     </div>
   </main>
   <script>
-    const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+    const authData = JSON.parse(localStorage.getItem('auth')) || 
+                     JSON.parse(sessionStorage.getItem('auth'));
 
-    if (!usuario) {
+    if (!authData) {
       window.location.href = 'login.html';
     }
 
-    const tipoUsuario = usuario ? usuario.tipo_user : null;
+    const TIPOS_USUARIO = {
+        USUARIO: 1,
+        ENFERMEIRO: 2,
+        MEDICO: 3,
+        HOSPITAL: 4 // Tipo especial para hospitais
+    };
 
+    // Configura os botões conforme o tipo
     const botoesPorTipo = {
-      1: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ],
-      2: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ],
-      3: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ]
+        [TIPOS_USUARIO.USUARIO]: [
+            { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+            { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+            { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+            { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+        ],
+        [TIPOS_USUARIO.ENFERMEIRO]: [
+            { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+            { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+            { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+            { nome: 'Remédios', icone: 'ri-capsule-line' },
+            { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+        ],
+        [TIPOS_USUARIO.MEDICO]: [
+            { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+            { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+            { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+            { nome: 'Remédios', icone: 'ri-capsule-line' },
+            { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+        ],
+        [TIPOS_USUARIO.HOSPITAL]: [
+            { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+            { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+            { nome: 'Funcionários', icone: 'ri-team-line' },
+            { nome: 'Relatórios', icone: 'ri-file-chart-line' },
+            { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+        ]
     };
 
     const nav = document.getElementById('nav-buttons');
+    const tipoUsuario = authData.dados.tipo_user;
+
 
     if (tipoUsuario) {
       let sairBotao = null;
@@ -375,9 +391,8 @@
 
           const visualizar = document.createElement('button');
           visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Quartos`;
-          visualizar.onclick = visualizar_quartos; // Aqui está a adição da função
+          visualizar.onclick = visualizar_quartos;
           dropdownContentQuartos.appendChild(visualizar);
-
 
           if (tipoUsuario >= 2) {
             const gerenciar = document.createElement('button');
@@ -387,6 +402,37 @@
 
           dropdownQuartos.appendChild(dropdownContentQuartos);
           nav.insertBefore(dropdownQuartos, nav.querySelector('.dropdown'));
+
+        } else if (item.nome === 'Funcionários' && tipoUsuario === 3) {
+          const dropdownFuncionarios = document.createElement('div');
+          dropdownFuncionarios.classList.add('dropdown');
+
+          const botaoFuncionarios = document.createElement('button');
+          botaoFuncionarios.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+          botaoFuncionarios.onclick = () => toggleDropdownFuncionarios();
+          dropdownFuncionarios.appendChild(botaoFuncionarios);
+
+          const dropdownContentFuncionarios = document.createElement('div');
+          dropdownContentFuncionarios.classList.add('dropdown-content');
+          dropdownContentFuncionarios.id = 'dropdown-funcionarios-content';
+
+          const visualizar = document.createElement('button');
+          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Funcionários`;
+          visualizar.onclick = visualizar_funcionarios;
+          dropdownContentFuncionarios.appendChild(visualizar);
+
+          const gerenciar = document.createElement('button');
+          gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Funcionários`;
+          gerenciar.onclick = gerenciar_funcionarios;
+          dropdownContentFuncionarios.appendChild(gerenciar);
+
+          const adicionar = document.createElement('button');
+          adicionar.innerHTML = `<i class="ri-user-add-line"></i> Adicionar Funcionário`;
+          adicionar.onclick = cadastro_funcionario;
+          dropdownContentFuncionarios.appendChild(adicionar);
+
+          dropdownFuncionarios.appendChild(dropdownContentFuncionarios);
+          nav.insertBefore(dropdownFuncionarios, nav.querySelector('.dropdown'));
 
         } else if (item.nome === 'Sair') {
           sairBotao = document.createElement('button');
@@ -408,12 +454,12 @@
     }
 
     function sair() {
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('theme');
-      sessionStorage.removeItem('usuario');
-      sessionStorage.removeItem('theme');
-      window.location.href = 'login.html';
-    }
+    localStorage.removeItem('auth');
+    localStorage.removeItem('theme');
+    sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('theme');
+    window.location.href = 'login.html';
+}
 
     function cadastro_paciente() {
       window.location.href = 'cadastro_paciente.html';
@@ -422,7 +468,6 @@
     function gerenciar_paciente() {
       window.location.href = 'paciente.html';
     }
-
 
     function visualizar_pacientes() {
       window.location.href = 'mostrar_pacientes.html';
@@ -485,10 +530,12 @@
       const tema = document.getElementById('dropdown-content');
       const pacientes = document.getElementById('dropdown-pacientes-content');
       const quartos = document.getElementById('dropdown-quartos-content');
+      const funcionarios = document.getElementById('dropdown-funcionarios-content');
 
       if (tema) tema.classList.remove('show');
       if (pacientes) pacientes.classList.remove('show');
       if (quartos) quartos.classList.remove('show');
+      if (funcionarios) funcionarios.classList.remove('show');
     }
 
     function toggleMenu() {

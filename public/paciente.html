@@ -364,7 +364,8 @@
         <div class="paciente-card" id="card">
             <h2 id="nome">Nome do Paciente</h2>
             <p><strong>Idade:</strong> <span id="idade">--</span> anos</p>
-            <p><strong>Sexo:</strong> <span id="sexo">--</span></p> <!-- NOVO CAMPO -->
+            <p><strong>Sexo:</strong> <span id="sexo">--</span></p>
+            <p><strong>Nível de Alerta:</strong> <span id="nivelalerta" </span></p> <!-- NOVO CAMPO -->
             <p><strong>Relatório:</strong> <span id="relatorio">--</span></p>
             <p><strong>Prescrição:</strong> <span id="prescricao">--</span></p>
             <p><strong>Estadia:</strong> <span id="estadia">--</span> dias</p>
@@ -382,44 +383,59 @@
 
     <script>
         window.addEventListener("pageshow", function (event) {
-    if (event.persisted) {
-        window.location.reload();
-    }
-});
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
 
 
-        const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+        const authData = JSON.parse(localStorage.getItem('auth')) ||
+            JSON.parse(sessionStorage.getItem('auth'));
 
-        if (!usuario) {
+        if (!authData) {
             window.location.href = 'login.html';
         }
 
-        const tipoUsuario = usuario ? usuario.tipo_user : null;
+        const TIPOS_USUARIO = {
+            USUARIO: 1,
+            ENFERMEIRO: 2,
+            MEDICO: 3,
+            HOSPITAL: 4 // Tipo especial para hospitais
+        };
 
+        // Configura os botões conforme o tipo
         const botoesPorTipo = {
-            1: [
+            [TIPOS_USUARIO.USUARIO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            2: [
+            [TIPOS_USUARIO.ENFERMEIRO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            3: [
+            [TIPOS_USUARIO.MEDICO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.HOSPITAL]: [
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Funcionários', icone: 'ri-team-line' },
+                { nome: 'Relatórios', icone: 'ri-file-chart-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ]
         };
 
         const nav = document.getElementById('nav-buttons');
+        const tipoUsuario = authData.dados.tipo_user;
 
         if (tipoUsuario) {
             let sairBotao = null;
@@ -508,12 +524,12 @@
         }
 
         function sair() {
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('theme');
-            sessionStorage.removeItem('usuario');
-            sessionStorage.removeItem('theme');
-            window.location.href = 'login.html';
-        }
+    localStorage.removeItem('auth');
+    localStorage.removeItem('theme');
+    sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('theme');
+    window.location.href = 'login.html';
+}
 
         function cadastro_paciente() {
             window.location.href = 'cadastro_paciente.html';
@@ -607,19 +623,20 @@
         // Dados do paciente
         const paciente = JSON.parse(localStorage.getItem('pacienteSelecionado'));
 
-function preencherCampos(paciente) {
-    if (!paciente) return;
+        function preencherCampos(paciente) {
+            if (!paciente) return;
 
-    document.getElementById('nome').textContent = paciente.nome || 'Nome não informado';
-    document.getElementById('idade').textContent = paciente.idade || '--';
-    document.getElementById('sexo').textContent = paciente.sexo || '--';
-    document.getElementById('relatorio').textContent = paciente.relatorio || '--';
-    document.getElementById('prescricao').textContent = paciente.prescricao || '--';
-    document.getElementById('estadia').textContent = paciente.estadia || '--';
-    document.getElementById('quarto').textContent = paciente.quarto || '--';
-}
+            document.getElementById('nome').textContent = paciente.nome || 'Nome não informado';
+            document.getElementById('idade').textContent = paciente.idade || '--';
+            document.getElementById('sexo').textContent = paciente.sexo || '--';
+            document.getElementById('nivelalerta').textContent = paciente.nivelalerta || '--'; // Novo campo
+            document.getElementById('relatorio').textContent = paciente.relatorio || '--';
+            document.getElementById('prescricao').textContent = paciente.prescricao || '--';
+            document.getElementById('estadia').textContent = paciente.estadia || '--';
+            document.getElementById('quarto').textContent = paciente.quarto || '--';
+        }
 
-preencherCampos(paciente);
+        preencherCampos(paciente);
 
 
     </script>

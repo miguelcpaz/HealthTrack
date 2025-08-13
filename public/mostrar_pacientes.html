@@ -76,11 +76,70 @@
       transition: background 0.3s, color 0.3s;
     }
 
+    .tooltip-icon {
+      cursor: help;
+      color: #666;
+      margin-left: 5px;
+      font-size: 14px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 0;
+      margin-left: 10px;
+      width: 200px;
+      padding: 10px;
+      background: white;
+      color: black;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      white-space: pre-line;
+    }
+
+    .dark-mode .tooltip-icon:hover::after {
+      background: #333;
+      color: white;
+      border-color: #555;
+    }
+
+
+    .alert-icon {
+      font-size: 18px;
+    }
+
+    .alert-icon.Vermelho {
+      color: red;
+    }
+
+    .alert-icon.Laranja {
+      color: orange;
+    }
+
+    .alert-icon.Amarelo {
+      color: rgb(202, 202, 65);
+    }
+
+    .alert-icon.Verde {
+      color: green;
+    }
+
+    .alert-icon.Azul {
+      color: rgb(40, 40, 146);
+    }
+
+
 
     nav button:hover {
       background: #f0f0f0;
       border-radius: 8px;
     }
+
 
 
     .hamburger {
@@ -294,6 +353,8 @@
         <option value="idade-desc">Idade (Mais velho)</option>
         <option value="estadia-asc">Estadia (Menos dias)</option>
         <option value="estadia-desc">Estadia (Mais dias)</option>
+        <option value="nivelalerta-asc">Gravidade (Menos grave)</option>
+        <option value="nivelalerta-desc">Gravidade (Mais grave)</option>
       </select>
     </label>
     <label for="filtro-quarto" style="margin-bottom: 10px; display: block;">
@@ -316,38 +377,53 @@
     <div id="lista-pacientes" style="overflow-x: auto;"></div>
   </main>
   <script>
-    const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+    const authData = JSON.parse(localStorage.getItem('auth')) ||
+      JSON.parse(sessionStorage.getItem('auth'));
 
-    if (!usuario) {
+    if (!authData) {
       window.location.href = 'login.html';
     }
 
-    const tipoUsuario = usuario ? usuario.tipo_user : null;
+    const TIPOS_USUARIO = {
+      USUARIO: 1,
+      ENFERMEIRO: 2,
+      MEDICO: 3,
+      HOSPITAL: 4 // Tipo especial para hospitais
+    };
 
+    // Configura os botões conforme o tipo
     const botoesPorTipo = {
-      1: [
+      [TIPOS_USUARIO.USUARIO]: [
         { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
         { nome: 'Pacientes', icone: 'ri-user-heart-line' },
         { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
         { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
       ],
-      2: [
+      [TIPOS_USUARIO.ENFERMEIRO]: [
         { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
         { nome: 'Pacientes', icone: 'ri-user-heart-line' },
         { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
         { nome: 'Remédios', icone: 'ri-capsule-line' },
         { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
       ],
-      3: [
+      [TIPOS_USUARIO.MEDICO]: [
         { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
         { nome: 'Pacientes', icone: 'ri-user-heart-line' },
         { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
         { nome: 'Remédios', icone: 'ri-capsule-line' },
+        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+      ],
+      [TIPOS_USUARIO.HOSPITAL]: [
+        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+        { nome: 'Funcionários', icone: 'ri-team-line' },
+        { nome: 'Relatórios', icone: 'ri-file-chart-line' },
         { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
       ]
     };
 
     const nav = document.getElementById('nav-buttons');
+    const tipoUsuario = authData.dados.tipo_user;
 
     if (tipoUsuario) {
       let sairBotao = null;
@@ -555,6 +631,14 @@
       const filtroQuarto = document.getElementById('filtro-quarto').value;
       const filtroSexo = document.getElementById('filtro-sexo').value;
 
+      const gravidadeOrdem = {
+        Azul: 0,
+        Verde: 1,
+        Amarelo: 2,
+        Laranja: 3,
+        Vermelho: 4
+      };
+
       let pacientesFiltrados = [...pacientesGlobal];
 
       if (filtroQuarto !== 'todos') {
@@ -573,6 +657,8 @@
           case 'idade-desc': return b.idade - a.idade;
           case 'estadia-asc': return a.estadia - b.estadia;
           case 'estadia-desc': return b.estadia - a.estadia;
+          case 'nivelalerta-asc': return gravidadeOrdem[a.nivelalerta] - gravidadeOrdem[b.nivelalerta];
+          case 'nivelalerta-desc': return gravidadeOrdem[b.nivelalerta] - gravidadeOrdem[a.nivelalerta];
           default: return 0;
         }
       });
@@ -589,8 +675,12 @@
       <thead>
         <tr>
           <th>Nome</th>
+            <th>
+  Nível de Alerta
+  <span class="tooltip-icon" data-tooltip="Nível de Alerta dos Pacientes\n\nAzul - Não Urgente\nVerde - Pouco Urgente\nAmarelo - Urgente\nLaranja - Muito Urgente\nVermelho - Emergência">ⓘ</span>
+</th>
           <th>Idade</th>
-          <th>Sexo</th>  <!-- nova coluna -->
+          <th>Sexo</th> 
           <th>Relatório</th>
           <th>Prescrição</th>
           <th>Estadia (dias)</th>
@@ -605,8 +695,11 @@
                 ${p.nome}
               </button>
             </td>
+            <td data-label="Alerta">
+              <i class="ri-alert-fill alert-icon ${p.nivelalerta}"></i> ${p.nivelalerta}
+            </td>
             <td data-label="Idade">${p.idade}</td>
-            <td data-label="Sexo">${p.sexo || ''}</td> <!-- nova coluna -->
+            <td data-label="Sexo">${p.sexo || ''}</td>
             <td data-label="Relatório">${p.relatorio}</td>
             <td data-label="Prescrição">${p.prescricao}</td>
             <td data-label="Estadia">${p.estadia}</td>
@@ -628,6 +721,26 @@
 
 
     carregarPacientes();
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const tooltipIcons = document.querySelectorAll('.tooltip-icon');
+
+      tooltipIcons.forEach(icon => {
+        // Temporariamente remove o title para prevenir o tooltip nativo
+        icon.addEventListener('mouseenter', function () {
+          this.setAttribute('data-original-title', this.getAttribute('title') || '');
+          this.removeAttribute('title');
+        });
+
+        // Restaura o title quando o mouse sai
+        icon.addEventListener('mouseleave', function () {
+          if (this.getAttribute('data-original-title')) {
+            this.setAttribute('title', this.getAttribute('data-original-title'));
+          }
+        });
+      });
+    });
   </script>
 
 </body>

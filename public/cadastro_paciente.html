@@ -357,6 +357,17 @@
                         <option value="Não Informado">Não informado</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="nivel-alerta">Nivel de Alerta</label>
+                    <select id="nivel-alerta" name="Nivel de Alerta" required>
+                        <option value="">Selecione o Nível de Alerta do Paciente</option>
+                        <option value="Azul">AZUL - NÃO URGENTE</option>
+                        <option value="Verde">VERDE - POUCO URGENTE</option>
+                        <option value="Amarelo">AMARELO - URGENTE</option>
+                        <option value="Laranja">LARANJA - MUITO URGENTE</option>
+                        <option value="Vermelho">VERMELHO - EMERGÊNCIA</option>
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label for="relatorio">Relatório</label>
@@ -380,40 +391,55 @@
     </main>
 
     <script>
-        const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
-        console.log(usuario.hospitalId);
-        const hospitalId = usuario.hospitalId;
 
-        if (!usuario) {
+        const hospitalId = usuario.hospitalId;
+        const authData = JSON.parse(localStorage.getItem('auth')) ||
+            JSON.parse(sessionStorage.getItem('auth'));
+
+        if (!authData) {
             window.location.href = 'login.html';
         }
 
-        const tipoUsuario = usuario ? usuario.tipo_user : null;
+        const TIPOS_USUARIO = {
+            USUARIO: 1,
+            ENFERMEIRO: 2,
+            MEDICO: 3,
+            HOSPITAL: 4 // Tipo especial para hospitais
+        };
 
+        // Configura os botões conforme o tipo
         const botoesPorTipo = {
-            1: [
+            [TIPOS_USUARIO.USUARIO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            2: [
+            [TIPOS_USUARIO.ENFERMEIRO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            3: [
+            [TIPOS_USUARIO.MEDICO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.HOSPITAL]: [
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Funcionários', icone: 'ri-team-line' },
+                { nome: 'Relatórios', icone: 'ri-file-chart-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ]
         };
 
         const nav = document.getElementById('nav-buttons');
+        const tipoUsuario = authData.dados.tipo_user;
 
         if (tipoUsuario) {
             let sairBotao = null;
@@ -506,11 +532,12 @@
             const nome = document.getElementById('nome').value;
             const idade = parseInt(document.getElementById('idade').value);
             const sexo = document.getElementById('sexo').value;
+            const nivelalerta = document.getElementById('nivel-alerta').value;
             const relatorio = document.getElementById('relatorio').value;
             const prescricao = document.getElementById('prescricao').value;
             const estadia = parseInt(document.getElementById('estadia').value);
             const quarto = parseInt(document.getElementById('quarto').value);
-            
+
 
 
             if (isNaN(estadia) || estadia <= 1) {
@@ -528,6 +555,7 @@
                         nome,
                         idade,
                         sexo,
+                        nivelalerta,
                         relatorio,
                         prescricao,
                         estadia,
@@ -552,12 +580,12 @@
 
 
         function sair() {
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('theme');
-            sessionStorage.removeItem('usuario');
-            sessionStorage.removeItem('theme');
-            window.location.href = 'login.html';
-        }
+    localStorage.removeItem('auth');
+    localStorage.removeItem('theme');
+    sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('theme');
+    window.location.href = 'login.html';
+}
 
 
         function cadastro_paciente() {

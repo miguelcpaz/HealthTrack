@@ -92,39 +92,39 @@
         }
 
         .room-card {
-    width: 280px;
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    border: 0.01px solid black;
-}
+            width: 280px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            border: 0.01px solid black;
+        }
 
-.room-card:hover {
-    transform: translateY(-5px);
-}
+        .room-card:hover {
+            transform: translateY(-5px);
+        }
 
-.room-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-color: #f0f0f0;
-}
+        .room-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
 
-.room-info {
-    padding: 15px;
-    text-align: center;
-}
+        .room-info {
+            padding: 15px;
+            text-align: center;
+        }
 
-.room-info h3 {
-    font-size: 18px;
-    margin: 0;
-    color: #333;
-}
+        .room-info h3 {
+            font-size: 18px;
+            margin: 0;
+            color: #333;
+        }
 
 
         .dark-mode .room-card {
@@ -268,7 +268,7 @@
 
         .dark-mode .room-card img {
 
-    filter: invert(1) hue-rotate(180deg);
+            filter: invert(1) hue-rotate(180deg);
 
         }
 
@@ -382,38 +382,53 @@
 
 
     <script>
-        const usuario = JSON.parse(localStorage.getItem('usuario')) || JSON.parse(sessionStorage.getItem('usuario'));
+        const authData = JSON.parse(localStorage.getItem('auth')) ||
+            JSON.parse(sessionStorage.getItem('auth'));
 
-        if (!usuario) {
+        if (!authData) {
             window.location.href = 'login.html';
         }
 
-        const tipoUsuario = usuario ? usuario.tipo_user : null;
+        const TIPOS_USUARIO = {
+            USUARIO: 1,
+            ENFERMEIRO: 2,
+            MEDICO: 3,
+            HOSPITAL: 4 // Tipo especial para hospitais
+        };
 
+        // Configura os botões conforme o tipo
         const botoesPorTipo = {
-            1: [
+            [TIPOS_USUARIO.USUARIO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            2: [
+            [TIPOS_USUARIO.ENFERMEIRO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ],
-            3: [
+            [TIPOS_USUARIO.MEDICO]: [
                 { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
                 { nome: 'Pacientes', icone: 'ri-user-heart-line' },
                 { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
                 { nome: 'Remédios', icone: 'ri-capsule-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.HOSPITAL]: [
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Funcionários', icone: 'ri-team-line' },
+                { nome: 'Relatórios', icone: 'ri-file-chart-line' },
                 { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
             ]
         };
 
         const nav = document.getElementById('nav-buttons');
+        const tipoUsuario = authData.dados.tipo_user;
 
         if (tipoUsuario) {
             let sairBotao = null;
@@ -500,12 +515,12 @@
         }
 
         function sair() {
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('theme');
-            sessionStorage.removeItem('usuario');
-            sessionStorage.removeItem('theme');
-            window.location.href = 'login.html';
-        }
+    localStorage.removeItem('auth');
+    localStorage.removeItem('theme');
+    sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('theme');
+    window.location.href = 'login.html';
+}
 
         function cadastro_paciente() {
             window.location.href = 'cadastro_paciente.html';

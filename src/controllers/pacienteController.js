@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 // Cadastro de paciente
 async function registerPaciente(req, res) {
-  const { nome, idade, sexo, relatorio, prescricao, estadia, quarto, hospitalId } = req.body;
+  const { nome, idade, sexo, nivelalerta, relatorio, prescricao, estadia, quarto, hospitalId } = req.body;
 
   try {
     await prisma.paciente.create({
@@ -11,6 +11,7 @@ async function registerPaciente(req, res) {
         nome,
         idade,
         sexo,
+        nivelalerta,
         relatorio,
         prescricao,
         estadia,
@@ -28,6 +29,7 @@ async function registerPaciente(req, res) {
 
 // Buscar todos pacientes
 async function getPacientes(req, res) {
+  const hospitalId = req.body;
   try {
     const pacientes = await prisma.paciente.findMany();
     return res.status(200).json(pacientes);
@@ -59,7 +61,7 @@ async function getPacienteById(req, res) {
 
 // Editar paciente
 async function editPaciente(req, res) {
-  const { id, nome, idade, sexo, relatorio, prescricao, estadia, quarto } = req.body;
+  const { id, nome, idade, sexo, nivelalerta, relatorio, prescricao, estadia, quarto } = req.body;
 
   try {
     const pacienteAtualizado = await prisma.paciente.update({
@@ -68,6 +70,7 @@ async function editPaciente(req, res) {
         nome: nome !== undefined ? nome : undefined,
         idade: idade !== undefined ? idade : undefined,
         sexo: sexo !== undefined ? sexo : undefined,
+        nivelalerta: nivelalerta !== undefined ? nivelalerta : undefined,
         relatorio: relatorio !== undefined ? relatorio : undefined,
         prescricao: prescricao !== undefined ? prescricao : undefined,
         estadia: estadia !== undefined ? estadia : undefined,

@@ -6,31 +6,53 @@ async function loginGeral(req, res) {
     const { email, senha } = req.body;
 
     try {
-        // Verifica no model User
-        const usuario = await prisma.user.findUnique({ where: { email } });
-        if (usuario && await bcrypt.compare(senha, usuario.senha)) {
-            return res.status(200).json({
-                message: 'Login realizado com sucesso (usuário)',
-                tipo: 'usuario',
-                usuario
-            });
+        // 1. Primeiro tenta encontrar como usuário
+        const usuario = await prisma.user.findUnique({ 
+            where: { email } 
+        });
+        
+        if (usuario) {
+            const senhaValida = await bcrypt.compare(senha, usuario.senha);
+            if (senhaValida) {
+                return res.status(200).json({
+                    message: 'Login realizado com sucesso (usuário)',
+                    tipo: 'usuario',
+                    dados: {
+                        ...usuario,
+                        tipo_user: usuario.tipo_user
+                    }
+                });
+            }
         }
 
-        // Verifica no model Hospital
-        const hospital = await prisma.hospital.findUnique({ where: { email } });
-        if (hospital && await bcrypt.compare(senha, hospital.senha)) {
-            return res.status(200).json({
-                message: 'Login realizado com sucesso (hospital)',
-                tipo: 'hospital',
-                usuario: hospital
-            });
+        // 2. Se não encontrou como usuário, tenta como hospital
+        const hospital = await prisma.hospital.findUnique({ 
+            where: { email } 
+        });
+
+        if (hospital) {
+            const senhaValida = await bcrypt.compare(senha, hospital.senha);
+            if (senhaValida) {
+                return res.status(200).json({
+                    message: 'Login realizado com sucesso (hospital)',
+                    tipo: 'hospital',
+                    dados: {
+                        ...hospital,
+                        tipo_user: 4 // Tipo fictício para hospital
+                    }
+                });
+            }
         }
 
+        // 3. Se não encontrou em nenhum, retorna erro
         return res.status(401).json({ error: 'Email ou senha inválidos' });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Erro no servidor' });
+        console.error('Erro no loginGeral:', err);
+        return res.status(500).json({ 
+            error: 'Erro no servidor',
+            details: err.message 
+        });
     }
 }
 

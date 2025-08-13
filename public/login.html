@@ -202,16 +202,13 @@
     <script>
 const form = document.querySelector("form");
 form.addEventListener("submit", async function (event) {
-    event.preventDefault(); // Evita que o formulário seja enviado da maneira tradicional
+    event.preventDefault();
 
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
-    const remember = document.getElementById("remember").checked; // Verifica se o usuário marcou "Permanecer conectado"
+    const remember = document.getElementById("remember").checked;
 
-    const data = {
-        email: email,
-        senha: senha
-    };
+    const data = { email, senha };
 
     try {
         const response = await fetch('http://localhost:3000/api/auth/login', {
@@ -221,21 +218,27 @@ form.addEventListener("submit", async function (event) {
         });
 
         const result = await response.json();
+        
         if (response.status === 200) {
-            // Salva o usuário no localStorage se o "Permanecer conectado" estiver marcado
+            // Armazena os dados de autenticação
+            const authData = {
+                tipo: result.tipo, // 'usuario' ou 'hospital'
+                dados: result.dados
+            };
+
             if (remember) {
-                localStorage.setItem('usuario', JSON.stringify(result.usuario)); 
+                localStorage.setItem('auth', JSON.stringify(authData));
             } else {
-                sessionStorage.setItem('usuario', JSON.stringify(result.usuario)); 
+                sessionStorage.setItem('auth', JSON.stringify(authData));
             }
 
-            // Exibe a mensagem de sucesso
-            alert(result.message);  
-
-            // Redireciona para a página principal
-            window.location.href = '/';
+            alert(result.message);
+            
+            // Redireciona conforme o tipo
+            window.location.href = "index.html";
         } else {
-            alert(result.error);  // Exibe o erro caso haja
+
+            alert(result.error);
         }
     } catch (error) {
         console.error('Erro ao fazer login:', error);

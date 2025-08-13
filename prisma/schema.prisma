@@ -46,6 +46,7 @@ model Paciente {
   nome        String
   idade       Int?
   sexo        String?
+  nivelalerta String
   relatorio   String?
   prescricao  String?
   estadia     Int?
