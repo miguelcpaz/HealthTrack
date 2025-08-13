@@ -63,7 +63,26 @@ async function loginUser(req, res) {
   }
 }
 
+async function getFuncionariosByHospital(req, res) {
+  const { id } = req.params; // hospitalId
+
+  try {
+    const funcionarios = await prisma.user.findMany({
+      where: { hospitalId: Number(id) }
+    });
+
+    if (!funcionarios || funcionarios.length === 0) {
+      return res.status(404).json({ error: 'Nenhum funcionario encontrado para este hospital.' });
+    }
+    return res.status(200).json(funcionarios);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao buscar funcionarios.' });
+  }
+}
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  getFuncionariosByHospital
 };

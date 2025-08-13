@@ -606,12 +606,31 @@
 
     async function carregarPacientes() {
       try {
-        const resposta = await fetch('http://localhost:3000/api/pacientes/get');
+        let urlBase = 'http://localhost:3000/api/pacientes/get';
+
+        if (authData.dados.tipo_user === 4) {
+          urlBase += `/${authData.dados.id}`;
+        } else {
+          urlBase += `/${authData.dados.hospitalId}`;
+        }
+
+        const resposta = await fetch(urlBase, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authData.token}`
+          }
+        });
+
         const pacientes = await resposta.json();
         pacientesGlobal = pacientes;
-        const quartosUnicos = [...new Set(pacientes.map(p => p.quarto))].filter(q => q !== undefined && q !== null);
+
+        const quartosUnicos = [...new Set(pacientes.map(p => p.quarto))]
+          .filter(q => q !== undefined && q !== null);
+
         const selectQuarto = document.getElementById('filtro-quarto');
         selectQuarto.innerHTML = '<option value="todos">Todos</option>';
+
         quartosUnicos.forEach(q => {
           const option = document.createElement('option');
           option.value = q;
@@ -619,12 +638,14 @@
           selectQuarto.appendChild(option);
         });
 
+        // Chama a renderização inicial
+        atualizarTabela();
 
-        renderizarTabela(pacientesGlobal);
-      } catch (erro) {
-        console.error('Erro ao carregar pacientes:', erro);
+      } catch (error) {
+        console.error('Erro ao carregar pacientes:', error);
       }
     }
+
 
     function atualizarTabela() {
       const criterioOrdenacao = document.getElementById('ordenar').value;

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEALTHTRACK - PACIENTES</title>
+
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            transition: background-color 0.3s, color 0.3s;
+            color: black;
+        }
+
+        body::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background: white;
+            position: relative;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+
+        .logo-area span {
+            font-size: 20px;
+            font-weight: bold;
+            color: black;
+            transition: color 0.3s;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            color: black;
+            padding: 6px 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .tooltip-icon {
+            cursor: help;
+            color: #666;
+            margin-left: 5px;
+            font-size: 14px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 0;
+            margin-left: 10px;
+            width: 200px;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            white-space: pre-line;
+        }
+
+        .dark-mode .tooltip-icon:hover::after {
+            background: #333;
+            color: white;
+            border-color: #555;
+        }
+
+
+        .alert-icon {
+            font-size: 18px;
+        }
+
+        .alert-icon.Vermelho {
+            color: red;
+        }
+
+        .alert-icon.Laranja {
+            color: orange;
+        }
+
+        .alert-icon.Amarelo {
+            color: rgb(202, 202, 65);
+        }
+
+        .alert-icon.Verde {
+            color: green;
+        }
+
+        .alert-icon.Azul {
+            color: rgb(40, 40, 146);
+        }
+
+
+
+        nav button:hover {
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+
+
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+        }
+
+
+        .dark-mode table {
+
+            color: white;
+        }
+
+        .dark-mode thead {
+            color: white;
+        }
+
+        .dark-mode th {
+            color: white;
+        }
+
+        .dark-mode td {
+            color: white;
+        }
+
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            color: black;
+        }
+
+        .dropdown-content button:hover {
+            background-color: #eee;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .link-button {
+            background: none;
+            border: none;
+            color: black;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .dark-mode {
+            background-color: #000000;
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #000000;
+        }
+
+        .dark-mode nav button,
+        .dark-mode .logo-area span,
+        .dark-mode .hamburger {
+            color: white;
+        }
+
+        .dark-mode nav button:hover {
+            background-color: #222222;
+        }
+
+        .dark-mode .dropdown-content {
+            background-color: #111111;
+            border-color: #333333;
+        }
+
+        .dark-mode .dropdown-content button {
+            color: white;
+        }
+
+        .dark-mode .dropdown-content button:hover {
+            background-color: #222222;
+        }
+
+        .dark-mode .link-button {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                width: 200px;
+                align-items: flex-start;
+                padding: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+                display: none;
+            }
+
+            nav.show {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .dark-mode nav {
+                background-color: #000000;
+                border-color: #333333;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 15px;
+                border-bottom: 2px solid #ccc;
+            }
+
+            td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+
+            td[data-label="Email"] {
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                white-space: nowrap;
+                font-weight: bold;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area" style="text-decoration: none;">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </a>
+        <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+        <nav id="nav-buttons">
+
+            <div class="dropdown">
+                <button onclick="toggleDropdown()">
+                    <i class="ri-moon-clear-line"></i> Tema
+                </button>
+                <div id="dropdown-content" class="dropdown-content">
+                    <button onclick="setLightMode()"><i class="ri-sun-line"></i> Claro</button>
+                    <button onclick="setDarkMode()"><i class="ri-moon-line"></i> Escuro</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main style="padding: 30px;">
+        <h2>Funcionarios Cadastrados</h2>
+
+        <label for="ordenar" style="margin-bottom: 10px; display: block;">
+            Ordenar por:
+            <select id="ordenar" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
+                <option value="nome-asc">Nome (A-Z)</option>
+                <option value="nome-desc">Nome (Z-A)</option>
+                <option value="idade-asc">Idade (Mais novo)</option>
+                <option value="idade-desc">Idade (Mais velho)</option>
+                <option value="estadia-asc">Estadia (Menos dias)</option>
+                <option value="estadia-desc">Estadia (Mais dias)</option>
+                <option value="nivelalerta-asc">Gravidade (Menos grave)</option>
+                <option value="nivelalerta-desc">Gravidade (Mais grave)</option>
+            </select>
+        </label>
+        <label for="filtro-funcao" style="margin-bottom: 10px; display: block;">
+            Filtrar por função:
+            <select id="filtro-funcao" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
+                <option value="todos">Todos</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Enfermeiro">Enfermeiro</option>
+                <option value="Médico">Médico</option>
+            </select>
+        </label>
+
+
+
+        <div id="lista-funcionarios" style="overflow-x: auto;"></div>
+    </main>
+    <script>
+        const authData = JSON.parse(localStorage.getItem('auth')) ||
+            JSON.parse(sessionStorage.getItem('auth'));
+
+        if (!authData) {
+            window.location.href = 'login.html';
+        }
+
+        const TIPOS_USUARIO = {
+            USUARIO: 1,
+            ENFERMEIRO: 2,
+            MEDICO: 3,
+            HOSPITAL: 4 // Tipo especial para hospitais
+        };
+
+        // Configura os botões conforme o tipo
+        const botoesPorTipo = {
+            [TIPOS_USUARIO.USUARIO]: [
+                { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.ENFERMEIRO]: [
+                { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Remédios', icone: 'ri-capsule-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.MEDICO]: [
+                { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Remédios', icone: 'ri-capsule-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ],
+            [TIPOS_USUARIO.HOSPITAL]: [
+                { nome: 'Pacientes', icone: 'ri-user-heart-line' },
+                { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
+                { nome: 'Funcionários', icone: 'ri-team-line' },
+                { nome: 'Relatórios', icone: 'ri-file-chart-line' },
+                { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
+            ]
+        };
+
+        const nav = document.getElementById('nav-buttons');
+        const tipoUsuario = authData.dados.tipo_user;
+
+        if (tipoUsuario) {
+            let sairBotao = null;
+
+            botoesPorTipo[tipoUsuario].forEach(item => {
+                if (item.nome === 'Pacientes') {
+                    const dropdownPacientes = document.createElement('div');
+                    dropdownPacientes.classList.add('dropdown');
+
+                    const botaoPacientes = document.createElement('button');
+                    botaoPacientes.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+                    botaoPacientes.onclick = () => toggleDropdownPacientes();
+                    dropdownPacientes.appendChild(botaoPacientes);
+
+                    const dropdownContentPacientes = document.createElement('div');
+                    dropdownContentPacientes.classList.add('dropdown-content');
+                    dropdownContentPacientes.id = 'dropdown-pacientes-content';
+
+                    const visualizar = document.createElement('button');
+                    visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Pacientes`;
+                    visualizar.onclick = visualizar_pacientes;
+                    dropdownContentPacientes.appendChild(visualizar);
+
+                    if (tipoUsuario >= 2) {
+                        const gerenciar = document.createElement('button');
+                        gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Pacientes`;
+                        dropdownContentPacientes.appendChild(gerenciar);
+                    }
+
+                    if (tipoUsuario === 3) {
+                        const adicionar = document.createElement('button');
+                        adicionar.innerHTML = `<i class="ri-user-add-line"></i> Adicionar Paciente`;
+                        adicionar.onclick = cadastro_paciente;
+                        dropdownContentPacientes.appendChild(adicionar);
+                    }
+
+                    dropdownPacientes.appendChild(dropdownContentPacientes);
+                    nav.insertBefore(dropdownPacientes, nav.querySelector('.dropdown'));
+
+                } else if (item.nome === 'Quartos') {
+                    const dropdownQuartos = document.createElement('div');
+                    dropdownQuartos.classList.add('dropdown');
+
+                    const botaoQuartos = document.createElement('button');
+                    botaoQuartos.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+                    botaoQuartos.onclick = () => toggleDropdownQuartos();
+                    dropdownQuartos.appendChild(botaoQuartos);
+
+                    const dropdownContentQuartos = document.createElement('div');
+                    dropdownContentQuartos.classList.add('dropdown-content');
+                    dropdownContentQuartos.id = 'dropdown-quartos-content';
+
+                    const visualizar = document.createElement('button');
+                    visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Quartos`;
+                    visualizar.onclick = visualizar_quartos;
+                    dropdownContentQuartos.appendChild(visualizar);
+
+                    if (tipoUsuario >= 2) {
+                        const gerenciar = document.createElement('button');
+                        gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Quartos`;
+                        dropdownContentQuartos.appendChild(gerenciar);
+                    }
+
+                    dropdownQuartos.appendChild(dropdownContentQuartos);
+                    nav.insertBefore(dropdownQuartos, nav.querySelector('.dropdown'));
+
+                } else if (item.nome === 'Sair') {
+                    sairBotao = document.createElement('button');
+                    sairBotao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+                    sairBotao.addEventListener('click', item.funcao);
+                } else {
+                    const botao = document.createElement('button');
+                    botao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+                    if (item.funcao) {
+                        botao.addEventListener('click', item.funcao);
+                    }
+                    nav.insertBefore(botao, nav.querySelector('.dropdown'));
+                }
+            });
+
+            if (sairBotao) {
+                nav.appendChild(sairBotao);
+            }
+        }
+
+        function sair() {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('theme');
+            sessionStorage.removeItem('usuario');
+            sessionStorage.removeItem('theme');
+            window.location.href = 'login.html';
+        }
+
+
+        function cadastro_paciente() {
+            window.location.href = 'cadastro_paciente.html';
+        }
+        function visualizar_pacientes() {
+            window.location.href = 'mostrar_pacientes.html';
+        }
+
+        function visualizar_quartos() {
+            window.location.href = 'mostrar_quartos.html';
+        }
+
+        function toggleDropdown() {
+            closeDropdown();
+            document.getElementById('dropdown-content').classList.toggle('show');
+        }
+
+        function toggleDropdownPacientes() {
+            closeDropdown();
+            const dropdown = document.getElementById('dropdown-pacientes-content');
+            if (dropdown) dropdown.classList.toggle('show');
+        }
+
+        function toggleDropdownQuartos() {
+            closeDropdown();
+            const dropdown = document.getElementById('dropdown-quartos-content');
+            if (dropdown) dropdown.classList.toggle('show');
+        }
+
+        function setDarkMode() {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            sessionStorage.setItem('theme', 'dark');
+            closeDropdown();
+        }
+
+        function setLightMode() {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+            sessionStorage.setItem('theme', 'light');
+            closeDropdown();
+        }
+
+        const savedThemeSession = sessionStorage.getItem('theme');
+        if (savedThemeSession) {
+            if (savedThemeSession === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        } else {
+            const savedThemeLocal = localStorage.getItem('theme');
+            if (savedThemeLocal) {
+                if (savedThemeLocal === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        }
+
+
+        function closeDropdown() {
+            const tema = document.getElementById('dropdown-content');
+            const pacientes = document.getElementById('dropdown-pacientes-content');
+            const quartos = document.getElementById('dropdown-quartos-content');
+
+            if (tema) tema.classList.remove('show');
+            if (pacientes) pacientes.classList.remove('show');
+            if (quartos) quartos.classList.remove('show');
+        }
+
+        function toggleMenu() {
+            nav.classList.toggle('show');
+        }
+
+        window.onclick = function (event) {
+            if (!event.target.closest('.dropdown') && !event.target.closest('.hamburger')) {
+                closeDropdown();
+                if (window.innerWidth <= 768) {
+                    nav.classList.remove('show');
+                }
+            }
+        }
+
+        let funcionariosGlobal = [];
+
+        async function carregarFuncionarios() {
+            try {
+                let urlBase = 'http://localhost:3000/api/usuarios/get';
+
+                if (authData.dados.tipo_user === 4) {
+                    urlBase += `/${authData.dados.id}`;
+                } else {
+                    urlBase += `/${authData.dados.hospitalId}`;
+                }
+
+                const resposta = await fetch(urlBase, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authData.token}`
+                    }
+                });
+
+                const funcionarios = await resposta.json();
+                funcionariosGlobal = funcionarios;
+
+
+                // Chama a renderização inicial
+                atualizarTabela();
+
+            } catch (error) {
+                console.error('Erro ao carregar pacientes:', error);
+            }
+        }
+
+
+        function atualizarTabela() {
+            const criterioOrdenacao = document.getElementById('ordenar').value;
+            const filtroFuncao = document.getElementById('filtro-funcao').value;
+
+            let funcionariosFiltrados = [...funcionariosGlobal];
+
+            // Filtra por função
+            if (filtroFuncao !== 'todos') {
+                funcionariosFiltrados = funcionariosFiltrados.filter(f => {
+                    const funcao = f.tipo_user === 1 ? 'Técnico' :
+                        f.tipo_user === 2 ? 'Enfermeiro' :
+                            f.tipo_user === 3 ? 'Médico' : '';
+                    return funcao === filtroFuncao;
+                });
+            }
+
+            // Ordena pelo nome
+            funcionariosFiltrados.sort((a, b) => {
+                if (criterioOrdenacao === 'nome-asc') return a.nome.localeCompare(b.nome);
+                if (criterioOrdenacao === 'nome-desc') return b.nome.localeCompare(a.nome);
+                return 0;
+            });
+
+            renderizarTabela(funcionariosFiltrados);
+        }
+
+
+
+
+        function renderizarTabela(funcionarios) {
+            const container = document.getElementById('lista-funcionarios');
+            container.innerHTML = `
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>CPF</th>
+          <th>CRM</th>
+          <th>Função</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${funcionarios.map(f => `
+          <tr>
+            <td data-label="Nome">
+                ${f.nome}
+            </td>
+            <td data-label="Email">${f.email}</td>
+            <td data-label="CPF">${f.cpf}</td>
+            <td data-label="CRM">${f.crm || ''}</td>
+            <td data-label="Função">
+              ${f.tipo_user === 1 ? 'Técnico' :
+                    f.tipo_user === 2 ? 'Enfermeiro' :
+                        f.tipo_user === 3 ? 'Médico' : ''}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+        }
+
+        carregarFuncionarios();
+
+    </script>
+
+</body>
+
+</html>

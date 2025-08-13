@@ -403,36 +403,15 @@
           dropdownQuartos.appendChild(dropdownContentQuartos);
           nav.insertBefore(dropdownQuartos, nav.querySelector('.dropdown'));
 
-        } else if (item.nome === 'Funcionários' && tipoUsuario === 3) {
-          const dropdownFuncionarios = document.createElement('div');
-          dropdownFuncionarios.classList.add('dropdown');
+        } else if (item.nome === 'Funcionários' && tipoUsuario >= 3) {
+  const botaoFuncionarios = document.createElement('button');
+  botaoFuncionarios.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
+  botaoFuncionarios.onclick = () => {
+    window.location.href = '/funcionarios.html';
+  };
+  nav.insertBefore(botaoFuncionarios, nav.querySelector('.dropdown'));
 
-          const botaoFuncionarios = document.createElement('button');
-          botaoFuncionarios.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
-          botaoFuncionarios.onclick = () => toggleDropdownFuncionarios();
-          dropdownFuncionarios.appendChild(botaoFuncionarios);
 
-          const dropdownContentFuncionarios = document.createElement('div');
-          dropdownContentFuncionarios.classList.add('dropdown-content');
-          dropdownContentFuncionarios.id = 'dropdown-funcionarios-content';
-
-          const visualizar = document.createElement('button');
-          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Funcionários`;
-          visualizar.onclick = visualizar_funcionarios;
-          dropdownContentFuncionarios.appendChild(visualizar);
-
-          const gerenciar = document.createElement('button');
-          gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Funcionários`;
-          gerenciar.onclick = gerenciar_funcionarios;
-          dropdownContentFuncionarios.appendChild(gerenciar);
-
-          const adicionar = document.createElement('button');
-          adicionar.innerHTML = `<i class="ri-user-add-line"></i> Adicionar Funcionário`;
-          adicionar.onclick = cadastro_funcionario;
-          dropdownContentFuncionarios.appendChild(adicionar);
-
-          dropdownFuncionarios.appendChild(dropdownContentFuncionarios);
-          nav.insertBefore(dropdownFuncionarios, nav.querySelector('.dropdown'));
 
         } else if (item.nome === 'Sair') {
           sairBotao = document.createElement('button');

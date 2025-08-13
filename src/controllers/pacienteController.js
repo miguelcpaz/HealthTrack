@@ -40,24 +40,24 @@ async function getPacientes(req, res) {
 }
 
 // Buscar paciente por ID
-async function getPacienteById(req, res) {
-  const { id } = req.params;
+async function getPacientesByHospital(req, res) {
+  const { id } = req.params; // hospitalId
 
   try {
-    const paciente = await prisma.paciente.findUnique({
-      where: { id: Number(id) }
+    const pacientes = await prisma.paciente.findMany({
+      where: { hospitalId: Number(id) }
     });
 
-    if (!paciente) {
-      return res.status(404).json({ error: 'Paciente não encontrado.' });
+    if (!pacientes || pacientes.length === 0) {
+      return res.status(404).json({ error: 'Nenhum paciente encontrado para este hospital.' });
     }
-
-    return res.status(200).json(paciente);
+    return res.status(200).json(pacientes);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Erro ao buscar paciente por ID.' });
+    return res.status(500).json({ error: 'Erro ao buscar pacientes.' });
   }
 }
+
 
 // Editar paciente
 async function editPaciente(req, res) {
@@ -93,6 +93,6 @@ async function editPaciente(req, res) {
 module.exports = {
   registerPaciente,
   getPacientes,
-  getPacienteById,
+  getPacientesByHospital,
   editPaciente,
 };
