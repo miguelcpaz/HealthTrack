@@ -140,6 +140,23 @@
       border-radius: 8px;
     }
 
+    .gravidade-btn {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.1s;
+  display: inline-block;
+  margin: 4px;
+}
+.gravidade-btn.ativo {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
 
 
     .hamburger {
@@ -372,6 +389,31 @@
         <option value="Outro">Outro</option>
       </select>
     </label>
+    <div style="margin-bottom: 15px; position: relative;">
+  <button id="abrir-filtro-gravidade" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+    Filtrar por Gravidade ⬇
+  </button>
+
+  <div id="menu-gravidade" style="
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 50;
+  ">
+    <button class="gravidade-btn" data-valor="todas">Todas</button>
+    <button class="gravidade-btn" data-valor="Azul" style="background: rgb(40, 40, 146); color: white;">Azul</button>
+    <button class="gravidade-btn" data-valor="Verde" style="background: green; color: white;">Verde</button>
+    <button class="gravidade-btn" data-valor="Amarelo" style="background: rgb(202, 202, 65);">Amarelo</button>
+    <button class="gravidade-btn" data-valor="Laranja" style="background: orange;">Laranja</button>
+    <button class="gravidade-btn" data-valor="Vermelho" style="background: red; color: white;">Vermelho</button>
+  </div>
+</div>
+
 
 
     <div id="lista-pacientes" style="overflow-x: auto;"></div>
@@ -602,6 +644,70 @@
       }
     }
 
+
+    let gravidadesSelecionadas = ["todas"];
+
+function inicializarFiltroGravidade() {
+  const menu = document.getElementById("menu-gravidade");
+  const abrirBtn = document.getElementById("abrir-filtro-gravidade");
+  const botoes = menu.querySelectorAll(".gravidade-btn");
+
+  // Abrir/fechar menu
+  abrirBtn.addEventListener("click", () => {
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  });
+
+  // Clique nos botões
+  botoes.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const valor = btn.getAttribute("data-valor");
+
+      if (valor === "todas") {
+        gravidadesSelecionadas = ["todas"];
+        botoes.forEach(b => b.classList.remove("ativo"));
+        btn.classList.add("ativo");
+      } else {
+        gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== "todas");
+
+        if (gravidadesSelecionadas.includes(valor)) {
+          gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== valor);
+        } else {
+          gravidadesSelecionadas.push(valor);
+        }
+
+        if (gravidadesSelecionadas.length === 0) {
+          gravidadesSelecionadas = ["todas"];
+        }
+
+        botoes.forEach(b => {
+          const val = b.getAttribute("data-valor");
+          if (gravidadesSelecionadas.includes(val)) {
+            b.classList.add("ativo");
+          } else {
+            b.classList.remove("ativo");
+          }
+        });
+      }
+
+      atualizarTabela();
+    });
+  });
+
+  // Fecha ao clicar fora
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && !abrirBtn.contains(e.target)) {
+      menu.style.display = "none";
+    }
+  });
+
+  // Ativa "todas" no início
+  document.querySelector('.gravidade-btn[data-valor="todas"]').classList.add("ativo");
+}
+
+inicializarFiltroGravidade();
+
+
+
     let pacientesGlobal = [];
 
     async function carregarPacientes() {
@@ -662,9 +768,15 @@
 
       let pacientesFiltrados = [...pacientesGlobal];
 
-      if (filtroQuarto !== 'todos') {
-        pacientesFiltrados = pacientesFiltrados.filter(p => p.quarto == filtroQuarto);
+      if (!gravidadesSelecionadas.includes("todas")) {
+        pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
       }
+
+
+      if (!gravidadesSelecionadas.includes("todas")) {
+  pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
+}
+
 
       if (filtroSexo !== 'todos') {
         pacientesFiltrados = pacientesFiltrados.filter(p => p.sexo == filtroSexo);
