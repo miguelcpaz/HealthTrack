@@ -1,33 +1,93 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
-// Cadastro de usuário
 async function registerUser(req, res) {
-  const { nome, cpf, email, senha, crm, tipo_user, hospitalId } = req.body;
-  const senhaHash = await bcrypt.hash(senha, 10);
+  const { nome, cpf, email, crm, uf, tipo_user, hospitalId, status_senha } = req.body;
+
+  console.log()
 
   try {
-    // Verifica se o email já existe
-    const emailCheck = await prisma.user.findUnique({
-      where: { email }
-    });
+    const senhaTemporaria = crypto.randomBytes(6).toString("hex");
+
+    // 🔹 Valida CRM apenas para médicos (tipo_user === 3)
+    const emailCheck = await prisma.user.findUnique({ where: { email } });
     if (emailCheck) {
       return res.status(400).json({ error: 'Email já cadastrado.' });
     }
 
-    // Verifica se o CPF já existe
-    const cpfCheck = await prisma.user.findUnique({
-      where: { cpf }
-    });
+    // Verifica se CPF já existe
+    const cpfCheck = await prisma.user.findUnique({ where: { cpf } });
     if (cpfCheck) {
       return res.status(400).json({ error: 'CPF já cadastrado.' });
     }
 
-    // Se tudo certo, cria usuário
+    // Gera hash da senha
+    const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
+
+    // Cria usuário
     const newUser = await prisma.user.create({
-      data: { nome, cpf, email, senha: senhaHash, crm, tipo_user, hospitalId}
+      data: {
+        nome,
+        cpf,
+        email,
+        senha: senhaHash,
+        crm: `${crm}/${uf}`, // interpolação correta
+        tipo_user,
+        hospitalId,
+        status_senha
+      }
     });
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,   // exemplo: "smtp.gmail.com"
+      port: process.env.EMAIL_PORT,   // exemplo: 587
+      secure: process.env.EMAIL_SECURE === "true", // true para 465, false para 587
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Enviar email com a senha temporária
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
+      text: `Olá,
+    
+    Seja bem-vindo ao HealthTrack!
+    
+    O seu Usuario foi cadastrado com sucesso em nossa plataforma. Para acessar o sistema, utilize as credenciais temporárias abaixo:
+    
+    🔐 Senha temporária de acesso: ${senhaTemporaria}
+    
+    ⚠️ Por razões de segurança, é extremamente importante que você altere essa senha assim que realizar o primeiro login.
+    
+    Através da plataforma, você poderá:
+    - Gerenciar pacientes de forma rápida e segura;
+    - Acompanhar internações, prescrições e relatórios clínicos;
+    - Organizar sua equipe e muito mais.
+    
+    Caso você não tenha solicitado este cadastro, ou tenha recebido este e-mail por engano, por favor, entre em contato com a nossa equipe imediatamente.
+    
+    Se precisar de ajuda, conte com nosso suporte:
+    
+    📧 healthtrack.tcc@gmail.com 
+    
+    Obrigado por confiar na nossa solução.
+    
+    Atenciosamente,  
+    Equipe HealthTrack
+
+    MENSAGEM AUTOMATICA NÃO RESPONDA!
+    `,
+    };
+
+
+    await transporter.sendMail(mailOptions);
 
     return res.status(201).json({ message: 'Usuário cadastrado com sucesso!', usuario: newUser });
   } catch (error) {

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trocar Senha - HEALTHTRACK</title>
+
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+            color: black;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-area img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+        }
+
+        .logo-area span {
+            font-size: 22px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn-login {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark mode */
+        .dark-mode {
+            background-color: #000000;
+            color: white;
+        }
+
+        .dark-mode .login-container {
+            background-color: #222;
+            color: white;
+        }
+
+        .dark-mode input[type="password"] {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        .dark-mode .btn-login {
+            background-color: #444;
+        }
+
+        @media (max-width: 480px) {
+            .logo-area span {
+                font-size: 20px;
+            }
+
+            .logo-area img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .login-container {
+                padding: 20px;
+            }
+
+            .btn-login {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="logo-area">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </div>
+
+        <h2>Trocar Senha Temporária</h2>
+
+        <form id="change-password-form">
+            <div class="form-group">
+                <label for="new-password">Nova Senha</label>
+                <input type="password" id="new-password" name="new-password" placeholder="Digite a nova senha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirme a Nova Senha</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirme a nova senha"
+                    required>
+            </div>
+
+            <button type="submit" class="btn-login">Atualizar Senha</button>
+        </form>
+    </div>
+
+    <script>
+        // Pega os dados de autenticação do localStorage ou sessionStorage
+        const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionStorage.getItem('auth'));
+
+        console.log(authData);
+
+        if (!authData) {
+            alert('Usuário não autenticado!');
+            window.location.href = "http://localhost:3000/login";
+        }
+
+        const form = document.getElementById("change-password-form");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const newPassword = document.getElementById("new-password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+            if (newPassword !== confirmPassword) {
+                alert("As senhas não coincidem!");
+                return;
+            }
+
+            const data = { newPassword };
+
+            try {
+                // Monta a URL do backend de forma correta
+                const urlBase = `http://localhost:3000/api/auth/change-temp-password/${authData.dados.id}`;
+
+                const response = await fetch(urlBase, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message);
+
+                    // Atualiza o auth no storage com os dados retornados pelo backend
+                    if (result.authAtualizado) {
+                        localStorage.setItem('auth', JSON.stringify(result.authAtualizado));
+                        sessionStorage.setItem('auth', JSON.stringify(result.authAtualizado));
+                    }
+
+                    // Redireciona para a página principal
+                    window.location.href = "http://localhost:3000";
+                } else {
+                    alert(result.error || "Erro ao atualizar a senha.");
+                }
+
+            } catch (error) {
+                console.error('Erro ao atualizar senha:', error);
+                alert('Erro ao tentar atualizar a senha.');
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

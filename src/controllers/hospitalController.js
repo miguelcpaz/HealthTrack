@@ -64,10 +64,10 @@ async function registerHospital(req, res) {
 
     // Enviar email com a senha temporária
     const mailOptions = {
-  from: process.env.EMAIL_USER,
-  to: email,
-  subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
-  text: `Olá,
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
+      text: `Olá,
 
 Seja bem-vindo ao HealthTrack!
 
@@ -86,15 +86,16 @@ Caso você não tenha solicitado este cadastro, ou tenha recebido este e-mail po
 
 Se precisar de ajuda, conte com nosso suporte:
 
-📧 suporte@healthtrack.com.br  
-📞 (11) 99999-0000
+📧 healthtrack.tcc@gmail.com  
 
 Obrigado por confiar na nossa solução.
 
 Atenciosamente,  
 Equipe HealthTrack
+
+MENSAGEM AUTOMATICA NÃO RESPONDA!
 `,
-};
+    };
 
 
     await transporter.sendMail(mailOptions);

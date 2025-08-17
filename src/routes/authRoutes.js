@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { loginGeral } = require('../controllers/authController');
+const { loginGeral, trocar_senhatemp } = require('../controllers/authController');
 
 router.post('/login', loginGeral);
+router.patch('/change-temp-password/:id', trocar_senhatemp);
 
 module.exports = router;

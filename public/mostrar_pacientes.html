@@ -7,11 +7,9 @@
   <title>HEALTHTRACK - PACIENTES</title>
 
   <link rel="icon" type="image/png" href="./img/favicon.png">
-
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="./js/global.js"></script>
 
   <style>
     body {
@@ -334,6 +332,58 @@
         text-align: left;
       }
     }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .dark-mode #loading-screen {
+      background-color: #000;
+      color: white;
+    }
+
+    .loader-content {
+      text-align: center;
+    }
+
+    .loader-logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 20px auto 0;
+      animation: spin 1s linear infinite;
+    }
+
+    .dark-mode .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-left-color: #00ccff;
+    }
   </style>
 </head>
 
@@ -422,205 +472,6 @@
     const authData = JSON.parse(localStorage.getItem('auth')) ||
       JSON.parse(sessionStorage.getItem('auth'));
 
-    if (!authData) {
-      window.location.href = 'login.html';
-    }
-
-    const TIPOS_USUARIO = {
-      USUARIO: 1,
-      ENFERMEIRO: 2,
-      MEDICO: 3,
-      HOSPITAL: 4 // Tipo especial para hospitais
-    };
-
-    // Configura os botões conforme o tipo
-    const botoesPorTipo = {
-      [TIPOS_USUARIO.USUARIO]: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ],
-      [TIPOS_USUARIO.ENFERMEIRO]: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ],
-      [TIPOS_USUARIO.MEDICO]: [
-        { nome: 'Avaliar', icone: 'ri-stethoscope-line' },
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ],
-      [TIPOS_USUARIO.HOSPITAL]: [
-        { nome: 'Pacientes', icone: 'ri-user-heart-line' },
-        { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Funcionários', icone: 'ri-team-line' },
-        { nome: 'Relatórios', icone: 'ri-file-chart-line' },
-        { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
-      ]
-    };
-
-    const nav = document.getElementById('nav-buttons');
-    const tipoUsuario = authData.dados.tipo_user;
-
-    if (tipoUsuario) {
-      let sairBotao = null;
-
-      botoesPorTipo[tipoUsuario].forEach(item => {
-        if (item.nome === 'Pacientes') {
-          const dropdownPacientes = document.createElement('div');
-          dropdownPacientes.classList.add('dropdown');
-
-          const botaoPacientes = document.createElement('button');
-          botaoPacientes.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
-          botaoPacientes.onclick = () => toggleDropdownPacientes();
-          dropdownPacientes.appendChild(botaoPacientes);
-
-          const dropdownContentPacientes = document.createElement('div');
-          dropdownContentPacientes.classList.add('dropdown-content');
-          dropdownContentPacientes.id = 'dropdown-pacientes-content';
-
-          const visualizar = document.createElement('button');
-          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Pacientes`;
-          visualizar.onclick = visualizar_pacientes;
-          dropdownContentPacientes.appendChild(visualizar);
-
-          if (tipoUsuario >= 2) {
-            const gerenciar = document.createElement('button');
-            gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Pacientes`;
-            dropdownContentPacientes.appendChild(gerenciar);
-          }
-
-          if (tipoUsuario === 3) {
-            const adicionar = document.createElement('button');
-            adicionar.innerHTML = `<i class="ri-user-add-line"></i> Adicionar Paciente`;
-            adicionar.onclick = cadastro_paciente;
-            dropdownContentPacientes.appendChild(adicionar);
-          }
-
-          dropdownPacientes.appendChild(dropdownContentPacientes);
-          nav.insertBefore(dropdownPacientes, nav.querySelector('.dropdown'));
-
-        } else if (item.nome === 'Quartos') {
-          const dropdownQuartos = document.createElement('div');
-          dropdownQuartos.classList.add('dropdown');
-
-          const botaoQuartos = document.createElement('button');
-          botaoQuartos.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
-          botaoQuartos.onclick = () => toggleDropdownQuartos();
-          dropdownQuartos.appendChild(botaoQuartos);
-
-          const dropdownContentQuartos = document.createElement('div');
-          dropdownContentQuartos.classList.add('dropdown-content');
-          dropdownContentQuartos.id = 'dropdown-quartos-content';
-
-          const visualizar = document.createElement('button');
-          visualizar.innerHTML = `<i class="ri-eye-line"></i> Visualizar Quartos`;
-          visualizar.onclick = visualizar_quartos;
-          dropdownContentQuartos.appendChild(visualizar);
-
-          if (tipoUsuario >= 2) {
-            const gerenciar = document.createElement('button');
-            gerenciar.innerHTML = `<i class="ri-settings-3-line"></i> Gerenciar Quartos`;
-            dropdownContentQuartos.appendChild(gerenciar);
-          }
-
-          dropdownQuartos.appendChild(dropdownContentQuartos);
-          nav.insertBefore(dropdownQuartos, nav.querySelector('.dropdown'));
-
-        } else if (item.nome === 'Sair') {
-          sairBotao = document.createElement('button');
-          sairBotao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
-          sairBotao.addEventListener('click', item.funcao);
-        } else {
-          const botao = document.createElement('button');
-          botao.innerHTML = `<i class="${item.icone}"></i> ${item.nome}`;
-          if (item.funcao) {
-            botao.addEventListener('click', item.funcao);
-          }
-          nav.insertBefore(botao, nav.querySelector('.dropdown'));
-        }
-      });
-
-      if (sairBotao) {
-        nav.appendChild(sairBotao);
-      }
-    }
-
-    function sair() {
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('theme');
-      sessionStorage.removeItem('usuario');
-      sessionStorage.removeItem('theme');
-      window.location.href = 'login.html';
-    }
-
-
-    function cadastro_paciente() {
-      window.location.href = 'cadastro_paciente.html';
-    }
-    function visualizar_pacientes() {
-      window.location.href = 'mostrar_pacientes.html';
-    }
-
-    function visualizar_quartos() {
-      window.location.href = 'mostrar_quartos.html';
-    }
-
-    function toggleDropdown() {
-      closeDropdown();
-      document.getElementById('dropdown-content').classList.toggle('show');
-    }
-
-    function toggleDropdownPacientes() {
-      closeDropdown();
-      const dropdown = document.getElementById('dropdown-pacientes-content');
-      if (dropdown) dropdown.classList.toggle('show');
-    }
-
-    function toggleDropdownQuartos() {
-      closeDropdown();
-      const dropdown = document.getElementById('dropdown-quartos-content');
-      if (dropdown) dropdown.classList.toggle('show');
-    }
-
-    function setDarkMode() {
-      document.body.classList.add('dark-mode');
-      localStorage.setItem('theme', 'dark');
-      sessionStorage.setItem('theme', 'dark');
-      closeDropdown();
-    }
-
-    function setLightMode() {
-      document.body.classList.remove('dark-mode');
-      localStorage.setItem('theme', 'light');
-      sessionStorage.setItem('theme', 'light');
-      closeDropdown();
-    }
-
-    const savedThemeSession = sessionStorage.getItem('theme');
-    if (savedThemeSession) {
-      if (savedThemeSession === 'dark') {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
-    } else {
-      const savedThemeLocal = localStorage.getItem('theme');
-      if (savedThemeLocal) {
-        if (savedThemeLocal === 'dark') {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }
-    }
-
-
     function closeDropdown() {
       const tema = document.getElementById('dropdown-content');
       const pacientes = document.getElementById('dropdown-pacientes-content');
@@ -643,7 +494,6 @@
         }
       }
     }
-
 
     let gravidadesSelecionadas = ["todas"];
 
@@ -706,8 +556,6 @@ function inicializarFiltroGravidade() {
 
 inicializarFiltroGravidade();
 
-
-
     let pacientesGlobal = [];
 
     async function carregarPacientes() {
@@ -752,7 +600,6 @@ inicializarFiltroGravidade();
       }
     }
 
-
     function atualizarTabela() {
       const criterioOrdenacao = document.getElementById('ordenar').value;
       const filtroQuarto = document.getElementById('filtro-quarto').value;
@@ -772,12 +619,9 @@ inicializarFiltroGravidade();
         pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
       }
 
-
       if (!gravidadesSelecionadas.includes("todas")) {
   pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
 }
-
-
       if (filtroSexo !== 'todos') {
         pacientesFiltrados = pacientesFiltrados.filter(p => p.sexo == filtroSexo);
       }
@@ -798,9 +642,6 @@ inicializarFiltroGravidade();
 
       renderizarTabela(pacientesOrdenados);
     }
-
-
-
     function renderizarTabela(pacientes) {
       const container = document.getElementById('lista-pacientes');
       container.innerHTML = `
@@ -843,39 +684,20 @@ inicializarFiltroGravidade();
     </table>
   `;
     }
-
-
     function verPaciente(paciente) {
       localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente));
       window.location.href = 'paciente.html';
     }
-
-
-
-
     carregarPacientes();
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const tooltipIcons = document.querySelectorAll('.tooltip-icon');
-
-      tooltipIcons.forEach(icon => {
-        // Temporariamente remove o title para prevenir o tooltip nativo
-        icon.addEventListener('mouseenter', function () {
-          this.setAttribute('data-original-title', this.getAttribute('title') || '');
-          this.removeAttribute('title');
-        });
-
-        // Restaura o title quando o mouse sai
-        icon.addEventListener('mouseleave', function () {
-          if (this.getAttribute('data-original-title')) {
-            this.setAttribute('title', this.getAttribute('data-original-title'));
-          }
-        });
-      });
-    });
   </script>
 
 </body>
 
+<div id="loading-screen">
+  <div class="loader-content">
+    <img src="./img/logo.png" alt="Logo" class="loader-logo">
+    <h1>HEALTHTRACK</h1>
+    <div class="spinner"></div>
+  </div>
+</div>
 </html>

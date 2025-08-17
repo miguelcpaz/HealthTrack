@@ -121,6 +121,63 @@
             outline: none;
         }
 
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .dark-mode #loading-screen {
+            background-color: #000;
+            color: white;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            animation: spin 1s linear infinite;
+        }
+
+        .dark-mode .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #00ccff;
+        }
+
         .terms {
             font-size: 13px;
             color: #555;
@@ -218,10 +275,6 @@
                 <input type="email" name="email_tecnico" required>
             </div>
             <div class="form-group">
-                <label>Senha</label>
-                <input type="password" name="senha_tecnico" required>
-            </div>
-            <div class="form-group">
                 <label>Hospital</label>
                 <select name="hospital_tecnico" required></select>
             </div>
@@ -249,10 +302,6 @@
                 <input type="email" name="email_enfermeiro" required>
             </div>
             <div class="form-group">
-                <label>Senha</label>
-                <input type="password" name="senha_enfermeiro" required>
-            </div>
-            <div class="form-group">
                 <label>Hospital</label>
                 <select name="hospital_enfermeiro" required></select>
             </div>
@@ -275,15 +324,45 @@
             </div>
             <div class="form-group">
                 <label>CRM</label>
-                <input type="text" name="crm_medico" required placeholder="Ex: 123456/SP">
+                <input type="text" name="crm_medico" required placeholder="Ex: 123456" maxlength="6" pattern="\d{6}"
+                    title="Digite exatamente 6 números">
+            </div>
+            <div class="form-group">
+                <label>UF</label>
+                <select name="uf_medico" required>
+                    <option value="">Selecione</option>
+                    <option value="AC">AC</option>
+                    <option value="AL">AL</option>
+                    <option value="AP">AP</option>
+                    <option value="AM">AM</option>
+                    <option value="BA">BA</option>
+                    <option value="CE">CE</option>
+                    <option value="DF">DF</option>
+                    <option value="ES">ES</option>
+                    <option value="GO">GO</option>
+                    <option value="MA">MA</option>
+                    <option value="MT">MT</option>
+                    <option value="MS">MS</option>
+                    <option value="MG">MG</option>
+                    <option value="PA">PA</option>
+                    <option value="PB">PB</option>
+                    <option value="PR">PR</option>
+                    <option value="PE">PE</option>
+                    <option value="PI">PI</option>
+                    <option value="RJ">RJ</option>
+                    <option value="RN">RN</option>
+                    <option value="RS">RS</option>
+                    <option value="RO">RO</option>
+                    <option value="RR">RR</option>
+                    <option value="SC">SC</option>
+                    <option value="SP">SP</option>
+                    <option value="SE">SE</option>
+                    <option value="TO">TO</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email_medico" required>
-            </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" name="senha_medico" required>
             </div>
             <div class="form-group">
                 <label>Hospital</label>
@@ -365,7 +444,7 @@
                 const response = await fetch("http://localhost:3000/api/hospital/listar");
                 const hospitais = await response.json();
 
-                
+
 
                 const selects = document.querySelectorAll('select[name^="hospital_"]');
                 selects.forEach(select => {
@@ -411,7 +490,8 @@
                         telefone: data["telefone_hospital"],
                         email: data["email_hospital"],
                         website: data["website_hospital"] || null,
-                        tipoEstabelecimento: data["tipoEstabelecimento_hospital"]
+                        tipoEstabelecimento: data["tipoEstabelecimento_hospital"],
+                        status_senha: 1
                     };
 
                     try {
@@ -442,10 +522,11 @@
                         nome: data[`nome_${form.id}`],
                         cpf: data[`cpf_${form.id}`],
                         email: data[`email_${form.id}`],
-                        senha: data[`senha_${form.id}`],
-                        crm: data[`crm_medico`] ? data[`crm_medico`] : null,
+                        crm: form.id === "medico" ? data[`crm_medico`] : null,
+                        uf: form.id === "medico" ? data[`uf_medico`] : null,
                         tipo_user,
-                        hospitalId: parseInt(hospitalId)
+                        hospitalId: parseInt(hospitalId),
+                        status_senha: 1
                     };
 
                     try {
@@ -456,24 +537,45 @@
                         });
 
                         if (response.ok) {
-                            alert("Usuário cadastrado com sucesso!");
+                            alert("Usuário cadastrado com sucesso! Uma senha temporária foi enviada para o email informado.");
                             form.reset();
                             window.location.href = "//localhost:3000";
                         } else {
                             const errorData = await response.json();
                             alert(errorData.error || "Erro ao cadastrar usuário.");
-                        } SVGAElement
+                        }
                     } catch (error) {
                         console.error(error);
                         alert("Erro ao conectar com o servidor.");
                     }
                 }
+
+
             });
+        });
+
+        window.addEventListener('load', function () {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                const randomDelay = Math.floor(Math.random() * (2500 - 1000 + 1)) + 1000;
+                console.log(randomDelay);
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => loadingScreen.style.display = 'none', 500); // fade out
+                }, randomDelay); // tempo de exibição antes de iniciar o fade (2.5s)
+            }
         });
     </script>
 
 
 
 </body>
+<div id="loading-screen">
+    <div class="loader-content">
+        <img src="./img/logo.png" alt="Logo" class="loader-logo">
+        <h1>HEALTHTRACK</h1>
+        <div class="spinner"></div>
+    </div>
+</div>
 
 </html>

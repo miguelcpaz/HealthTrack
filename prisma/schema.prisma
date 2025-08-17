@@ -14,15 +14,16 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  nome        String
-  email       String   @unique
-  senha       String
-  cpf         String   @unique
-  crm         String?
-  tipo_user   Int
-  hospitalId  Int
-  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+  id           Int      @id @default(autoincrement())
+  nome         String
+  email        String   @unique
+  senha        String  
+  status_senha Int      @default(0)
+  cpf          String   @unique
+  crm          String?
+  tipo_user    Int
+  hospitalId   Int
+  hospital     Hospital @relation(fields: [hospitalId], references: [id])
 }
 
 model Hospital {
@@ -30,11 +31,12 @@ model Hospital {
   nome                String
   cnpj                String     @unique
   cnes                String     @unique
-  cep                 String
+  cep                 String  
   numero              String
   telefone            String
   email               String     @unique
   senha               String
+  status_senha        Int        @default(0) 
   website             String?
   tipoEstabelecimento String
   users               User[]
