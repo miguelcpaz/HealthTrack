@@ -7,11 +7,9 @@
     <title>HEALTHTRACK - PACIENTES</title>
 
     <link rel="icon" type="image/png" href="./img/favicon.png">
-
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="./js/global.js"></script>
 
     <style>
         body {
@@ -141,6 +139,24 @@
         }
 
 
+        .funcao-btn {
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.1s;
+            display: inline-block;
+            margin: 4px;
+        }
+
+        .funcao-btn.ativo {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
 
         .hamburger {
             display: none;
@@ -215,6 +231,109 @@
             text-decoration: underline;
         }
 
+        /* Estilos para a barra de pesquisa */
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 15px;
+            padding-right: 40px;
+            /* Espaço para o ícone */
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .dark-mode .search-bar {
+            background-color: #222;
+            color: white;
+            border-color: #444;
+        }
+
+        .dark-mode .search-button {
+            color: #aaa;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .dark-mode #loading-screen {
+            background-color: #000;
+            color: white;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            animation: spin 1s linear infinite;
+        }
+
+        .dark-mode .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #00ccff;
+        }
+
         .dark-mode {
             background-color: #000000;
             color: white;
@@ -280,52 +399,7 @@
                 border-color: #333333;
             }
 
-            #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      color: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 9999;
-      transition: opacity 0.5s ease;
-    }
 
-    .dark-mode #loading-screen {
-      background-color: #000;
-      color: white;
-    }
-
-    .loader-content {
-      text-align: center;
-    }
-
-    .loader-logo {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-    }
-
-    .spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #007bff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      margin: 20px auto 0;
-      animation: spin 1s linear infinite;
-    }
-
-    .dark-mode .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-left-color: #00ccff;
-    }
         }
 
         @media (max-width: 600px) {
@@ -396,6 +470,13 @@
     <main style="padding: 30px;">
         <h2>Funcionarios Cadastrados</h2>
 
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome, CPF ou CRM...">
+            <button class="search-button" onclick="focusSearch()">
+                <i class="ri-search-line"></i>
+            </button>
+        </div>
+
         <label for="ordenar" style="margin-bottom: 10px; display: block;">
             Ordenar por:
             <select id="ordenar" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
@@ -409,15 +490,28 @@
                 <option value="nivelalerta-desc">Gravidade (Mais grave)</option>
             </select>
         </label>
-        <label for="filtro-funcao" style="margin-bottom: 10px; display: block;">
-            Filtrar por função:
-            <select id="filtro-funcao" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
-                <option value="todos">Todos</option>
-                <option value="Técnico">Técnico</option>
-                <option value="Enfermeiro">Enfermeiro</option>
-                <option value="Médico">Médico</option>
-            </select>
-        </label>
+        <div style="margin-bottom: 15px; position: relative;">
+            <button id="abrir-filtro-funcao" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                Filtrar por Função ⬇
+            </button>
+
+            <div id="menu-funcao" style="
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 50;
+  ">
+                <button class="funcao-btn" data-valor="todas">Todas</button>
+                <button class="funcao-btn" data-valor="1" style="background: #4e73df; color: white;">Técnico</button>
+                <button class="funcao-btn" data-valor="2" style="background: #1cc88a; color: white;">Enfermeiro</button>
+                <button class="funcao-btn" data-valor="3" style="background: #36b9cc; color: white;">Médico</button>
+            </div>
+        </div>
 
 
 
@@ -426,6 +520,8 @@
     <script>
         const authData = JSON.parse(localStorage.getItem('auth')) ||
             JSON.parse(sessionStorage.getItem('auth'));
+
+
 
         if (!authData) {
             window.location.href = 'login.html';
@@ -436,7 +532,7 @@
             try {
                 let urlBase = 'http://localhost:3000/api/usuarios/get';
 
-                if (authData.dados.tipo_user === 4) {
+                if (authData.tipo === 'hospital') {
                     urlBase += `/${authData.dados.id}`;
                 } else {
                     urlBase += `/${authData.dados.hospitalId}`;
@@ -462,31 +558,106 @@
             }
         }
 
+        let funcoesSelecionadas = ["todas"];
+
+        function inicializarFiltroFuncao() {
+            const menu = document.getElementById("menu-funcao");
+            const abrirBtn = document.getElementById("abrir-filtro-funcao");
+            const botoes = menu.querySelectorAll(".funcao-btn");
+
+            // Abrir/fechar menu
+            abrirBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                menu.style.display = menu.style.display === "block" ? "none" : "block";
+            });
+
+            // Clique nos botões
+            botoes.forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const valor = btn.getAttribute("data-valor");
+
+                    if (valor === "todas") {
+                        funcoesSelecionadas = ["todas"];
+                        botoes.forEach(b => b.classList.remove("ativo"));
+                        btn.classList.add("ativo");
+                    } else {
+                        funcoesSelecionadas = funcoesSelecionadas.filter(v => v !== "todas");
+
+                        if (funcoesSelecionadas.includes(valor)) {
+                            funcoesSelecionadas = funcoesSelecionadas.filter(v => v !== valor);
+                        } else {
+                            funcoesSelecionadas.push(valor);
+                        }
+
+                        if (funcoesSelecionadas.length === 0) {
+                            funcoesSelecionadas = ["todas"];
+                        }
+
+                        botoes.forEach(b => {
+                            const val = b.getAttribute("data-valor");
+                            if (funcoesSelecionadas.includes(val) || (val === "todas" && funcoesSelecionadas.includes("todas"))) {
+                                b.classList.add("ativo");
+                            } else {
+                                b.classList.remove("ativo");
+                            }
+                        });
+                    }
+
+                    atualizarTabela();
+                });
+            });
+
+            // Fecha ao clicar fora
+            document.addEventListener("click", (e) => {
+                if (!menu.contains(e.target) && !abrirBtn.contains(e.target)) {
+                    menu.style.display = "none";
+                }
+            });
+
+            // Ativa "todas" no início
+            document.querySelector('.funcao-btn[data-valor="todas"]').classList.add("ativo");
+        }
+
 
         function atualizarTabela() {
             const criterioOrdenacao = document.getElementById('ordenar').value;
-            const filtroFuncao = document.getElementById('filtro-funcao').value;
+            const termoPesquisa = document.getElementById('search-input').value.toLowerCase();
 
             let funcionariosFiltrados = [...funcionariosGlobal];
 
-            // Filtra por função
-            if (filtroFuncao !== 'todos') {
-                funcionariosFiltrados = funcionariosFiltrados.filter(f => {
-                    const funcao = f.tipo_user === 1 ? 'Técnico' :
-                        f.tipo_user === 2 ? 'Enfermeiro' :
-                            f.tipo_user === 3 ? 'Médico' : '';
-                    return funcao === filtroFuncao;
-                });
+            // Aplica filtro de pesquisa (Nome, CPF ou CRM)
+            if (termoPesquisa) {
+                funcionariosFiltrados = funcionariosFiltrados.filter(f =>
+                    f.nome.toLowerCase().includes(termoPesquisa) ||
+                    (f.cpf && f.cpf.toString().includes(termoPesquisa)) ||
+                    (f.crm && f.crm.toString().toLowerCase().includes(termoPesquisa))
+                );
             }
 
-            // Ordena pelo nome
+            // Aplica filtro por função
+            if (!funcoesSelecionadas.includes("todas")) {
+                funcionariosFiltrados = funcionariosFiltrados.filter(f =>
+                    funcoesSelecionadas.includes(f.tipo_user.toString())
+                );
+            }
+
+            // Ordena pelo critério selecionado
             funcionariosFiltrados.sort((a, b) => {
-                if (criterioOrdenacao === 'nome-asc') return a.nome.localeCompare(b.nome);
-                if (criterioOrdenacao === 'nome-desc') return b.nome.localeCompare(a.nome);
-                return 0;
+                switch (criterioOrdenacao) {
+                    case 'nome-asc': return a.nome.localeCompare(b.nome);
+                    case 'nome-desc': return b.nome.localeCompare(a.nome);
+                    case 'idade-asc': return a.idade - b.idade;
+                    case 'idade-desc': return b.idade - a.idade;
+                    default: return 0;
+                }
             });
 
             renderizarTabela(funcionariosFiltrados);
+        }
+
+        function focusSearch() {
+            document.getElementById('search-input').focus();
         }
 
 
@@ -526,15 +697,22 @@
   `;
         }
 
-        carregarFuncionarios();
+        window.addEventListener('DOMContentLoaded', () => {
+            carregarFuncionarios();
+            inicializarFiltroFuncao(); // Adicione esta linha
+
+            // Adiciona evento de pesquisa
+            document.getElementById('search-input').addEventListener('input', atualizarTabela);
+        });
     </script>
 
 </body>
 <div id="loading-screen">
-  <div class="loader-content">
-    <img src="./img/logo.png" alt="Logo" class="loader-logo">
-    <h1>HEALTHTRACK</h1>
-    <div class="spinner"></div>
-  </div>
+    <div class="loader-content">
+        <img src="./img/logo.png" alt="Logo" class="loader-logo">
+        <h1>HEALTHTRACK</h1>
+        <div class="spinner"></div>
+    </div>
 </div>
+
 </html>

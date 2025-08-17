@@ -186,7 +186,7 @@
         // Pega os dados de autenticação do localStorage ou sessionStorage
         const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionStorage.getItem('auth'));
 
-        console.log(authData);
+        console.log(authData.dados.email);
 
         if (!authData) {
             alert('Usuário não autenticado!');
@@ -210,7 +210,7 @@
 
             try {
                 // Monta a URL do backend de forma correta
-                const urlBase = `http://localhost:3000/api/auth/change-temp-password/${authData.dados.id}`;
+                const urlBase = `http://localhost:3000/api/auth/change-temp-password/${authData.dados.email}`;
 
                 const response = await fetch(urlBase, {
                     method: 'PATCH',

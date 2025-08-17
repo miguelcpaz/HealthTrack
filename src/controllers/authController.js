@@ -6,12 +6,15 @@ async function loginGeral(req, res) {
     const { email, senha } = req.body;
 
     try {
+
+        console.log('Dados de login recebidos:', { email, senha });
         // 1. Primeiro tenta encontrar como usuário
         const usuario = await prisma.user.findUnique({ 
             where: { email } 
         });
         
         if (usuario) {
+             console.log('Dados de login recebidos:', { email, senha, usuario, });
             const senhaValida = await bcrypt.compare(senha, usuario.senha);
             if (senhaValida) {
                 return res.status(200).json({
@@ -31,7 +34,9 @@ async function loginGeral(req, res) {
         });
 
         if (hospital) {
+             console.log('Dados de login recebidos:', { email, senha, hospital});
             const senhaValida = await bcrypt.compare(senha, hospital.senha);
+            console.log('Password valid?', senhaValida); 
             if (senhaValida) {
                 return res.status(200).json({
                     message: 'Login realizado com sucesso (hospital)',
@@ -57,8 +62,14 @@ async function loginGeral(req, res) {
 }
 
 async function trocar_senhatemp(req, res) {
-    const { id } = req.params;
+    const { email } = req.params; // Obtém o email dos parâmetros da URL
     const { newPassword } = req.body;
+
+
+    // Verifica se o email foi fornecido
+    if (!email) {
+        return res.status(400).json({ error: 'Email é obrigatório'});
+    }
 
     if (!newPassword || newPassword.length < 6) {
         return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres' });
@@ -67,12 +78,15 @@ async function trocar_senhatemp(req, res) {
     try {
         const senhaHash = await bcrypt.hash(newPassword, 10);
 
-        let user = await prisma.user.findUnique({ where: { id: Number(id) } });
+        // Primeiro verifica se é um usuário
+        let user = await prisma.user.findUnique({ 
+            where: { email: email } // Certifica-se de que o email está sendo passado
+        });
 
         if (user) {
             // Atualiza usuário
             const updatedUser = await prisma.user.update({
-                where: { id: Number(id) },
+                where: { email: email },
                 data: {
                     senha: senhaHash,
                     status_senha: 0
@@ -88,30 +102,38 @@ async function trocar_senhatemp(req, res) {
             });
         }
 
-        let hospital = await prisma.hospital.findUnique({ where: { id: Number(id) } });
-        if (!hospital) {
-            return res.status(404).json({ error: 'Usuário ou hospital não encontrado' });
+        // Se não for usuário, verifica se é um hospital
+        let hospital = await prisma.hospital.findUnique({ 
+            where: { email: email }
+        });
+
+        if (hospital) {
+            const updatedHospital = await prisma.hospital.update({
+                where: { email: email },
+                data: {
+                    senha: senhaHash,
+                    status_senha: 0
+                }
+            });
+
+            return res.status(200).json({
+                message: 'Senha atualizada com sucesso!',
+                authAtualizado: {
+                    dados: updatedHospital,
+                    tipo: 'hospital'
+                }
+            });
         }
 
-        const updatedHospital = await prisma.hospital.update({
-            where: { id: Number(id) },
-            data: {
-                senha: senhaHash,
-                status_senha: 0
-            }
-        });
-
-        return res.status(200).json({
-            message: 'Senha atualizada com sucesso!',
-            authAtualizado: {
-                dados: updatedHospital,
-                tipo: 'hospital'
-            }
-        });
+        // Se não encontrou nem usuário nem hospital
+        return res.status(404).json({ error: 'Email não encontrado', email});
 
     } catch (error) {
         console.error('Erro ao atualizar senha temporária:', error);
-        return res.status(500).json({ error: 'Erro ao atualizar a senha' });
+        return res.status(500).json({ 
+            error: 'Erro ao atualizar a senha',
+            details: error.message 
+        });
     }
 }
 

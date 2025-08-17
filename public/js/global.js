@@ -56,7 +56,7 @@ function verificarAutenticacao() {
 function configurarNavegacao() {
     const authData = verificarAutenticacao();
     const nav = document.getElementById('nav-buttons');
-    const tipoUsuario = authData.dados.tipo_user;
+    const tipoUsuario = authData.dados.tipo_user || 4;
 
     if (tipoUsuario && nav) {
         let sairBotao = null;

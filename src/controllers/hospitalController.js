@@ -16,26 +16,26 @@ async function registerHospital(req, res) {
       email,
       website,
       tipoEstabelecimento,
+      status_senha
     } = req.body;
 
-    // Verifica se hospital já existe pelo email, cnpj ou cnes
     const hospitalExists = await prisma.hospital.findFirst({
       where: {
         OR: [{ email }, { cnpj }, { cnes }],
       },
     });
+    const emailExists = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    if (hospitalExists) {
+    if (hospitalExists || emailExists) {
       return res.status(400).json({ error: "Hospital já cadastrado com esses dados." });
     }
 
-    // Gera senha temporária aleatória
-    const senhaTemporaria = crypto.randomBytes(6).toString("hex"); // 12 caracteres hex
+    const senhaTemporaria = crypto.randomBytes(6).toString("hex");
 
-    // Hash da senha temporária
     const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
-    // Cria o hospital no banco com a senha hashada
     const hospital = await prisma.hospital.create({
       data: {
         nome,
@@ -48,21 +48,20 @@ async function registerHospital(req, res) {
         senha: senhaHash,
         website,
         tipoEstabelecimento,
+        status_senha
       },
     });
 
-    // Configura o transporter do Nodemailer dentro do controller
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,   // exemplo: "smtp.gmail.com"
-      port: process.env.EMAIL_PORT,   // exemplo: 587
-      secure: process.env.EMAIL_SECURE === "true", // true para 465, false para 587
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: process.env.EMAIL_SECURE === "true",
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Enviar email com a senha temporária
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -113,7 +112,6 @@ async function loginHospital(req, res) {
   try {
     const { email, senha } = req.body;
 
-    // Verifica se o hospital existe pelo e-mail
     const hospital = await prisma.hospital.findUnique({
       where: { email },
     });
@@ -122,15 +120,12 @@ async function loginHospital(req, res) {
       return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
-    // Verifica se a senha está correta
     const senhaValida = await bcrypt.compare(senha, hospital.senha);
 
     if (!senhaValida) {
       return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
-    // Aqui você pode gerar um token JWT se desejar
-    // const token = jwt.sign({ id: hospital.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
     res.status(200).json({
       message: "Login realizado com sucesso.",
@@ -139,7 +134,6 @@ async function loginHospital(req, res) {
         nome: hospital.nome,
         email: hospital.email,
       },
-      // token, // caso implemente JWT
     });
   } catch (error) {
     console.error("Erro no login do hospital:", error);
@@ -152,7 +146,7 @@ async function listarHospitaisFormatado(req, res) {
   try {
     const hospitais = await prisma.hospital.findMany();
 
-    const hospitaisFiltrados = hospitais.filter(h => h.id !== 0); // <-- filtra o id 0
+    const hospitaisFiltrados = hospitais.filter(h => h.id !== 0);
 
     const hospitaisComCidade = await Promise.all(
       hospitaisFiltrados.map(async (hospital) => {

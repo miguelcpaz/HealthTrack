@@ -1,7 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Cadastro de paciente
 async function registerPaciente(req, res) {
   const { nome, idade, sexo, nivelalerta, relatorio, prescricao, estadia, quarto, hospitalId } = req.body;
 
@@ -27,7 +26,6 @@ async function registerPaciente(req, res) {
   }
 }
 
-// Buscar todos pacientes
 async function getPacientes(req, res) {
   const hospitalId = req.body;
   try {
@@ -39,9 +37,8 @@ async function getPacientes(req, res) {
   }
 }
 
-// Buscar paciente por ID
 async function getPacientesByHospital(req, res) {
-  const { id } = req.params; // hospitalId
+  const { id } = req.params;
 
   try {
     const pacientes = await prisma.paciente.findMany({
@@ -59,7 +56,6 @@ async function getPacientesByHospital(req, res) {
 }
 
 
-// Editar paciente
 async function editPaciente(req, res) {
   const { id, nome, idade, sexo, nivelalerta, relatorio, prescricao, estadia, quarto } = req.body;
 
@@ -82,7 +78,7 @@ async function editPaciente(req, res) {
   } catch (error) {
     console.error('Erro ao atualizar paciente:', error);
 
-    if (error.code === 'P2025') { // Prisma not found error code
+    if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Paciente não encontrado.' });
     }
 

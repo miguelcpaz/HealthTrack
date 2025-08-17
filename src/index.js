@@ -13,7 +13,6 @@ server.use(cors());
 server.use(express.json());
 server.use(express.static(path.join(__dirname, '..', 'public')));
 
-
 server.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'index.html')));
 server.get('/login', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'login.html')));
 server.get('/cadastro', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'cadastro.html')));
@@ -22,6 +21,5 @@ server.use('/api/usuarios', userRoutes);
 server.use('/api/pacientes', pacienteRoutes);
 server.use('/api/hospital', hospitalRoutes);
 server.use('/api/auth', authRoutes);
-
 
 server.listen(process.env.PORT || 3000, () => console.log('HealthTrack is running!'));

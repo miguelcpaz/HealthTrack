@@ -4,7 +4,7 @@ const { registerHospital, listarHospitaisFormatado, loginHospital} = require('..
 const router = express.Router();
 
 router.post('/register', registerHospital);
-router.post('/login', loginHospital); // <-- Adiciona rota de login
+router.post('/login', loginHospital); 
 router.get('/listar', listarHospitaisFormatado);  
 
 module.exports = router;

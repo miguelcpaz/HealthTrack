@@ -131,31 +131,28 @@
       color: rgb(40, 40, 146);
     }
 
-
-
     nav button:hover {
       background: #f0f0f0;
       border-radius: 8px;
     }
 
     .gravidade-btn {
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  opacity: 0.6;
-  transition: opacity 0.2s, transform 0.1s;
-  display: inline-block;
-  margin: 4px;
-}
-.gravidade-btn.ativo {
-  opacity: 1;
-  transform: scale(1.05);
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      opacity: 0.6;
+      transition: opacity 0.2s, transform 0.1s;
+      display: inline-block;
+      margin: 4px;
+    }
 
-
+    .gravidade-btn.ativo {
+      opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
 
     .hamburger {
       display: none;
@@ -166,9 +163,7 @@
       color: black;
     }
 
-
     .dark-mode table {
-
       color: white;
     }
 
@@ -183,7 +178,6 @@
     .dark-mode td {
       color: white;
     }
-
 
     .dropdown {
       position: relative;
@@ -266,6 +260,45 @@
       color: white;
     }
 
+    .search-container {
+      margin-bottom: 15px;
+    }
+
+    .search-bar {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-bar:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .search-button:hover {
+      background: #f0f0f0;
+    }
+
+    .dark-mode .search-bar {
+      background-color: #222;
+      color: white;
+      border-color: #444;
+    }
+
+
+    .dark-mode .search-button {
+      color: #aaa;
+    }
+
+    .dark-mode .search-button:hover {
+      background: #333;
+    }
+
     @media (max-width: 768px) {
       nav {
         position: absolute;
@@ -293,6 +326,10 @@
       .dark-mode nav {
         background-color: #000000;
         border-color: #333333;
+      }
+
+      .search-bar {
+        width: 200px;
       }
     }
 
@@ -331,12 +368,21 @@
         font-weight: bold;
         text-align: left;
       }
+
+      .search-bar {
+        width: 150px;
+      }
     }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
     #loading-screen {
       position: fixed;
@@ -396,7 +442,6 @@
     </a>
     <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
     <nav id="nav-buttons">
-
       <div class="dropdown">
         <button onclick="toggleDropdown()">
           <i class="ri-moon-clear-line"></i> Tema
@@ -411,6 +456,9 @@
   <main style="padding: 30px;">
     <h2>Pacientes Cadastrados</h2>
 
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome...">
+    </div>
     <label for="ordenar" style="margin-bottom: 10px; display: block;">
       Ordenar por:
       <select id="ordenar" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
@@ -436,131 +484,105 @@
         <option value="todos">Todos</option>
         <option value="Feminino">Feminino</option>
         <option value="Masculino">Masculino</option>
+        <option value="Intersexo">Intersexo</option>
         <option value="Outro">Outro</option>
       </select>
     </label>
     <div style="margin-bottom: 15px; position: relative;">
-  <button id="abrir-filtro-gravidade" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-    Filtrar por Gravidade ⬇
-  </button>
+      <button id="abrir-filtro-gravidade" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+        Filtrar por Gravidade ⬇
+      </button>
 
-  <div id="menu-gravidade" style="
-    display: none;
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    z-index: 50;
-  ">
-    <button class="gravidade-btn" data-valor="todas">Todas</button>
-    <button class="gravidade-btn" data-valor="Azul" style="background: rgb(40, 40, 146); color: white;">Azul</button>
-    <button class="gravidade-btn" data-valor="Verde" style="background: green; color: white;">Verde</button>
-    <button class="gravidade-btn" data-valor="Amarelo" style="background: rgb(202, 202, 65);">Amarelo</button>
-    <button class="gravidade-btn" data-valor="Laranja" style="background: orange;">Laranja</button>
-    <button class="gravidade-btn" data-valor="Vermelho" style="background: red; color: white;">Vermelho</button>
-  </div>
-</div>
-
-
+      <div id="menu-gravidade" style="
+        display: none;
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        z-index: 50;
+      ">
+        <button class="gravidade-btn" data-valor="todas">Todas</button>
+        <button class="gravidade-btn" data-valor="Azul"
+          style="background: rgb(40, 40, 146); color: white;">Azul</button>
+        <button class="gravidade-btn" data-valor="Verde" style="background: green; color: white;">Verde</button>
+        <button class="gravidade-btn" data-valor="Amarelo" style="background: rgb(202, 202, 65);">Amarelo</button>
+        <button class="gravidade-btn" data-valor="Laranja" style="background: orange;">Laranja</button>
+        <button class="gravidade-btn" data-valor="Vermelho" style="background: red; color: white;">Vermelho</button>
+      </div>
+    </div>
 
     <div id="lista-pacientes" style="overflow-x: auto;"></div>
   </main>
   <script>
-    const authData = JSON.parse(localStorage.getItem('auth')) ||
-      JSON.parse(sessionStorage.getItem('auth'));
-
-    function closeDropdown() {
-      const tema = document.getElementById('dropdown-content');
-      const pacientes = document.getElementById('dropdown-pacientes-content');
-      const quartos = document.getElementById('dropdown-quartos-content');
-
-      if (tema) tema.classList.remove('show');
-      if (pacientes) pacientes.classList.remove('show');
-      if (quartos) quartos.classList.remove('show');
-    }
-
-    function toggleMenu() {
-      nav.classList.toggle('show');
-    }
-
-    window.onclick = function (event) {
-      if (!event.target.closest('.dropdown') && !event.target.closest('.hamburger')) {
-        closeDropdown();
-        if (window.innerWidth <= 768) {
-          nav.classList.remove('show');
-        }
-      }
-    }
-
+        const authData = JSON.parse(localStorage.getItem('auth')) || 
+                   JSON.parse(sessionStorage.getItem('auth'));
     let gravidadesSelecionadas = ["todas"];
 
-function inicializarFiltroGravidade() {
-  const menu = document.getElementById("menu-gravidade");
-  const abrirBtn = document.getElementById("abrir-filtro-gravidade");
-  const botoes = menu.querySelectorAll(".gravidade-btn");
+    function inicializarFiltroGravidade() {
+      const menu = document.getElementById("menu-gravidade");
+      const abrirBtn = document.getElementById("abrir-filtro-gravidade");
+      const botoes = menu.querySelectorAll(".gravidade-btn");
 
-  // Abrir/fechar menu
-  abrirBtn.addEventListener("click", () => {
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-  });
+      abrirBtn.addEventListener("click", () => {
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      });
 
-  // Clique nos botões
-  botoes.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const valor = btn.getAttribute("data-valor");
+      botoes.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const valor = btn.getAttribute("data-valor");
 
-      if (valor === "todas") {
-        gravidadesSelecionadas = ["todas"];
-        botoes.forEach(b => b.classList.remove("ativo"));
-        btn.classList.add("ativo");
-      } else {
-        gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== "todas");
-
-        if (gravidadesSelecionadas.includes(valor)) {
-          gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== valor);
-        } else {
-          gravidadesSelecionadas.push(valor);
-        }
-
-        if (gravidadesSelecionadas.length === 0) {
-          gravidadesSelecionadas = ["todas"];
-        }
-
-        botoes.forEach(b => {
-          const val = b.getAttribute("data-valor");
-          if (gravidadesSelecionadas.includes(val)) {
-            b.classList.add("ativo");
+          if (valor === "todas") {
+            gravidadesSelecionadas = ["todas"];
+            botoes.forEach(b => b.classList.remove("ativo"));
+            btn.classList.add("ativo");
           } else {
-            b.classList.remove("ativo");
+            gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== "todas");
+
+            if (gravidadesSelecionadas.includes(valor)) {
+              gravidadesSelecionadas = gravidadesSelecionadas.filter(v => v !== valor);
+            } else {
+              gravidadesSelecionadas.push(valor);
+            }
+
+            if (gravidadesSelecionadas.length === 0) {
+              gravidadesSelecionadas = ["todas"];
+            }
+
+            botoes.forEach(b => {
+              const val = b.getAttribute("data-valor");
+              if (gravidadesSelecionadas.includes(val)) {
+                b.classList.add("ativo");
+              } else {
+                b.classList.remove("ativo");
+              }
+            });
           }
+
+          atualizarTabela();
         });
-      }
+      });
 
-      atualizarTabela();
-    });
-  });
+      document.addEventListener("click", (e) => {
+        if (!menu.contains(e.target) && !abrirBtn.contains(e.target)) {
+          menu.style.display = "none";
+        }
+      });
 
-  // Fecha ao clicar fora
-  document.addEventListener("click", (e) => {
-    if (!menu.contains(e.target) && !abrirBtn.contains(e.target)) {
-      menu.style.display = "none";
+      document.querySelector('.gravidade-btn[data-valor="todas"]').classList.add("ativo");
     }
-  });
 
-  // Ativa "todas" no início
-  document.querySelector('.gravidade-btn[data-valor="todas"]').classList.add("ativo");
-}
-
-inicializarFiltroGravidade();
+    inicializarFiltroGravidade();
 
     let pacientesGlobal = [];
 
     async function carregarPacientes() {
       try {
         let urlBase = 'http://localhost:3000/api/pacientes/get';
+
+        console.log(authData);
 
         if (authData.dados.tipo_user === 4) {
           urlBase += `/${authData.dados.id}`;
@@ -592,7 +614,8 @@ inicializarFiltroGravidade();
           selectQuarto.appendChild(option);
         });
 
-        // Chama a renderização inicial
+        document.getElementById('search-input').addEventListener('input', atualizarTabela);
+
         atualizarTabela();
 
       } catch (error) {
@@ -604,6 +627,7 @@ inicializarFiltroGravidade();
       const criterioOrdenacao = document.getElementById('ordenar').value;
       const filtroQuarto = document.getElementById('filtro-quarto').value;
       const filtroSexo = document.getElementById('filtro-sexo').value;
+      const termoPesquisa = document.getElementById('search-input').value.toLowerCase();
 
       const gravidadeOrdem = {
         Azul: 0,
@@ -615,13 +639,20 @@ inicializarFiltroGravidade();
 
       let pacientesFiltrados = [...pacientesGlobal];
 
+      if (termoPesquisa) {
+        pacientesFiltrados = pacientesFiltrados.filter(p =>
+          p.nome.toLowerCase().includes(termoPesquisa)
+        );
+      }
+
       if (!gravidadesSelecionadas.includes("todas")) {
         pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
       }
 
-      if (!gravidadesSelecionadas.includes("todas")) {
-  pacientesFiltrados = pacientesFiltrados.filter(p => gravidadesSelecionadas.includes(p.nivelalerta));
-}
+      if (filtroQuarto !== 'todos') {
+        pacientesFiltrados = pacientesFiltrados.filter(p => p.quarto == filtroQuarto);
+      }
+
       if (filtroSexo !== 'todos') {
         pacientesFiltrados = pacientesFiltrados.filter(p => p.sexo == filtroSexo);
       }
@@ -642,53 +673,58 @@ inicializarFiltroGravidade();
 
       renderizarTabela(pacientesOrdenados);
     }
+
     function renderizarTabela(pacientes) {
       const container = document.getElementById('lista-pacientes');
       container.innerHTML = `
-    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Nome</th>
-            <th>
-  Nível de Alerta
-  <span class="tooltip-icon" data-tooltip="Nível de Alerta dos Pacientes\n\nAzul - Não Urgente\nVerde - Pouco Urgente\nAmarelo - Urgente\nLaranja - Muito Urgente\nVermelho - Emergência">ⓘ</span>
-</th>
-          <th>Idade</th>
-          <th>Sexo</th> 
-          <th>Relatório</th>
-          <th>Prescrição</th>
-          <th>Estadia (dias)</th>
-          <th>Quarto</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${pacientes.map(p => `
-          <tr>
-            <td data-label="Nome">
-              <button onclick='verPaciente(${JSON.stringify(p)})' class="link-button">
-                ${p.nome}
-              </button>
-            </td>
-            <td data-label="Alerta">
-              <i class="ri-alert-fill alert-icon ${p.nivelalerta}"></i> ${p.nivelalerta}
-            </td>
-            <td data-label="Idade">${p.idade}</td>
-            <td data-label="Sexo">${p.sexo || ''}</td>
-            <td data-label="Relatório">${p.relatorio}</td>
-            <td data-label="Prescrição">${p.prescricao}</td>
-            <td data-label="Estadia">${p.estadia}</td>
-            <td data-label="Quarto">${p.quarto}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
+        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>
+                Nível de Alerta
+                <span class="tooltip-icon" data-tooltip="Nível de Alerta dos Pacientes\n\nAzul - Não Urgente\nVerde - Pouco Urgente\nAmarelo - Urgente\nLaranja - Muito Urgente\nVermelho - Emergência">ⓘ</span>
+              </th>
+              <th>Idade</th>
+              <th>Sexo</th> 
+              <th>Relatório</th>
+              <th>Prescrição</th>
+              <th>Estadia (dias)</th>
+              <th>Quarto</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${pacientes.map(p => `
+              <tr>
+                <td data-label="Nome">
+                  <button onclick='verPaciente(${JSON.stringify(p)})' class="link-button">
+                    ${p.nome}
+                  </button>
+                </td>
+                <td data-label="Alerta">
+                  <i class="ri-alert-fill alert-icon ${p.nivelalerta}"></i> ${p.nivelalerta}
+                </td>
+                <td data-label="Idade">${p.idade}</td>
+                <td data-label="Sexo">${p.sexo || ''}</td>
+                <td data-label="Relatório">${p.relatorio}</td>
+                <td data-label="Prescrição">${p.prescricao}</td>
+                <td data-label="Estadia">${p.estadia}</td>
+                <td data-label="Quarto">${p.quarto}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
     }
+
     function verPaciente(paciente) {
       localStorage.setItem('pacienteSelecionado', JSON.stringify(paciente));
       window.location.href = 'paciente.html';
     }
-    carregarPacientes();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      carregarPacientes();
+    });
   </script>
 
 </body>
@@ -700,4 +736,5 @@ inicializarFiltroGravidade();
     <div class="spinner"></div>
   </div>
 </div>
+
 </html>

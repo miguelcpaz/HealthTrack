@@ -3,7 +3,6 @@ const { registerPaciente, getPacientes, getPacientesByHospital, editPaciente} = 
 
 const router = express.Router();
 
-// Cadastro
 router.post('/register', registerPaciente);
 router.get('/get', getPacientes);
 router.put('/:id', editPaciente);

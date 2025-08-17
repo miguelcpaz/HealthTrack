@@ -3,12 +3,8 @@ const { registerUser, loginUser,getFuncionariosByHospital } = require('../contro
 
 const router = express.Router();
 
-// Cadastro
 router.post('/register', registerUser);
-
 router.get('/get/:id', getFuncionariosByHospital);
-
-// Login
 router.post('/login', loginUser);
 
 module.exports = router;
