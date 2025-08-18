@@ -53,6 +53,7 @@ function verificarAutenticacao() {
     return authData;
 }
 
+
 function configurarNavegacao() {
     const authData = verificarAutenticacao();
     const nav = document.getElementById('nav-buttons');

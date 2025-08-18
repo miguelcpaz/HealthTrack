@@ -471,7 +471,7 @@
         <h2>Funcionarios Cadastrados</h2>
 
         <div class="search-container">
-            <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome, CPF ou CRM...">
+            <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome, Email, CPF ou CRM...">
             <button class="search-button" onclick="focusSearch()">
                 <i class="ri-search-line"></i>
             </button>
@@ -630,6 +630,7 @@
             if (termoPesquisa) {
                 funcionariosFiltrados = funcionariosFiltrados.filter(f =>
                     f.nome.toLowerCase().includes(termoPesquisa) ||
+                    (f.email && f.email.toLowerCase().includes(termoPesquisa)) ||
                     (f.cpf && f.cpf.toString().includes(termoPesquisa)) ||
                     (f.crm && f.crm.toString().toLowerCase().includes(termoPesquisa))
                 );
