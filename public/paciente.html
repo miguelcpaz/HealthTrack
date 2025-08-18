@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paciente | HEALTHTRACK</title>
+    <link rel="icon" type="image/png" href="./img/favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <script src="./js/global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            transition: background-color 0.3s, color 0.3s;
+            color: black;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background: white;
+            position: relative;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+
+        .logo-area span {
+            font-size: 20px;
+            font-weight: bold;
+            color: black;
+            transition: color 0.3s;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            color: black;
+            padding: 6px 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav button:hover {
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .intro-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            padding: 0 30px;
+        }
+
+        .intro-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .intro-content img {
+            width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .text-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-block h1.title-main {
+            font-size: 48px;
+            font-weight: bold;
+            color: black;
+            margin: 0;
+        }
+
+        .text-block h3.title-sub {
+            font-size: 22px;
+            font-weight: 400;
+            color: black;
+            margin-top: 10px;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            color: black;
+        }
+
+        .dropdown-content button:hover {
+            background-color: #eee;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .paciente-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 40px;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 100%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .paciente-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .paciente-card h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 20px 0;
+            text-align: center;
+            /* Nome centralizado */
+        }
+
+        .paciente-card p {
+            font-size: 16px;
+            margin: 8px 0;
+            text-align: left;
+            /* Texto das infos alinhado à esquerda */
+            padding-left: 15px;
+            /* espaço da borda */
+        }
+
+        .paciente-card strong {
+            font-weight: 600;
+        }
+
+        .paciente-card .voltar {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .paciente-card .voltar a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: 500;
+        }
+
+        .paciente-card .alterar {
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .paciente-card .alterar a {
+            text-decoration: none;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .paciente-card .alterar a:hover {
+            text-decoration: underline;
+        }
+
+
+        .dark-mode .paciente-card {
+            background-color: #111111;
+            color: white;
+        }
+
+
+
+        .dark-mode {
+            background-color: #000000;
+            color: white;
+        }
+
+        .dark-mode .intro-content h1.title-main,
+        .dark-mode .intro-content h3.title-sub {
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #000000;
+        }
+
+        .dark-mode nav button,
+        .dark-mode .logo-area span,
+        .dark-mode .hamburger {
+            color: white;
+        }
+
+        .dark-mode nav button:hover {
+            background-color: #222222;
+        }
+
+        .dark-mode .dropdown-content {
+            background-color: #111111;
+            border-color: #333333;
+        }
+
+        .dark-mode .dropdown-content button {
+            color: white;
+        }
+
+        .dark-mode .dropdown-content button:hover {
+            background-color: #222222;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                width: 200px;
+                align-items: flex-start;
+                padding: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+                display: none;
+            }
+
+            nav.show {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .dark-mode nav {
+                background-color: #000000;
+                border-color: #333333;
+            }
+
+            .intro-section {
+                padding: 20px;
+                height: auto;
+            }
+
+            .intro-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .text-block {
+                align-items: center;
+            }
+
+            .text-block h1.title-main {
+                font-size: 36px;
+            }
+
+            .text-block h3.title-sub {
+                font-size: 18px;
+            }
+
+            .intro-content img {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .dark-mode #loading-screen {
+            background-color: #000;
+            color: white;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            animation: spin 1s linear infinite;
+        }
+
+        .dark-mode .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #00ccff;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo-area" style="text-decoration: none;">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </a>
+        <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+        <nav id="nav-buttons">
+            <div class="dropdown">
+                <button onclick="toggleDropdown()">
+                    <i class="ri-moon-clear-line"></i> Tema
+                </button>
+                <div id="dropdown-content" class="dropdown-content">
+                    <button onclick="setLightMode()"><i class="ri-sun-line"></i> Claro</button>
+                    <button onclick="setDarkMode()"><i class="ri-moon-line"></i> Escuro</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="paciente-card" id="card">
+            <h2 id="nome">Nome do Paciente</h2>
+            <p><strong>Idade:</strong> <span id="idade">--</span> anos</p>
+            <p><strong>Sexo:</strong> <span id="sexo">--</span></p>
+            <p><strong>Nível de Alerta:</strong> <span id="nivelalerta" </span></p> <!-- NOVO CAMPO -->
+            <p><strong>Relatório:</strong> <span id="relatorio">--</span></p>
+            <p><strong>Prescrição:</strong> <span id="prescricao">--</span></p>
+            <p><strong>Estadia:</strong> <span id="estadia">--</span> dias</p>
+            <p><strong>Quarto:</strong> <span id="quarto">--</span></p>
+            <div class="alterar">
+                <a href="editar_paciente.html"><i class="ri-edit-line"></i> Alterar Informações</a>
+            </div>
+            <div class="gerar-pdf" style="margin-top: 20px;">
+                <button onclick="gerarPDF()"
+                    style="background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="ri-file-pdf-line"></i> Gerar PDF
+                </button>
+            </div>
+            <div class="voltar">
+                <a href="mostrar_pacientes.html"><i class="ri-arrow-left-line"></i> Voltar</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+        // Variável global para armazenar os dados do paciente
+        let pacienteData = null;
+        let patientId = null;
+        let hospitalId = null;
+
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session');
+
+            if (sessionId) {
+                const sessionData = sessionStorage.getItem(sessionId);
+                if (sessionData) {
+                    try {
+                        const data = JSON.parse(sessionData);
+                        sessionStorage.removeItem(sessionId); // Limpa após uso
+                        return data;
+                    } catch (e) {
+                        console.error('Erro ao analisar dados da sessão:', e);
+                    }
+                }
+            }
+
+            return {
+                patientId: urlParams.get('patientId'),
+                hospitalId: urlParams.get('hospitalId')
+            };
+        }
+
+        // Função para gerar um ID de sessão aleatório
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+        }
+
+        async function carregarDadosPaciente() {
+            if (patientId && hospitalId) {
+                // Acesso via QR Code - buscar dados da API
+                try {
+                    const response = await fetch(`/api/pacientes/${patientId}?hospitalId=${hospitalId}`);
+                    pacienteData = await response.json();
+                    preencherCampos(pacienteData);
+                } catch (error) {
+                    console.error('Erro ao buscar paciente:', error);
+                    // Caso falhe, tentar pelo localStorage
+                    carregarDoLocalStorage();
+                }
+            } else {
+                // Acesso normal - usar localStorage
+                carregarDoLocalStorage();
+            }
+        }
+
+        function carregarDoLocalStorage() {
+            pacienteData = JSON.parse(localStorage.getItem('pacienteSelecionado'));
+            if (pacienteData) {
+                preencherCampos(pacienteData);
+            } else {
+                console.error('Nenhum paciente encontrado no LocalStorage');
+                // Você pode adicionar aqui uma mensagem para o usuário
+            }
+        }
+
+        function preencherCampos(paciente) {
+            if (!paciente) {
+                console.error('Dados do paciente não disponíveis');
+                return;
+            }
+
+            document.getElementById('nome').textContent = paciente.nome || 'Nome não informado';
+            document.getElementById('idade').textContent = paciente.idade || '--';
+            document.getElementById('sexo').textContent = paciente.sexo || '--';
+            document.getElementById('nivelalerta').textContent = paciente.nivelalerta || '--';
+            document.getElementById('relatorio').textContent = paciente.relatorio || '--';
+            document.getElementById('prescricao').textContent = paciente.prescricao || '--';
+            document.getElementById('estadia').textContent = paciente.estadia || '--';
+            document.getElementById('quarto').textContent = paciente.quarto || '--';
+        }
+
+        function gerarPDF() {
+            if (!pacienteData) {
+                alert('Nenhum dado de paciente disponível para gerar PDF');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Configurações de estilo
+                const primaryColor = [15, 82, 186];
+                const accentColor = [230, 240, 255];
+                const textColor = [50, 50, 50];
+
+                // Funções auxiliares para cores
+                const safeSetTextColor = (color) => Array.isArray(color) && color.length === 3
+                    ? doc.setTextColor(color[0], color[1], color[2])
+                    : doc.setTextColor(0, 0, 0);
+
+                const safeSetFillColor = (color) => Array.isArray(color) && color.length === 3
+                    ? doc.setFillColor(color[0], color[1], color[2])
+                    : doc.setFillColor(255, 255, 255);
+
+                const safeSetDrawColor = (color) => Array.isArray(color) && color.length === 3
+                    ? doc.setDrawColor(color[0], color[1], color[2])
+                    : doc.setDrawColor(0, 0, 0);
+
+                // Configurações de layout
+                const margin = 15;
+                const maxWidth = 180;
+                let y = 25;
+
+                // Cabeçalho
+                safeSetFillColor(accentColor);
+                doc.rect(0, 0, 210, 35, 'F');
+                doc.setFontSize(18);
+                doc.setFont("helvetica", "bold");
+                safeSetTextColor(primaryColor);
+                doc.text("HEALTHTRACK", 15, 22);
+                doc.setFontSize(12);
+                safeSetTextColor(textColor);
+                doc.text("Relatório Médico - Confidencial", 15, 30);
+
+                // Linha divisória
+                safeSetDrawColor(primaryColor);
+                doc.setLineWidth(0.7);
+                doc.line(margin, 37, 195, 37);
+                y = 45;
+
+                // Box de informações do paciente
+                const infoBoxHeight = 70;
+                safeSetFillColor([245, 245, 245]);
+                safeSetDrawColor(primaryColor);
+                doc.roundedRect(margin, y, maxWidth, infoBoxHeight, 3, 3, 'FD');
+
+                const col1 = margin + 5;
+                const col2 = 110;
+                let lineHeight = 10;
+
+                // Preencher informações do paciente
+                safeSetTextColor(primaryColor);
+                doc.setFont("helvetica", "bold");
+                doc.text("Nome:", col1, y + lineHeight);
+                doc.text("Idade:", col1, y + 2 * lineHeight);
+                doc.text("Sexo:", col1, y + 3 * lineHeight);
+                safeSetTextColor(textColor);
+                doc.setFont("helvetica", "normal");
+                doc.text(pacienteData.nome || '--', col1 + 25, y + lineHeight);
+                doc.text(pacienteData.idade ? `${pacienteData.idade} anos` : '--', col1 + 25, y + 2 * lineHeight);
+                doc.text(pacienteData.sexo || '--', col1 + 25, y + 3 * lineHeight);
+
+                safeSetTextColor(primaryColor);
+                doc.setFont("helvetica", "bold");
+                doc.text("Quarto:", col2, y + lineHeight);
+                doc.text("Estadia:", col2, y + 2 * lineHeight);
+                doc.text("Alerta:", col2, y + 3 * lineHeight);
+                safeSetTextColor(textColor);
+                doc.setFont("helvetica", "normal");
+                doc.text(String(pacienteData.quarto || '--'), col2 + 25, y + lineHeight);
+                doc.text(pacienteData.estadia ? `${pacienteData.estadia} dias` : '--', col2 + 25, y + 2 * lineHeight);
+                doc.text(pacienteData.nivelalerta || '--', col2 + 25, y + 3 * lineHeight);
+
+                y += infoBoxHeight + 10;
+
+                // Função para adicionar seções
+                const addSection = (title, content) => {
+                    safeSetFillColor(accentColor);
+                    doc.roundedRect(margin, y, maxWidth, 12, 2, 2, 'F');
+                    safeSetTextColor(primaryColor);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(11);
+                    doc.text(title, margin + 3, y + 8);
+                    y += 18;
+
+                    safeSetTextColor(textColor);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(10);
+                    const lines = doc.splitTextToSize(content || 'Não informado', maxWidth - 4);
+                    doc.text(lines, margin + 2, y);
+                    y += lines.length * 8 + 20;
+                };
+
+                // Adicionar seções
+                addSection("RELATÓRIO CLÍNICO", pacienteData.relatorio);
+                addSection("PRESCRIÇÃO MÉDICA", pacienteData.prescricao);
+
+                // Gerar QR Code com session ID
+                const sessionId = generateSessionId();
+                sessionStorage.setItem(sessionId, JSON.stringify({
+                    patientId: pacienteData.id,
+                    hospitalId: pacienteData.hospitalId
+                }));
+
+                const qrData = `${window.location.origin}${window.location.pathname}?session=${sessionId}`;
+
+                QRCode.toDataURL(qrData, { width: 70 }, (err, url) => {
+                    if (!err) {
+                        safeSetFillColor([255, 255, 255]);
+                        safeSetDrawColor(primaryColor);
+                        doc.roundedRect(140, y - 5, 55, 55, 3, 3, 'FD');
+                        doc.addImage(url, 'JPEG', 145, y, 45, 45);
+                        safeSetTextColor(primaryColor);
+                        doc.setFontSize(9);
+                        doc.setFont("helvetica", "bold");
+                        doc.text("ACESSO RÁPIDO", 167.5, y + 45, { align: "center" });
+                    }
+
+                    // Rodapé
+                    safeSetTextColor([120, 120, 120]);
+                    doc.setFontSize(9);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Documento gerado em: ${new Date().toLocaleDateString('pt-BR')}`, margin, 285);
+                    safeSetTextColor(primaryColor);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Sistema HealthTrack - Confidencial", 105, 285, { align: "center" });
+
+                    const safeFileName = `Prontuario_${(pacienteData.nome || 'Paciente').replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}.pdf`;
+                    doc.save(safeFileName);
+                });
+
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.');
+            }
+        }
+
+        // Adicione este código temporário no seu script para testar
+        function testarQRCode() {
+            const sessionId = generateSessionId();
+            sessionStorage.setItem(sessionId, JSON.stringify({
+                patientId: "123", // ID de teste
+                hospitalId: "456" // ID de teste
+            }));
+
+            const qrData = `${window.location.origin}${window.location.pathname}?session=${sessionId}`;
+            console.log("Link do QRCode:", qrData);
+            console.log(`Link gerado para teste:\n${qrData}\n\nCopie e cole no navegador.`);
+        }
+
+        // Chame esta função temporariamente para teste
+        testarQRCode();
+
+        // Inicializar
+        window.addEventListener('load', function () {
+            carregarDadosPaciente();
+
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                const randomDelay = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => loadingScreen.style.display = 'none', 500);
+                }, randomDelay);
+            }
+        });
+    </script>
+</body>
+<div id="loading-screen">
+    <div class="loader-content">
+        <img src="./img/logo.png" alt="Logo" class="loader-logo">
+        <h1>HEALTHTRACK</h1>
+        <div class="spinner"></div>
+    </div>
+</div>
+
+</html>
