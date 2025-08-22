@@ -5,30 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - HEALTHTRACK</title>
-
     <link rel="icon" type="image/png" href="./img/favicon.png">
 
-    <!-- Ícones do RemixIcon -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-
-    <!-- Fonte Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            /* Adiciona um respiro nas laterais */
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
-            color: black;
-        }
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #e0f0ff, #b3d9ff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: background-color 0.3s, color 0.3s;
+        color: black;
+    }
+
 
         .login-container {
             background-color: white;
@@ -37,7 +33,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
-            /* Tamanho máximo para desktop */
             text-align: center;
             box-sizing: border-box;
         }
@@ -222,7 +217,6 @@
     <div class="login-container">
         <div class="logo-area">
             <img src="./img/logo.png" alt="Logo">
-
             <span>HEALTHTRACK</span>
         </div>
         <form action="#" method="POST">
@@ -235,7 +229,6 @@
                 <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
             </div>
 
-            <!-- Caixa de permanecer conectado -->
             <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
                 <input type="checkbox" id="remember" name="remember" style="width: auto;">
                 <label for="remember" style="margin: 0; font-size: 14px;">Permanecer conectado</label>
@@ -271,7 +264,6 @@ form.addEventListener("submit", async function (event) {
         const result = await response.json();
         
         if (response.status === 200) {
-            // Armazena os dados de autenticação
             const authData = {
                 tipo: result.tipo, // 'usuario' ou 'hospital'
                 dados: result.dados
@@ -321,5 +313,4 @@ window.addEventListener('load', function () {
     <div class="spinner"></div>
   </div>
 </div>
-
 </html>
