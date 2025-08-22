@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - HEALTHTRACK</title>
     <link rel="stylesheet" href="./css/cadastro.css">
-
+    <link rel="icon" type="image/png" href="./img/favicon.png">
     <!-- Ícones e Fontes -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: white;
+            background: linear-gradient(135deg, #e0f0ff, #b3d9ff);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,9 +24,13 @@
             box-sizing: border-box;
             transition: background-color 0.3s, color 0.3s;
             color: black;
+            position: relative;
+            overflow: hidden;
         }
 
         .register-container {
+            position: relative;
+            z-index: 1;
             background-color: white;
             padding: 30px;
             border-radius: 10px;
@@ -246,7 +250,6 @@
 </head>
 
 <body>
-
     <div class="register-container">
         <div class="logo-area">
             <img src="./img/logo.png" alt="Logo">
@@ -437,14 +440,23 @@
 
             event.target.classList.add('active');
             document.getElementById(formId).classList.add('active');
+
+            // Scroll bloqueado para todos exceto Hospital
+            if (formId === "hospital") {
+                document.body.style.overflowX = "hidden"; // horizontal bloqueado
+                document.body.style.overflowY = "auto";   // vertical permitido
+                document.body.style.maxHeight = (registerContainer.offsetHeight + 21) + "px";
+            } else {
+                document.body.style.overflow = "hidden";
+            }
         }
+
+        document.body.style.overflow = "hidden";
         // Carregar hospitais no select
         async function carregarHospitais() {
             try {
                 const response = await fetch("http://localhost:3000/api/hospital/listar");
                 const hospitais = await response.json();
-
-
 
                 const selects = document.querySelectorAll('select[name^="hospital_"]');
                 selects.forEach(select => {
@@ -462,9 +474,6 @@
             }
         }
         carregarHospitais();
-
-
-        // Captura todos os formulários
         const forms = document.querySelectorAll("form");
 
         forms.forEach(form => {
