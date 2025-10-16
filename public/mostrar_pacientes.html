@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK - PACIENTES</title>
+
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/mostrar_pacientes.css">
+  <script src="./js/global.js" defer></script>
+  <script src="./js/mostrar_pacientes.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <!-- Dropdowns são gerados dinamicamente via global.js -->
+    </nav>
+  </header>
+
+  <main style="padding: 30px;">
+    <h2>Pacientes Cadastrados</h2>
+
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome...">
+    </div>
+
+    <label for="ordenar" style="margin-bottom: 10px; display: block;">
+      Ordenar por:
+      <select id="ordenar" style="margin-left: 10px; padding: 5px;">
+        <option value="nome-asc">Nome (A-Z)</option>
+        <option value="nome-desc">Nome (Z-A)</option>
+        <option value="idade-asc">Idade (Mais novo)</option>
+        <option value="idade-desc">Idade (Mais velho)</option>
+        <option value="estadia-asc">Estadia (Menos dias)</option>
+        <option value="estadia-desc">Estadia (Mais dias)</option>
+        <option value="nivelalerta-asc">Gravidade (Menos grave)</option>
+        <option value="nivelalerta-desc">Gravidade (Mais grave)</option>
+      </select>
+    </label>
+
+    <label for="filtro-quarto" style="margin-bottom: 10px; display: block;">
+      Filtrar por quarto:
+      <select id="filtro-quarto" style="margin-left: 10px; padding: 5px;">
+        <option value="todos">Todos</option>
+      </select>
+    </label>
+
+    <label for="filtro-sexo" style="margin-bottom: 10px; display: block;">
+      Filtrar por sexo:
+      <select id="filtro-sexo" style="margin-left: 10px; padding: 5px;">
+        <option value="todos">Todos</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Intersexo">Intersexo</option>
+        <option value="Outro">Outro</option>
+      </select>
+    </label>
+
+    <div style="margin-bottom: 15px; position: relative;">
+      <button id="abrir-filtro-gravidade" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+        Filtrar por Gravidade ⬇
+      </button>
+
+      <div id="menu-gravidade">
+        <button class="gravidade-btn" data-valor="todas">Todas</button>
+        <button class="gravidade-btn" data-valor="Azul" style="background: rgb(40, 40, 146); color: white;">Azul</button>
+        <button class="gravidade-btn" data-valor="Verde" style="background: green; color: white;">Verde</button>
+        <button class="gravidade-btn" data-valor="Amarelo" style="background: rgb(202, 202, 65);">Amarelo</button>
+        <button class="gravidade-btn" data-valor="Laranja" style="background: orange;">Laranja</button>
+        <button class="gravidade-btn" data-valor="Vermelho" style="background: red; color: white;">Vermelho</button>
+      </div>
+    </div>
+
+    <div id="lista-pacientes" style="overflow-x: auto;"></div>
+  </main>
+
+  <div id="loading-screen">
+    <div class="loader-content">
+      <img src="./img/logo.png" alt="Logo" class="loader-logo">
+      <h1>HEALTHTRACK</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK - FUNCIONÁRIOS</title>
+
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/funcionarios.css">
+  <script src="./js/global.js" defer></script>
+  <script src="./js/funcionarios.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <!-- Todos os dropdowns do usuário e tema serão gerados dinamicamente pelo global.js -->
+    </nav>
+  </header>
+
+  <main>
+    <h2>Funcionários Cadastrados</h2>
+
+    <div class="search-container">
+      <input type="text" id="search-input" class="search-bar" placeholder="Pesquisar por Nome, Email, CPF ou CRM...">
+      <button class="search-button" onclick="focusSearch()">
+        <i class="ri-search-line"></i>
+      </button>
+    </div>
+
+    <label for="ordenar" style="margin-bottom: 10px; display: block;">
+      Ordenar por:
+      <select id="ordenar" onchange="atualizarTabela()" style="margin-left: 10px; padding: 5px;">
+        <option value="nome-asc">Nome (A-Z)</option>
+        <option value="nome-desc">Nome (Z-A)</option>
+      </select>
+    </label>
+
+    <div style="margin-bottom: 15px; position: relative;">
+      <button id="abrir-filtro-funcao" style="padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+        Filtrar por Função ⬇
+      </button>
+
+      <div id="menu-funcao" style="
+        display: none;
+        position: absolute;
+        background: var(--form-bg);
+        border: 1px solid var(--border-color);
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 5px;
+        box-shadow: var(--shadow);
+        z-index: 50;
+      ">
+        <button class="funcao-btn" data-valor="todas">Todas</button>
+        <button class="funcao-btn" data-valor="1" style="background: #4e73df; color: white;">Técnico</button>
+        <button class="funcao-btn" data-valor="2" style="background: #1cc88a; color: white;">Enfermeiro</button>
+        <button class="funcao-btn" data-valor="3" style="background: #36b9cc; color: white;">Médico</button>
+      </div>
+    </div>
+
+    <div id="lista-funcionarios" style="overflow-x: auto;"></div>
+  </main>
+
+  <!-- Loading inicial -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <img src="./img/logo.png" alt="Logo" class="loader-logo">
+      <h1>HEALTHTRACK</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+</body>
+
+</html>

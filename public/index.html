@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK - Pacientes em Alerta</title>
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Scripts globais -->
+  <script src="./js/global.js" defer></script>
+  <script src="./js/gerarPDF.js" defer></script>
+  <script src="./js/index.js" defer></script>
+
+  <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <!-- Todos os dropdowns do usuário e tema serão gerados dinamicamente pelo global.js -->
+    </nav>
+  </header>
+
+  <!-- Seção de Pacientes em Alerta -->
+  <section class="pacientes-section">
+    <div class="pacientes-container">
+      <div class="pacientes-header">
+        <h2 class="pacientes-title">Pacientes em Estado de Alerta</h2>
+
+        <div class="filtros">
+          <button class="filtro-btn active" data-filtro="todos">Todos</button>
+          <button class="filtro-btn vermelho" data-filtro="vermelho">Vermelho</button>
+          <button class="filtro-btn" data-filtro="laranja">Laranja</button>
+        </div>
+
+        <div class="carrossel-controls">
+          <button class="carrossel-btn prev-btn" aria-label="Slide anterior">
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+          <button class="carrossel-btn next-btn" aria-label="Próximo slide">
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="carrossel-container">
+        <div id="error-message" style="display: none;" class="error-message">
+          <i class="ri-error-warning-line"></i>
+          <p>Erro ao carregar pacientes. Verifique sua conexão e tente novamente.</p>
+          <button onclick="carregarPacientesCriticos()"
+            style="margin-top: 10px; padding: 8px 16px; background: #c62828; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Tentar Novamente
+          </button>
+        </div>
+
+        <div class="carrossel" id="pacientes-carrossel">
+          <!-- Os cards serão preenchidos via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="loading-screen">
+    <div class="loader-content">
+      <img src="./img/logo.png" alt="Logo" class="loader-logo">
+      <h1>HEALTHTRACK</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+</body>
+
+</html>

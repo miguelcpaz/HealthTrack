@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - HEALTHTRACK</title>
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+
+  <!-- Ícones e fontes -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="logo-area">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </div>
+
+    <form id="loginForm" method="POST">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" placeholder="Digite seu email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+        <i class="ri-eye-off-line toggle-password" data-target="senha"></i>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" id="remember" name="remember" style="width: auto;">
+        <label for="remember" style="margin: 0; font-size: 14px;">Permanecer conectado</label>
+      </div>
+
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+
+    <div class="footer">
+      <p><a href="#">Esqueceu sua senha?</a></p>
+      <p>Não tem uma conta? <a href="cadastro.html">Crie uma agora</a></p>
+    </div>
+  </div>
+
+  <!-- Tela de carregamento -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <img src="./img/logo.png" alt="Logo" class="loader-logo">
+      <h1>HEALTHTRACK</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Script externo -->
+  <script src="./js/login.js"></script>
+</body>
+
+</html>

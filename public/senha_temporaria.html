@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trocar Senha - HEALTHTRACK</title>
+
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/senha_temporaria.css">
+
+    <!-- Script separado -->
+    <script src="./js/senha_temporaria.js" defer></script>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="logo-area">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </div>
+
+        <h2>Trocar Senha Temporária</h2>
+
+        <form id="change-password-form">
+            <div class="form-group">
+                <label for="new-password">Nova Senha</label>
+                <input type="password" id="new-password" name="new-password" placeholder="Digite a nova senha" required>
+                <i class="ri-eye-off-line toggle-password" data-target="new-password"></i>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirme a Nova Senha</label>
+                <input type="password" id="confirm-password" name="confirm-password"
+                    placeholder="Confirme a nova senha" required>
+                <i class="ri-eye-off-line toggle-password" data-target="confirm-password"></i>
+            </div>
+
+            <button type="submit" class="btn-login">Atualizar Senha</button>
+        </form>
+    </div>
+
+</body>
+
+</html>

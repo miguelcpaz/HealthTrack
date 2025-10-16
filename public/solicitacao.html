@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK - Solicitações de Cadastro</title>
+
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/solicitacao.css">
+
+  <script src="./js/global.js" defer></script>
+  <script src="./js/solicitacao.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <!-- Dropdowns do usuário e tema gerados dinamicamente -->
+    </nav>
+  </header>
+
+  <main>
+    <h2>Solicitações Pendentes</h2>
+    <p id="mensagem">Carregando solicitações...</p>
+    <div id="tabela-container"></div>
+  </main>
+</body>
+
+</html>

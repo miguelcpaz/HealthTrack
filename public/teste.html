@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEALTHTRACK</title>
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="./js/global.js"></script>
+
+  <style>
+    :root {
+      --bg-color: white;
+      --text-color: black;
+      --header-bg: white;
+      --border-color: #ddd;
+      --button-hover-bg: #f0f0f0;
+      --dropdown-bg: white;
+      --dropdown-border: #ddd;
+      --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      --dropdown-button-hover: #eee;
+      --nav-bg: white;
+      --nav-border: #ddd;
+      --spinner-border: rgba(0, 0, 0, 0.1);
+      --spinner-color: #007bff;
+    }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --header-bg: #1a1a1a;
+      --border-color: #444;
+      --button-hover-bg: #222222;
+      --dropdown-bg: #1e1e1e;
+      --dropdown-border: #333;
+      --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+      --dropdown-button-hover: #222222;
+      --nav-bg: #1a1a1a;
+      --nav-border: #333;
+      --spinner-border: rgba(255, 255, 255, 0.2);
+      --spinner-color: #00ccff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-color);
+      transition: background-color 0.3s, color 0.3s;
+      color: var(--text-color);
+    }
+
+    body::-webkit-scrollbar {
+      width: 0px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      background: var(--header-bg);
+      position: relative;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-area img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+
+    .logo-area span {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text-color);
+      transition: color 0.3s;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    nav button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-color);
+      padding: 6px 8px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    nav button:hover {
+      background: var(--button-hover-bg);
+      border-radius: 8px;
+    }
+
+    .intro-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70vh;
+      padding: 0 30px;
+    }
+
+    .intro-content {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .intro-content img {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .text-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .text-block h1.title-main {
+      font-size: 48px;
+      font-weight: bold;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .text-block h3.title-sub {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-color);
+      margin-top: 10px;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-color);
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: var(--dropdown-bg);
+      border: 1px solid var(--dropdown-border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--dropdown-shadow);
+      z-index: 1;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .dropdown-content button:hover {
+      background-color: var(--dropdown-button-hover);
+    }
+
+    .show {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--nav-bg);
+        flex-direction: column;
+        width: 200px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border: 1px solid var(--nav-border);
+        border-radius: 8px;
+        box-shadow: var(--dropdown-shadow);
+        display: none;
+      }
+
+      nav.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .intro-section {
+        padding: 20px;
+        height: auto;
+      }
+
+      .intro-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .text-block {
+        align-items: center;
+      }
+
+      .text-block h1.title-main {
+        font-size: 36px;
+      }
+
+      .text-block h3.title-sub {
+        font-size: 18px;
+      }
+
+      .intro-content img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loader-content {
+      text-align: center;
+    }
+
+    .loader-logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    .spinner {
+      border: 4px solid var(--spinner-border);
+      border-left-color: var(--spinner-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 20px auto 0;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <div class="dropdown">
+        <button onclick="toggleDropdown()">
+          <i class="ri-moon-clear-line"></i> Tema
+        </button>
+        <div id="dropdown-content" class="dropdown-content">
+          <button onclick="setLightMode()"><i class="ri-sun-line"></i> Claro</button>
+          <button onclick="setDarkMode()"><i class="ri-moon-line"></i> Escuro</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main class="intro-section">
+    <div class="intro-content">
+      <img src="./img/logo.png" alt="Logo HEALTHTRACK">
+      <div class="text-block">
+        <h1 class="title-main">HEALTHTRACK</h1>
+        <h3 class="title-sub">Sistema de Suporte para Enfermeiros </h3>
+      </div>
+    </div>
+  </main>
+
+  <div id="loading-screen">
+    <div class="loader-content">
+      <img src="./img/logo.png" alt="Logo" class="loader-logo">
+      <h1>HEALTHTRACK</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('dropdown-content');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleMenu() {
+      const nav = document.getElementById('nav-buttons');
+      nav.classList.toggle('show');
+    }
+
+    // Fechar dropdown ao clicar fora dele
+    window.onclick = function(event) {
+      if (!event.target.matches('nav button')) {
+        const dropdown = document.getElementById('dropdown-content');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        }
+      }
+    }
+
+    // Ocultar loading inicial após carregamento
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('loading-screen').style.opacity = '0';
+        setTimeout(function() {
+          document.getElementById('loading-screen').style.display = 'none';
+        }, 500);
+      }, 1000);
+    });
+  </script>
+</body>
+
+</html>

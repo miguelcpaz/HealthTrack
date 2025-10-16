@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paciente | HEALTHTRACK</title>
+    <link rel="icon" type="image/png" href="./img/favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/paciente.css">
+    <script src="./js/global.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js" defer></script>
+    <script src="./js/gerarPDF.js" defer></script>
+    <script src="./js/paciente.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo-area" style="text-decoration: none;">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </a>
+        <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+        <nav id="nav-buttons">
+            <!-- dropdowns gerados dinamicamente -->
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="paciente-card" id="card">
+            <h2 id="nome">Nome do Paciente</h2>
+            <p><strong>Idade:</strong> <span id="idade">--</span> anos</p>
+            <p><strong>Sexo:</strong> <span id="sexo">--</span></p>
+            <p><strong>Nível de Alerta:</strong> <span id="nivelalerta"></span></p>
+            <p><strong>Relatório:</strong> <span id="relatorio">--</span></p>
+            <p><strong>Prescrição:</strong> <span id="prescricao">--</span></p>
+            <p><strong>Estadia:</strong> <span id="estadia">--</span> dias</p>
+            <p><strong>Quarto:</strong> <span id="quarto">--</span></p>
+
+            <div class="alterar">
+                <a href="editar_paciente.html"><i class="ri-edit-line"></i> Alterar Informações</a>
+            </div>
+
+            <div class="gerar-pdf" style="margin-top: 20px;">
+                <button onclick="gerarPDF()" class="btn-pdf">
+                    <i class="ri-file-pdf-line"></i> Gerar PDF
+                </button>
+            </div>
+
+            <div class="dar-alta" style="margin-top: 20px; display: none;" id="alta-container">
+                <button id="btnAlta" class="btn-alta">
+                    <i class="ri-checkbox-line"></i> Dar Alta
+                </button>
+            </div>
+
+            <div class="voltar">
+                <a href="mostrar_pacientes.html"><i class="ri-arrow-left-line"></i> Voltar</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-screen">
+        <div class="loader-content">
+            <img src="./img/logo.png" alt="Logo" class="loader-logo">
+            <h1>HEALTHTRACK</h1>
+            <div class="spinner"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEALTHTRACK - Cadastro de Pacientes</title>
+
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="./js/global.js"></script>
+    <link rel="stylesheet" href="./css/cadastro_paciente.css" class="css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo-area" style="text-decoration: none;">
+            <img src="./img/logo.png" alt="Logo">
+            <span>HEALTHTRACK</span>
+        </a>
+        <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+        <nav id="nav-buttons">
+            <!-- Todos os dropdowns do usuário e tema serão gerados dinamicamente pelo global.js -->
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Cadastrar Paciente</h2>
+            <form id="paciente-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" required>
+                </div>
+                <div class="form-group">
+                    <label for="sexo">Sexo</label>
+                    <select id="sexo" name="sexo" required>
+                        <option value="">Selecione o sexo</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Intersexo">Intersexo</option>
+                        <option value="Não Informado">Não informado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="nivel-alerta">Nivel de Alerta</label>
+                    <select id="nivel-alerta" name="Nivel de Alerta" required>
+                        <option value="">Selecione o Nível de Alerta do Paciente</option>
+                        <option value="Azul">AZUL - NÃO URGENTE</option>
+                        <option value="Verde">VERDE - POUCO URGENTE</option>
+                        <option value="Amarelo">AMARELO - URGENTE</option>
+                        <option value="Laranja">LARANJA - MUITO URGENTE</option>
+                        <option value="Vermelho">VERMELHO - EMERGÊNCIA</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="relatorio">Relatório</label>
+                    <textarea id="relatorio" name="relatorio" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="prescricao">Prescrição</label>
+                    <textarea id="prescricao" name="prescricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="estadia">Dias de Estadia</label>
+                    <input type="number" id="estadia" name="estadia" required>
+                </div>
+                <div class="form-group">
+                    <label for="quarto">Quarto</label>
+                    <input type="number" id="quarto" name="quarto" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Loading inicial -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <img src="./img/logo.png" alt="Logo" class="loader-logo">
+            <h1>HEALTHTRACK</h1>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Script externo -->
+    <script src="./js/cadastro_paciente.js"></script>
+</body>
+</html>

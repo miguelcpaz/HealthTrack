@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  nome           String
+  email          String         @unique
+  senha          String  
+  status_senha   Int            @default(0)
+  cpf            String         @unique
+  crm            String?
+  tipo_user      Int
+  hospitalId     Int
+  status_cadastro String        @default("pendente")
+  hospital       Hospital       @relation(fields: [hospitalId], references: [id])
+
+  solicitations  Solicitation[] // <-- adicionado
+}
+  
+model Hospital {
+  id                  Int            @id @default(autoincrement())
+  nome                String
+  cnpj                String         @unique
+  cnes                String         @unique
+  cep                 String  
+  numero              String
+  telefone            String
+  email               String         @unique
+  senha               String
+  status_senha        Int            @default(0) 
+  website             String?
+  tipoEstabelecimento String
+  users               User[]
+  pacientes           Paciente[]
+
+  solicitations       Solicitation[] // <-- adicionado
+}
+
+
+model Paciente {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  idade       Int?
+  sexo        String?
+  nivelalerta String
+  relatorio   String?
+  prescricao  String?
+  estadia     Int?
+  quarto      Int?
+  hospitalId  Int
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+}
+
+model Solicitation {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  hospitalId   Int
+  status       String   @default("pendente") // pendente, aceito, recusado
+  createdAt    DateTime @default(now())
+  user         User      @relation(fields: [userId], references: [id])
+  hospital     Hospital  @relation(fields: [hospitalId], references: [id])
+}
+
+
+

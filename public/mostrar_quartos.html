@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quartos - HEALTHTRACK</title>
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/mostrar_quartos.css">
+
+  <script src="./js/global.js" defer></script>
+  <script src="./js/mostrar_quartos.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" class="logo-area" style="text-decoration: none;">
+      <img src="./img/logo.png" alt="Logo">
+      <span>HEALTHTRACK</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()"><i class="ri-menu-line"></i></button>
+    <nav id="nav-buttons">
+      <!-- Todos os dropdowns do usuário e tema serão gerados dinamicamente pelo global.js -->
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title">Quartos do Hospital</h1>
+
+    <div id="hospital-info" class="hospital-info">
+      <h2>Carregando informações do hospital...</h2>
+    </div>
+
+    <div id="rooms-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Carregando quartos...</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

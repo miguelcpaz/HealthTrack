@@ -1,0 +1,263 @@
+:root {
+      --bg-color: white;
+      --text-color: black;
+      --header-bg: white;
+      --border-color: #ddd;
+      --button-hover-bg: #f0f0f0;
+      --dropdown-bg: white;
+      --dropdown-border: #ddd;
+      --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      --dropdown-button-hover: #eee;
+      --nav-bg: white;
+      --nav-border: #ddd;
+      --spinner-border: rgba(0, 0, 0, 0.1);
+      --spinner-color: #007bff;
+      --primary-color: #007bff;
+      --primary-hover: #0056b3;
+      --card-bg: white;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --header-bg: #1a1a1a;
+      --border-color: #444;
+      --button-hover-bg: #222222;
+      --dropdown-bg: #1e1e1e;
+      --dropdown-border: #333;
+      --dropdown-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+      --dropdown-button-hover: #222222;
+      --nav-bg: #1a1a1a;
+      --nav-border: #333;
+      --spinner-border: rgba(255, 255, 255, 0.2);
+      --spinner-color: #00ccff;
+      --primary-color: #00aaff;
+      --primary-hover: #0088cc;
+      --card-bg: #1e1e1e;
+      --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-color);
+      transition: background-color 0.3s, color 0.3s;
+      color: var(--text-color);
+    }
+
+    body::-webkit-scrollbar {
+      width: 0px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      background: var(--header-bg);
+      position: relative;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-area img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+
+    .logo-area span {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text-color);
+      transition: color 0.3s;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    nav button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-color);
+      padding: 6px 8px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    nav button:hover {
+      background: var(--button-hover-bg);
+      border-radius: 8px;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-color);
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: var(--dropdown-bg);
+      border: 1px solid var(--dropdown-border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--dropdown-shadow);
+      z-index: 1;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .dropdown-content button:hover {
+      background-color: var(--dropdown-button-hover);
+    }
+
+    .show {
+      display: block;
+    }
+
+    /* Estilos específicos para a página de quartos */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-color);
+    }
+
+    .hospital-info {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .room-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 20px 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80px;
+    }
+
+    .room-button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .no-rooms {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 40px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
+
+    .spinner {
+      border: 4px solid var(--spinner-border);
+      border-left-color: var(--spinner-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 20px auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--nav-bg);
+        flex-direction: column;
+        width: 200px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border: 1px solid var(--nav-border);
+        border-radius: 8px;
+        box-shadow: var(--dropdown-shadow);
+        display: none;
+      }
+
+      nav.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .rooms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
