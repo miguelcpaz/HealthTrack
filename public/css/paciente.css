@@ -253,6 +253,64 @@
             text-decoration: underline;
         }
 
+/* === Botões de Ação (Gerar PDF / Dar Alta) === */
+.btn-pdf,
+.btn-alta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* === Botão Gerar PDF === */
+.btn-pdf {
+  background-color: #e63946;
+}
+
+.btn-pdf:hover {
+  background-color: #c92f3a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(230, 57, 70, 0.4);
+}
+
+/* === Botão Dar Alta === */
+.btn-alta {
+  background-color: #2a9d8f;
+}
+
+.btn-alta:hover {
+  background-color: #21867a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(42, 157, 143, 0.4);
+}
+
+/* Ícones dentro dos botões */
+.btn-pdf i,
+.btn-alta i {
+  font-size: 18px;
+}
+
+/* === Responsividade === */
+@media (max-width: 600px) {
+  .btn-pdf,
+  .btn-alta {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 0;
+  }
+}
+
+
         @media (max-width: 768px) {
             nav {
                 position: absolute;
