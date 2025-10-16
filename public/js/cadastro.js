@@ -121,7 +121,7 @@ document.body.style.overflow = 'hidden';
 // Carregar hospitais
 async function carregarHospitais() {
   try {
-    const response = await fetch('http://localhost:3000/api/hospital/listar');
+    const response = await fetch('/api/hospital/listar');
     const hospitais = await response.json();
 
     const selects = document.querySelectorAll('select[name^="hospital_"]');
@@ -169,7 +169,7 @@ document.querySelectorAll('form').forEach(form => {
       };
 
       try {
-        const response = await fetch('http://localhost:3000/api/hospital/register', {
+        const response = await fetch('/api/hospital/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(hospital),
@@ -178,7 +178,7 @@ document.querySelectorAll('form').forEach(form => {
         if (response.ok) {
           alert('Hospital cadastrado! Uma senha temporária foi enviada para o email informado.');
           form.reset();
-          window.location.href = '//localhost:3000';
+          window.location.href = '/';
         } else {
           const errorData = await response.json();
           alert(errorData.error || 'Erro ao cadastrar hospital.');
@@ -202,7 +202,7 @@ document.querySelectorAll('form').forEach(form => {
       };
 
       try {
-        const response = await fetch('http://localhost:3000/api/usuarios/register', {
+        const response = await fetch('/api/usuarios/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(user),
@@ -211,7 +211,7 @@ document.querySelectorAll('form').forEach(form => {
         if (response.ok) {
           alert('Usuário cadastrado com sucesso! Uma senha temporária foi enviada para o email informado.');
           form.reset();
-          window.location.href = '//localhost:3000';
+          window.location.href = '/';
         } else {
           const errorData = await response.json();
           alert(errorData.error || 'Erro ao cadastrar usuário.');
