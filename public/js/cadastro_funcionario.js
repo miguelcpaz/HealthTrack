@@ -78,7 +78,7 @@ document.getElementById('single-form').addEventListener('submit', async function
     const hospitalId = authData.dados.id;
 
     try {
-        const response = await fetch('http://localhost:3000/api/usuarios/register', {
+        const response = await fetch('/api/usuarios/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -128,7 +128,7 @@ document.getElementById('multiple-form').addEventListener('submit', async functi
         formData.append('file', fileInput.files[0]);
         formData.append('hospitalId', hospitalId);
         
-        const response = await fetch('http://localhost:3000/api/usuarios/register-from-excel', {
+        const response = await fetch('/api/usuarios/register-from-excel', {
             method: 'POST',
             body: formData
         });

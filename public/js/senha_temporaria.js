@@ -39,7 +39,7 @@ form.addEventListener("submit", async function (event) {
     const data = { newPassword };
 
     try {
-        const urlBase = `http://localhost:3000/api/auth/change-temp-password/${authData.dados.email}`;
+        const urlBase = `/api/auth/change-temp-password/${authData.dados.email}`;
         const response = await fetch(urlBase, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },

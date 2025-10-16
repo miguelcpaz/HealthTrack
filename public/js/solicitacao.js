@@ -9,7 +9,7 @@ if (!authData || authData.tipo !== 'hospital') {
 async function carregarSolicitacoes() {
   try {
     const resposta = await fetch(
-      `http://localhost:3000/api/solicitacoes/${authData.dados.id}`,
+      `/api/solicitacoes/${authData.dados.id}`,
       {
         headers: { Authorization: `Bearer ${authData.token}` },
       }
@@ -83,7 +83,7 @@ async function aprovarSolicitacao(id, botao) {
 
   try {
     const resposta = await fetch(
-      `http://localhost:3000/api/solicitacoes/${id}/aprovar`,
+      `/api/solicitacoes/${id}/aprovar`,
       {
         method: 'PUT',
         headers: { Authorization: `Bearer ${authData.token}` },
@@ -106,7 +106,7 @@ async function recusarSolicitacao(id, botao) {
 
   try {
     const resposta = await fetch(
-      `http://localhost:3000/api/solicitacoes/${id}/recusar`,
+      `/api/solicitacoes/${id}/recusar`,
       {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${authData.token}` },
