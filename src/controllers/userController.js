@@ -55,14 +55,17 @@ await prisma.solicitation.create({
 
 
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+  host: process.env.EMAIL_HOST,
+  port: Number(process.env.EMAIL_PORT),
+  secure: process.env.EMAIL_SECURE === "true", // false para 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // app password do Gmail
+  },
+  tls: {
+    rejectUnauthorized: false, // necessário em alguns servidores cloud
+  },
+});
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
