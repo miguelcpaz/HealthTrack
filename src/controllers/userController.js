@@ -106,9 +106,10 @@ await prisma.solicitation.create({
 
     return res.status(201).json({ message: 'Usuário cadastrado com sucesso!', usuario: newUser });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
-  }
+  console.error("❌ Erro detalhado ao cadastrar:", error);
+  return res.status(500).json({ error: 'Erro ao cadastrar usuário.', details: error.message });
+}
+
 }
 
 async function registerUsersFromExcel(req, res) {
