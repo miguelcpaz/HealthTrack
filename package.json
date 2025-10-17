@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/index.js",
   "scripts": {
-    "start": "npx nodemon index"
+    "start": "npx nodemon ./src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "fast-check": "^4.2.0",
+    "jsonwebtoken": "^9.0.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
