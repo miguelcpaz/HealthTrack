@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { registerUser, loginUser, getFuncionariosByHospital, registerUsersFromExcel } = require('../controllers/userController');
+const { registerUser, getFuncionariosByHospital, registerUsersFromExcel } = require('../controllers/userController');
 
 // Configuração do multer
 const storage = multer.memoryStorage();
@@ -22,7 +22,6 @@ const upload = multer({
 
 // Rotas
 router.post('/register', registerUser);
-router.post('/login', loginUser);
 router.get('/funcionarios/:id', getFuncionariosByHospital);
 router.post('/register-from-excel', upload.single('file'), registerUsersFromExcel);
 
