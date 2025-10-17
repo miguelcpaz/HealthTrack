@@ -1,61 +1,27 @@
-function showForm(formId) {
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.form-area').forEach(form => form.classList.remove('active'));
+// ===============================
+// Função para alternar formulários
+// ===============================
+function showForm(formId, event) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.form-area').forEach(form => form.classList.remove('active'));
 
-    event.target.classList.add('active');
-    document.getElementById(formId).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById(formId).classList.add('active');
+
+  // Ajuste de rolagem dependendo do formulário
+  if (formId === 'hospital') {
+    document.body.style.overflowX = 'hidden';
+    document.body.style.overflowY = 'auto';
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
 }
 
-// Captura todos os formulários
-const forms = document.querySelectorAll("form");
+document.body.style.overflow = 'hidden';
 
-forms.forEach(form => {
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        let tipo_user;
-        if (form.id === "tecnico") tipo_user = 1;
-        else if (form.id === "enfermeiro") tipo_user = 2;
-        else if (form.id === "medico") tipo_user = 3;
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        const user = {
-            nome: data[`nome_${form.id}`],
-            cpf: data[`cpf_${form.id}`],
-            email: data[`email_${form.id}`],
-            senha: data[`senha_${form.id}`],
-            crm: data[`crm_medico`] ? data[`crm_medico`] : null,
-            tipo_user
-        };
-
-        console.log(user);
-
-        try {
-            const response = await fetch("/api/usuarios", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(user)
-            });
-
-
-            if (response.ok) {
-                alert("Usuário cadastrado com sucesso!");
-                form.reset();
-                window.location.href = 'index.html';
-            } else {
-                alert("Erro ao cadastrar usuário.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao conectar com o servidor.");
-        }
-    });
-});
-// Máscaras de entrada
+// ===============================
+// Funções de máscara
+// ===============================
 function mascaraCPF(input) {
   let value = input.value.replace(/\D/g, '');
   if (value.length > 11) value = value.slice(0, 11);
@@ -101,24 +67,9 @@ function mascaraTelefone(input) {
   input.value = value;
 }
 
-// Alternar formulários
-function showForm(formId, event) {
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.form-area').forEach(form => form.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById(formId).classList.add('active');
-
-  if (formId === 'hospital') {
-    document.body.style.overflowX = 'hidden';
-    document.body.style.overflowY = 'auto';
-  } else {
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-document.body.style.overflow = 'hidden';
-
-// Carregar hospitais
+// ===============================
+// Carregar hospitais no select
+// ===============================
 async function carregarHospitais() {
   try {
     const response = await fetch('/api/hospital/listar');
@@ -141,10 +92,13 @@ async function carregarHospitais() {
 }
 carregarHospitais();
 
-// Submissão dos formulários
+// ===============================
+// Submissão de formulários
+// ===============================
 document.querySelectorAll('form').forEach(form => {
   form.addEventListener('submit', async e => {
     e.preventDefault();
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     let tipo_user;
@@ -153,7 +107,9 @@ document.querySelectorAll('form').forEach(form => {
     else if (form.id === 'enfermeiro') tipo_user = 2;
     else if (form.id === 'medico') tipo_user = 3;
 
+    // ===============================
     // Cadastro de hospital
+    // ===============================
     if (form.id === 'hospital') {
       const hospital = {
         nome: data['nome_hospital'],
@@ -180,15 +136,19 @@ document.querySelectorAll('form').forEach(form => {
           form.reset();
           window.location.href = '/';
         } else {
-          const errorData = await response.json();
-          alert(errorData.error || 'Erro ao cadastrar hospital.');
+          const errorData = await response.json().catch(() => ({}));
+          console.error('❌ Erro ao cadastrar hospital:', errorData);
+          alert(errorData.details || errorData.error || 'Erro ao cadastrar hospital.');
         }
       } catch (error) {
-        console.error(error);
+        console.error('❌ Erro de conexão com servidor:', error);
         alert('Erro ao conectar com o servidor.');
       }
-    } else {
-      // Cadastro de técnico, enfermeiro ou médico
+    } 
+    // ===============================
+    // Cadastro de técnico, enfermeiro ou médico
+    // ===============================
+    else {
       const hospitalId = data[`hospital_${form.id}`];
       const user = {
         nome: data[`nome_${form.id}`],
@@ -213,18 +173,21 @@ document.querySelectorAll('form').forEach(form => {
           form.reset();
           window.location.href = '/';
         } else {
-          const errorData = await response.json();
-          alert(errorData.error || 'Erro ao cadastrar usuário.');
+          const errorData = await response.json().catch(() => ({}));
+          console.error('❌ Erro ao cadastrar usuário:', errorData);
+          alert(errorData.details || errorData.error || 'Erro ao cadastrar usuário.');
         }
       } catch (error) {
-        console.error(error);
+        console.error('❌ Erro de conexão com servidor:', error);
         alert('Erro ao conectar com o servidor.');
       }
     }
   });
 });
 
-// Loading
+// ===============================
+// Tela de loading
+// ===============================
 window.addEventListener('load', function () {
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
