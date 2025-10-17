@@ -12,7 +12,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 async function enviarEmail(destinatario, assunto, texto) {
   try {
     await resend.emails.send({
-      from: "HealthTrack <no-reply@healthtrack.app>",
+      from: "HealthTrack <healthtrack.tcc@gmail.com>",
       to: destinatario,
       subject: assunto,
       text: texto,
