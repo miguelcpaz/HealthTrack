@@ -12,7 +12,7 @@ async function enviarEmail(destinatario, assunto, texto) {
     if (process.env.NODE_ENV === "production") {
       // 🔹 Usa Resend em produção (Render, Railway, etc.)
       await resend.emails.send({
-        from: "HealthTrack <no-reply@healthtrack.app>",
+        from: 'HealthTrack <onboarding@resend.dev>',
         to: destinatario,
         subject: assunto,
         text: texto,
