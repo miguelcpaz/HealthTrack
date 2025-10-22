@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const ExcelJS = require('exceljs');
-const fetch = require("node-fetch"); // importante
 
 // ====================== FUNÇÃO AUXILIAR PARA ENVIO DE E-MAIL VIA BREVO ======================
 async function enviarEmail(destinatario, assunto, texto) {
