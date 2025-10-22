@@ -57,7 +57,7 @@ form.addEventListener("submit", async function (event) {
                 sessionStorage.setItem('auth', JSON.stringify(result.authAtualizado));
             }
 
-            window.location.href = "http://localhost:3000";
+            window.location.href = "/";
         } else {
             alert(result.error || "Erro ao atualizar a senha.");
         }
