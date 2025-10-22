@@ -13,6 +13,13 @@ const tiposUser = {
 // Função de envio de e-mail via Brevo
 async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlContent, textoAlternativo) {
   try {
+    if (!destinatario) {
+      console.warn(`E-mail do destinatário não fornecido para ${nomeDestinatario}. Pulando envio.`);
+      return;
+    }
+
+    console.log(`📨 Tentando enviar e-mail para ${destinatario}...`);
+
     const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
@@ -21,7 +28,10 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: { name: "HealthTrack", email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com" },
+        sender: {
+          name: "HealthTrack",
+          email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com"
+        },
         to: [{ email: destinatario, name: nomeDestinatario }],
         subject: assunto,
         htmlContent: htmlContent,
@@ -30,21 +40,26 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
     });
 
     const data = await resposta.json();
-    if (!resposta.ok) throw new Error(JSON.stringify(data));
-    console.log(`E-mail enviado para ${destinatario}:`, data);
+
+    console.log(`Status da resposta Brevo: ${resposta.status}`);
+    console.log("Retorno do Brevo:", data);
+
+    if (!resposta.ok) {
+      throw new Error(`Erro na API Brevo: ${JSON.stringify(data)}`);
+    }
+
+    console.log(`✅ E-mail enviado com sucesso para ${destinatario}`);
     return data;
 
   } catch (err) {
-    console.error(`Erro ao enviar e-mail para ${destinatario}:`, err);
-    throw err;
+    console.error(`❌ Erro ao enviar e-mail para ${destinatario}:`, err);
   }
 }
 
-// 🕒 Agendamento: toda segunda-feira às 9h
 // 🕒 Agendamento: todos os dias às 23:52
-cron.schedule("07 00 * * *", async () => {
-  console.log("📨 Enviando e-mails de solicitações pendentes...");
-  
+cron.schedule("18 00 * * *", async () => {
+  console.log("⏰ Iniciando envio diário de e-mails de solicitações pendentes...");
+
   try {
     // Busca todas as solicitações pendentes de aprovação
     const solicitacoesPendentes = await prisma.solicitation.findMany({
@@ -52,8 +67,10 @@ cron.schedule("07 00 * * *", async () => {
       include: { user: true, hospital: true },
     });
 
+    console.log(`📊 Solicitações pendentes encontradas: ${solicitacoesPendentes.length}`);
+
     if (solicitacoesPendentes.length === 0) {
-      console.log("Nenhuma solicitação pendente no momento.");
+      console.log("Nenhuma solicitação pendente no momento. Encerrando cron.");
       return;
     }
 
@@ -69,14 +86,21 @@ cron.schedule("07 00 * * *", async () => {
     for (const [hospitalNome, solicitacoes] of Object.entries(porHospital)) {
       const hospitalEmail = solicitacoes[0].hospital.email;
 
-      const listaSolicitacoes = solicitacoes
+      console.log(`🏥 Hospital: ${hospitalNome}, Email: ${hospitalEmail}, Nº de solicitações: ${solicitacoes.length}`);
+
+      if (!hospitalEmail) {
+        console.warn(`Hospital ${hospitalNome} não possui e-mail válido. Pulando envio.`);
+        continue;
+      }
+
+      const listaSolicitacoesHtml = solicitacoes
         .map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`)
         .join("<br>");
 
       const mensagemHtml = `
 <p>Olá, ${hospitalNome} 👋</p>
 <p>Essas são as solicitações de cadastro pendentes no HealthTrack:</p><br>
-<p>${listaSolicitacoes}</p><br>
+<p>${listaSolicitacoesHtml}</p><br>
 <p>
   Acesse as solicitações: 
   <a href="http://healthtrack-p6oq.onrender.com/solicitacao.html">
@@ -87,12 +111,16 @@ cron.schedule("07 00 * * *", async () => {
 <p>Atenciosamente,<br>Equipe HealthTrack</p>
 `;
 
+      const listaSolicitacoesTexto = solicitacoes
+        .map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`)
+        .join("\n");
+
       const mensagemTexto = `
 Olá, ${hospitalNome}
 
 Essas são as solicitações de cadastro pendentes no HealthTrack:
 
-${solicitacoes.map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`).join("\n")}
+${listaSolicitacoesTexto}
 
 Acesse as solicitações: http://healthtrack-p6oq.onrender.com/solicitacao.html
 
@@ -102,11 +130,13 @@ Atenciosamente,
 Equipe HealthTrack
 `;
 
+      // Envio de e-mail
       await enviarEmailBrevo(hospitalEmail, hospitalNome, "Solicitações pendentes de cadastro - HealthTrack", mensagemHtml, mensagemTexto);
     }
 
-    console.log("📬 Todos os e-mails foram enviados com sucesso!");
+    console.log("📬 Todos os e-mails processados!");
+
   } catch (error) {
-    console.error("❌ Erro ao enviar e-mails semanais:", error);
+    console.error("❌ Erro ao processar envio diário de e-mails:", error);
   }
 });
