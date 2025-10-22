@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const { PrismaClient } = require("@prisma/client");
-const SibApiV3Sdk = require("@sendinblue/client");
 require("dotenv").config();
+const fetch = require("node-fetch"); // Node <18, senão fetch nativo
 
 const prisma = new PrismaClient();
 
@@ -12,9 +12,35 @@ const tiposUser = {
   3: "Médico",
 };
 
-// Configura Brevo
-const client = new SibApiV3Sdk.TransactionalEmailsApi();
-client.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+// Função de envio de e-mail via Brevo
+async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlContent, textoAlternativo) {
+  try {
+    const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "HealthTrack", email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com" },
+        to: [{ email: destinatario, name: nomeDestinatario }],
+        subject: assunto,
+        htmlContent: htmlContent,
+        textContent: textoAlternativo,
+      }),
+    });
+
+    const data = await resposta.json();
+    if (!resposta.ok) throw new Error(JSON.stringify(data));
+    console.log(`E-mail enviado para ${destinatario}:`, data);
+    return data;
+
+  } catch (err) {
+    console.error(`Erro ao enviar e-mail para ${destinatario}:`, err);
+    throw err;
+  }
+}
 
 // 🕒 Agendamento: toda segunda-feira às 9h
 cron.schedule("0 0 9 * * 1", async () => {
@@ -45,37 +71,39 @@ cron.schedule("0 0 9 * * 1", async () => {
       const hospitalEmail = solicitacoes[0].hospital.email;
 
       const listaSolicitacoes = solicitacoes
-        .map(
-          (s) =>
-            `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`
-        )
+        .map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`)
         .join("<br>");
 
-      const mensagem = `
+      const mensagemHtml = `
 <p>Olá, ${hospitalNome} 👋</p>
-
-<p>Essas são as solicitações de cadastro pendentes no HealthTrack:</p> <br>
-
-<p>${listaSolicitacoes}</p> <br>
-
+<p>Essas são as solicitações de cadastro pendentes no HealthTrack:</p><br>
+<p>${listaSolicitacoes}</p><br>
 <p>
   Acesse as solicitações: 
   <a href="http://healthtrack-p6oq.onrender.com/solicitacao.html">
     http://healthtrack-p6oq.onrender.com/solicitacao.html
   </a>
 </p>
-
 <p>🕒 Este e-mail é enviado automaticamente toda segunda-feira às 9h.</p>
-
 <p>Atenciosamente,<br>Equipe HealthTrack</p>
 `;
 
-      await client.sendTransacEmail({
-        sender: { name: "HealthTrack", email: process.env.BREVO_SENDER_EMAIL },
-        to: [{ email: hospitalEmail, name: hospitalNome }],
-        subject: "Solicitações pendentes de cadastro - HealthTrack",
-        htmlContent: mensagem,
-      });
+      const mensagemTexto = `
+Olá, ${hospitalNome}
+
+Essas são as solicitações de cadastro pendentes no HealthTrack:
+
+${solicitacoes.map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`).join("\n")}
+
+Acesse as solicitações: http://healthtrack-p6oq.onrender.com/solicitacao.html
+
+Este e-mail é enviado automaticamente toda segunda-feira às 9h.
+
+Atenciosamente,
+Equipe HealthTrack
+`;
+
+      await enviarEmailBrevo(hospitalEmail, hospitalNome, "Solicitações pendentes de cadastro - HealthTrack", mensagemHtml, mensagemTexto);
     }
 
     console.log("📬 Todos os e-mails foram enviados com sucesso!");
