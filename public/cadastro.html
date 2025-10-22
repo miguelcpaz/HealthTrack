@@ -10,14 +10,8 @@
   <link rel="icon" type="image/png" href="./img/favicon.png" />
 
   <!-- Ícones e Fontes -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 
 <body>
@@ -42,13 +36,7 @@
       </div>
       <div class="form-group">
         <label>CPF</label>
-        <input
-          type="text"
-          name="cpf_tecnico"
-          required
-          placeholder="000.000.000-00"
-          oninput="mascaraCPF(this)"
-        />
+        <input type="text" name="cpf_tecnico" required placeholder="000.000.000-00" oninput="mascaraCPF(this)" />
       </div>
       <div class="form-group">
         <label>Email</label>
@@ -75,13 +63,7 @@
       </div>
       <div class="form-group">
         <label>CPF</label>
-        <input
-          type="text"
-          name="cpf_enfermeiro"
-          required
-          placeholder="000.000.000-00"
-          oninput="mascaraCPF(this)"
-        />
+        <input type="text" name="cpf_enfermeiro" required placeholder="000.000.000-00" oninput="mascaraCPF(this)" />
       </div>
       <div class="form-group">
         <label>Email</label>
@@ -106,25 +88,12 @@
       </div>
       <div class="form-group">
         <label>CPF</label>
-        <input
-          type="text"
-          name="cpf_medico"
-          required
-          placeholder="000.000.000-00"
-          oninput="mascaraCPF(this)"
-        />
+        <input type="text" name="cpf_medico" required placeholder="000.000.000-00" oninput="mascaraCPF(this)" />
       </div>
       <div class="form-group">
         <label>CRM</label>
-        <input
-          type="text"
-          name="crm_medico"
-          required
-          placeholder="Ex: 123456"
-          maxlength="6"
-          pattern="\d{6}"
-          title="Digite exatamente 6 números"
-        />
+        <input type="text" name="crm_medico" required placeholder="Ex: 123456" maxlength="6" pattern="\d{6}"
+          title="Digite exatamente 6 números" />
       </div>
       <div class="form-group">
         <label>UF</label>
@@ -182,13 +151,7 @@
       </div>
       <div class="form-group">
         <label>CNPJ</label>
-        <input
-          type="text"
-          name="cnpj_hospital"
-          required
-          placeholder="00.000.000/0000-00"
-          oninput="mascaraCNPJ(this)"
-        />
+        <input type="text" name="cnpj_hospital" required placeholder="00.000.000/0000-00" oninput="mascaraCNPJ(this)" />
       </div>
       <div class="form-group">
         <label>CNES</label>
@@ -196,13 +159,7 @@
       </div>
       <div class="form-group">
         <label>CEP</label>
-        <input
-          type="text"
-          name="cep_hospital"
-          required
-          placeholder="00000-000"
-          oninput="mascaraCEP(this)"
-        />
+        <input type="text" name="cep_hospital" required placeholder="00000-000" oninput="mascaraCEP(this)" />
       </div>
       <div class="form-group">
         <label>Número</label>
@@ -210,13 +167,8 @@
       </div>
       <div class="form-group">
         <label>Telefone</label>
-        <input
-          type="text"
-          name="telefone_hospital"
-          required
-          placeholder="(00) 00000-0000"
-          oninput="mascaraTelefone(this)"
-        />
+        <input type="text" name="telefone_hospital" required placeholder="(00) 00000-0000"
+          oninput="mascaraTelefone(this)" />
       </div>
       <div class="form-group">
         <label>Email</label>
@@ -228,12 +180,7 @@
       </div>
       <div class="form-group">
         <label>Tipo de Estabelecimento</label>
-        <input
-          type="text"
-          name="tipoEstabelecimento_hospital"
-          required
-          placeholder="Ex: Hospital Geral"
-        />
+        <input type="text" name="tipoEstabelecimento_hospital" required placeholder="Ex: Hospital Geral" />
       </div>
       <div class="terms">
         <input type="checkbox" required />
@@ -245,6 +192,16 @@
     <div class="login-link">
       Já possui uma conta? <a href="login.html">Faça login</a>
     </div>
+
+    <!-- Mini tela de carregamento -->
+    <div id="mini-loader" class="mini-loader hidden">
+      <div class="mini-loader-content">
+        <img src="./img/logo.png" alt="Logo" class="mini-loader-logo">
+        <p>Enviando dados de cadastro...</p>
+        <div class="mini-spinner"></div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Loading -->
@@ -259,4 +216,5 @@
   <!-- JS externo -->
   <script src="./js/cadastro.js"></script>
 </body>
+
 </html>

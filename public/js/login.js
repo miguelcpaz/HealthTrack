@@ -16,6 +16,8 @@ document.querySelectorAll(".toggle-password").forEach(icon => {
 
 // Lógica de login
 const form = document.getElementById("loginForm");
+const miniLoader = document.getElementById("mini-loader");
+
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
 
@@ -25,10 +27,16 @@ form.addEventListener("submit", async function (event) {
 
   const data = { email, senha };
 
+  // === Mostra o mini loader ===
+  if (miniLoader) {
+    miniLoader.classList.remove("hidden");
+    miniLoader.classList.add("active");
+  }
+
   try {
     const response = await fetch("/api/auth/login", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
 
@@ -41,9 +49,9 @@ form.addEventListener("submit", async function (event) {
       };
 
       if (remember) {
-        localStorage.setItem('auth', JSON.stringify(authData));
+        localStorage.setItem("auth", JSON.stringify(authData));
       } else {
-        sessionStorage.setItem('auth', JSON.stringify(authData));
+        sessionStorage.setItem("auth", JSON.stringify(authData));
       }
 
       alert(result.message);
@@ -54,22 +62,28 @@ form.addEventListener("submit", async function (event) {
         window.location.href = "index.html";
       }
     } else {
-      alert(result.error);
+      alert(result.error || "Erro ao fazer login.");
     }
   } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    alert('Erro ao tentar fazer login.');
+    console.error("Erro ao fazer login:", error);
+    alert("Erro ao tentar fazer login.");
+  } finally {
+    // === Oculta o mini loader ===
+    if (miniLoader) {
+      miniLoader.classList.remove("active");
+      setTimeout(() => miniLoader.classList.add("hidden"), 300);
+    }
   }
 });
 
-// Tela de carregamento
-window.addEventListener('load', function () {
-  const loadingScreen = document.getElementById('loading-screen');
+// Tela de carregamento inicial (antiga)
+window.addEventListener("load", function () {
+  const loadingScreen = document.getElementById("loading-screen");
   if (loadingScreen) {
     const randomDelay = Math.floor(Math.random() * (2500 - 1000 + 1)) + 1000;
     setTimeout(() => {
-      loadingScreen.style.opacity = '0';
-      setTimeout(() => loadingScreen.style.display = 'none', 500);
+      loadingScreen.style.opacity = "0";
+      setTimeout(() => loadingScreen.style.display = "none", 500);
     }, randomDelay);
   }
 });
