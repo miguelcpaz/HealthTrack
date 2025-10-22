@@ -2,24 +2,36 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const { Resend } = require("resend");
 const jwt = require("jsonwebtoken");
 const ExcelJS = require('exceljs');
+const fetch = require("node-fetch"); // importante
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Função auxiliar para envio de e-mails via Resend
+// ====================== FUNÇÃO AUXILIAR PARA ENVIO DE E-MAIL VIA BREVO ======================
 async function enviarEmail(destinatario, assunto, texto) {
   try {
-    await resend.emails.send({
-      from: "HealthTrack <onboarding@resend.dev>",
-      to: destinatario,
-      subject: assunto,
-      text: texto,
+    const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY, // chave API do Brevo
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: "HealthTrack",
+          email: process.env.SENDER_EMAIL || "seuemail@gmail.com", // pode ser Gmail ou domínio verificado
+        },
+        to: [{ email: destinatario }],
+        subject: assunto,
+        htmlContent: `<pre>${texto}</pre>`, // Brevo exige campo HTML
+      }),
     });
-    console.log(`📧 E-mail enviado para ${destinatario}`);
+
+    const data = await resposta.json();
+    if (!resposta.ok) throw new Error(JSON.stringify(data));
+    console.log(`📧 E-mail enviado via Brevo para ${destinatario}`);
   } catch (err) {
-    console.error("❌ Erro ao enviar e-mail:", err);
+    console.error("❌ Erro ao enviar e-mail via Brevo:", err.message);
   }
 }
 
@@ -30,6 +42,7 @@ async function registerUser(req, res) {
   try {
     const senhaTemporaria = crypto.randomBytes(6).toString("hex");
 
+    // Verificações de duplicidade
     const emailCheck = await prisma.user.findUnique({ where: { email } });
     if (emailCheck) return res.status(400).json({ error: 'Email já cadastrado.' });
 
@@ -51,17 +64,17 @@ async function registerUser(req, res) {
         tipo_user,
         hospitalId,
         status_senha,
-        status_cadastro: "pendente"
-      }
+        status_cadastro: "pendente",
+      },
     });
 
-    // Cria solicitação de cadastro para o hospital
+    // Cria solicitação de cadastro
     await prisma.solicitation.create({
       data: {
         userId: newUser.id,
         hospitalId,
-        status: "pendente"
-      }
+        status: "pendente",
+      },
     });
 
     // Envio de e-mail com senha temporária
@@ -77,7 +90,7 @@ Equipe HealthTrack`;
 
     await enviarEmail(email, assunto, texto);
 
-    // Gerar token JWT seguro
+    // Gera token JWT
     const token = jwt.sign(
       { id: newUser.id, tipo_user: newUser.tipo_user },
       process.env.JWT_SECRET,
@@ -87,13 +100,13 @@ Equipe HealthTrack`;
     return res.status(201).json({
       message: 'Usuário cadastrado com sucesso!',
       usuario: newUser,
-      token
+      token,
     });
   } catch (error) {
     console.error("❌ Erro detalhado ao cadastrar:", error);
     return res.status(500).json({
       error: 'Erro ao cadastrar usuário.',
-      details: error.message || "Sem detalhes"
+      details: error.message || "Sem detalhes",
     });
   }
 }
@@ -111,7 +124,6 @@ async function registerUsersFromExcel(req, res) {
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(req.file.buffer);
-
     const worksheet = workbook.worksheets[0];
     const data = [];
 
@@ -123,7 +135,7 @@ async function registerUsersFromExcel(req, res) {
           email: row.getCell(3).value,
           crm: row.getCell(4).value,
           uf: row.getCell(5).value,
-          tipo_user: row.getCell(6).value
+          tipo_user: row.getCell(6).value,
         });
       }
     });
@@ -134,28 +146,20 @@ async function registerUsersFromExcel(req, res) {
 
     for (const [index, row] of data.entries()) {
       try {
-        // Normalizar CPF
-        if (row.cpf) row.cpf = row.cpf.toString().replace(/\D/g, '');
-
-        // Validar campos obrigatórios
+        row.cpf = row.cpf?.toString().replace(/\D/g, '');
         const tipoUser = parseInt(row.tipo_user);
-        const baseRequiredFields = ['nome', 'cpf', 'email', 'tipo_user'];
-        const missingFields = baseRequiredFields.filter(f => !row[f]);
+
+        const missingFields = ['nome', 'cpf', 'email', 'tipo_user'].filter(f => !row[f]);
         if (missingFields.length > 0) {
           results.errors.push({ linha: index + 2, error: `Campos obrigatórios faltando: ${missingFields.join(', ')}` });
           continue;
         }
 
-        if (tipoUser === 3) {
-          const medicoFields = ['crm', 'uf'];
-          const missingMedicoFields = medicoFields.filter(f => !row[f]);
-          if (missingMedicoFields.length > 0) {
-            results.errors.push({ linha: index + 2, error: `Para médicos (tipo 3), campos obrigatórios faltando: ${missingMedicoFields.join(', ')}` });
-            continue;
-          }
+        if (tipoUser === 3 && (!row.crm || !row.uf)) {
+          results.errors.push({ linha: index + 2, error: 'Para médicos (tipo 3), CRM e UF são obrigatórios' });
+          continue;
         }
 
-        // Verificar duplicados
         const emailCheck = await prisma.user.findUnique({ where: { email: row.email } });
         const cpfCheck = await prisma.user.findUnique({ where: { cpf: row.cpf } });
         if (emailCheck || cpfCheck) {
@@ -163,24 +167,22 @@ async function registerUsersFromExcel(req, res) {
           continue;
         }
 
-        // Criar usuário
         const senhaTemporaria = crypto.randomBytes(6).toString("hex");
         const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
-        const userData = {
-          nome: row.nome,
-          cpf: row.cpf,
-          email: row.email,
-          senha: senhaHash,
-          tipo_user: tipoUser,
-          hospitalId: parseInt(hospitalId),
-          status_senha: 1,
-          crm: tipoUser === 3 && row.crm && row.uf ? `${row.crm}/${row.uf}` : null
-        };
+        const newUser = await prisma.user.create({
+          data: {
+            nome: row.nome,
+            cpf: row.cpf,
+            email: row.email,
+            senha: senhaHash,
+            tipo_user: tipoUser,
+            hospitalId: parseInt(hospitalId),
+            status_senha: 1,
+            crm: tipoUser === 3 ? `${row.crm}/${row.uf}` : null,
+          },
+        });
 
-        const newUser = await prisma.user.create({ data: userData });
-
-        // Enviar e-mail via Resend
         const assunto = "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema";
         const texto = `Olá ${row.nome},
 
@@ -193,17 +195,10 @@ Equipe HealthTrack`;
 
         await enviarEmail(row.email, assunto, texto);
 
-        // Gerar token JWT para cada usuário (opcional)
-        const token = jwt.sign(
-          { id: newUser.id, tipo_user: newUser.tipo_user },
-          process.env.JWT_SECRET,
-          { expiresIn: "8h" }
-        );
-
-        results.success.push({ linha: index + 2, usuario: newUser.email, token, message: 'Usuário cadastrado com sucesso' });
+        results.success.push({ linha: index + 2, usuario: newUser.email, message: 'Usuário cadastrado com sucesso' });
 
       } catch (err) {
-        results.errors.push({ linha: index + 2, error: `Erro ao processar linha: ${err.message}` });
+        results.errors.push({ linha: index + 2, error: err.message });
       }
     }
 
@@ -212,7 +207,7 @@ Equipe HealthTrack`;
       total: data.length,
       sucessos: results.success.length,
       erros: results.errors.length,
-      detalhes: results
+      detalhes: results,
     });
 
   } catch (error) {
@@ -227,16 +222,17 @@ async function getFuncionariosByHospital(req, res) {
 
   try {
     const funcionarios = await prisma.user.findMany({ where: { hospitalId: Number(id) } });
-    if (!funcionarios || funcionarios.length === 0) return res.status(404).json({ error: 'Nenhum funcionario encontrado.' });
+    if (!funcionarios || funcionarios.length === 0)
+      return res.status(404).json({ error: 'Nenhum funcionário encontrado.' });
     return res.status(200).json(funcionarios);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Erro ao buscar funcionarios.' });
+    return res.status(500).json({ error: 'Erro ao buscar funcionários.' });
   }
 }
 
 module.exports = {
   registerUser,
   getFuncionariosByHospital,
-  registerUsersFromExcel
+  registerUsersFromExcel,
 };
