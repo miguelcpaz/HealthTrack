@@ -56,7 +56,7 @@ document.getElementById('paciente-form').addEventListener('submit', async functi
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/pacientes/register', {
+        const response = await fetch('/api/pacientes/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -42,7 +42,7 @@ let funcoesSelecionadas = ['todas'];
 
 async function carregarFuncionarios() {
   try {
-    let urlBase = 'http://localhost:3000/api/usuarios/funcionarios';
+    let urlBase = '/api/usuarios/funcionarios';
 
     if (authData.tipo === 'hospital') {
       urlBase += `/${authData.dados.id}`;

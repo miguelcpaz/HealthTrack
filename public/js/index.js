@@ -38,7 +38,7 @@ async function carregarPacientesCriticos() {
       JSON.parse(localStorage.getItem('auth')) ||
       JSON.parse(sessionStorage.getItem('auth'));
 
-    let urlBase = 'http://localhost:3000/api/pacientes/get';
+    let urlBase = '/api/pacientes/get';
 
     if (authData.tipo === 'hospital') {
       urlBase += `/${authData.dados.id}/critico`;

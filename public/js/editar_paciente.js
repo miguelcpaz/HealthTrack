@@ -78,7 +78,7 @@ document.getElementById('form-editar-paciente').addEventListener('submit', async
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/api/pacientes/${id}`, {
+    const response = await fetch(`/api/pacientes/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
