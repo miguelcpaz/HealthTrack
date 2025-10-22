@@ -3,7 +3,7 @@ const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionS
 
 if (!authData) {
     alert('Usuário não autenticado!');
-    window.location.href = "http://localhost:3000/login";
+    window.location.href = "/login";
 }
 
 // 👁️ Alternar visibilidade das senhas
