@@ -1,6 +1,6 @@
 const cron = require("node-cron");
-const nodemailer = require("nodemailer");
 const { PrismaClient } = require("@prisma/client");
+const SibApiV3Sdk = require("@sendinblue/client");
 require("dotenv").config();
 
 const prisma = new PrismaClient();
@@ -12,7 +12,11 @@ const tiposUser = {
   3: "Médico",
 };
 
-// 🕒 Agendamento: hoje, 15/10 às 12:45
+// Configura Brevo
+const client = new SibApiV3Sdk.TransactionalEmailsApi();
+client.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+// 🕒 Agendamento: toda segunda-feira às 9h
 cron.schedule("0 0 9 * * 1", async () => {
   console.log("📨 Enviando e-mails de solicitações pendentes...");
 
@@ -36,17 +40,6 @@ cron.schedule("0 0 9 * * 1", async () => {
       return acc;
     }, {});
 
-    // Configura transporte de e-mail
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
     // Envia e-mail individual para cada hospital
     for (const [hospitalNome, solicitacoes] of Object.entries(porHospital)) {
       const hospitalEmail = solicitacoes[0].hospital.email;
@@ -67,8 +60,8 @@ cron.schedule("0 0 9 * * 1", async () => {
 
 <p>
   Acesse as solicitações: 
-  <a href="http://localhost:3000/solicitacao.html">
-    http://localhost:3000/solicitacao.html
+  <a href="http://healthtrack-p6oq.onrender.com/solicitacao.html">
+    http://healthtrack-p6oq.onrender.com/solicitacao.html
   </a>
 </p>
 
@@ -77,11 +70,11 @@ cron.schedule("0 0 9 * * 1", async () => {
 <p>Atenciosamente,<br>Equipe HealthTrack</p>
 `;
 
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: hospitalEmail,
+      await client.sendTransacEmail({
+        sender: { name: "HealthTrack", email: process.env.BREVO_SENDER_EMAIL },
+        to: [{ email: hospitalEmail, name: hospitalNome }],
         subject: "Solicitações pendentes de cadastro - HealthTrack",
-        html: mensagem, // <-- envia HTML com botão
+        htmlContent: mensagem,
       });
     }
 
