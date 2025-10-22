@@ -2,7 +2,15 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
+const SibApiV3Sdk = require("@sendinblue/client");
+require("dotenv").config();
+
+// Configura Brevo
+const client = new SibApiV3Sdk.TransactionalEmailsApi();
+client.setApiKey(
+  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 async function registerHospital(req, res) {
   try {
@@ -24,6 +32,7 @@ async function registerHospital(req, res) {
         OR: [{ email }, { cnpj }, { cnes }],
       },
     });
+
     const emailExists = await prisma.user.findUnique({
       where: { email },
     });
@@ -33,7 +42,6 @@ async function registerHospital(req, res) {
     }
 
     const senhaTemporaria = crypto.randomBytes(6).toString("hex");
-
     const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
     const hospital = await prisma.hospital.create({
@@ -52,56 +60,44 @@ async function registerHospital(req, res) {
       },
     });
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    const mensagem = `
+<p>Olá,</p>
+
+<p>Seja bem-vindo ao HealthTrack!</p>
+
+<p>O seu hospital foi cadastrado com sucesso em nossa plataforma. Para acessar o sistema, utilize as credenciais temporárias abaixo:</p>
+
+<p>🔐 Senha temporária de acesso: <strong>${senhaTemporaria}</strong></p>
+
+<p>⚠️ Por razões de segurança, é extremamente importante que você altere essa senha assim que realizar o primeiro login.</p>
+
+<p>Através da plataforma, você poderá:</p>
+<ul>
+<li>Gerenciar pacientes de forma rápida e segura;</li>
+<li>Acompanhar internações, prescrições e relatórios clínicos;</li>
+<li>Organizar sua equipe e muito mais.</li>
+</ul>
+
+<p>Caso você não tenha solicitado este cadastro, ou tenha recebido este e-mail por engano, por favor, entre em contato com a nossa equipe imediatamente.</p>
+
+<p>Se precisar de ajuda, conte com nosso suporte:</p>
+<p>📧 healthtrack.tcc@gmail.com</p>
+
+<p>Atenciosamente,<br>Equipe HealthTrack</p>
+<p><small>MENSAGEM AUTOMÁTICA - NÃO RESPONDA!</small></p>
+`;
+
+    // Envia e-mail pelo Brevo
+    await client.sendTransacEmail({
+      sender: { name: "HealthTrack", email: process.env.BREVO_SENDER_EMAIL },
+      to: [{ email, name: nome }],
+      subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
+      htmlContent: mensagem,
     });
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
-      text: `Olá,
-
-Seja bem-vindo ao HealthTrack!
-
-O seu hospital foi cadastrado com sucesso em nossa plataforma. Para acessar o sistema, utilize as credenciais temporárias abaixo:
-
-🔐 Senha temporária de acesso: ${senhaTemporaria}
-
-⚠️ Por razões de segurança, é extremamente importante que você altere essa senha assim que realizar o primeiro login.
-
-Através da plataforma, você poderá:
-- Gerenciar pacientes de forma rápida e segura;
-- Acompanhar internações, prescrições e relatórios clínicos;
-- Organizar sua equipe e muito mais.
-
-Caso você não tenha solicitado este cadastro, ou tenha recebido este e-mail por engano, por favor, entre em contato com a nossa equipe imediatamente.
-
-Se precisar de ajuda, conte com nosso suporte:
-
-📧 healthtrack.tcc@gmail.com  
-
-Obrigado por confiar na nossa solução.
-
-Atenciosamente,  
-Equipe HealthTrack
-
-MENSAGEM AUTOMATICA NÃO RESPONDA!
-`,
-    };
-
-
-    await transporter.sendMail(mailOptions);
-
-    res
-      .status(201)
-      .json({ message: "Hospital cadastrado com sucesso, senha temporária enviada por email." });
+    res.status(201).json({
+      message: "Hospital cadastrado com sucesso, senha temporária enviada por email.",
+    });
   } catch (error) {
     console.error("Erro ao cadastrar hospital:", error);
     res.status(500).json({ error: "Erro interno do servidor." });
@@ -126,7 +122,6 @@ async function loginHospital(req, res) {
       return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
-
     res.status(200).json({
       message: "Login realizado com sucesso.",
       hospital: {
@@ -141,11 +136,9 @@ async function loginHospital(req, res) {
   }
 }
 
-
 async function listarHospitaisFormatado(req, res) {
   try {
     const hospitais = await prisma.hospital.findMany();
-
     const hospitaisFiltrados = hospitais.filter(h => h.id !== 0);
 
     const hospitaisComCidade = await Promise.all(
@@ -175,7 +168,6 @@ async function listarHospitaisFormatado(req, res) {
     res.status(500).json({ error: "Erro ao buscar hospitais." });
   }
 }
-
 
 module.exports = {
   registerHospital,
