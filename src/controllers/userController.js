@@ -19,7 +19,7 @@ async function enviarEmail(destinatario, assunto, texto) {
       body: JSON.stringify({
         sender: {
           name: "HealthTrack",
-          email: process.env.SENDER_EMAIL || "seuemail@gmail.com", // pode ser Gmail ou domínio verificado
+          email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com", // pode ser Gmail ou domínio verificado
         },
         to: [{ email: destinatario }],
         subject: assunto,
