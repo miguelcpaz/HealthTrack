@@ -1,8 +1,6 @@
 const cron = require("node-cron");
 const { PrismaClient } = require("@prisma/client");
 require("dotenv").config();
-const fetch = require("node-fetch"); // Node <18, senão fetch nativo
-
 const prisma = new PrismaClient();
 
 // Mapeamento de tipo de usuário
