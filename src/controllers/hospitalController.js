@@ -2,21 +2,44 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-// Configura transporte de e-mail
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_SECURE === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
+// ======================================================
+// Função de envio de e-mail via Brevo (Sendinblue)
+// ======================================================
+async function enviarEmailBrevo(destinatario, assunto, htmlContent, textoAlternativo) {
+  try {
+    const resposta = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "HealthTrack", email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com" },
+        to: [{ email: destinatario }],
+        subject: assunto,
+        htmlContent: htmlContent,
+        textContent: textoAlternativo,
+      }),
+    });
+
+    const data = await resposta.json();
+    if (!resposta.ok) throw new Error(JSON.stringify(data));
+    console.log("E-mail enviado via Brevo:", data);
+    return data;
+
+  } catch (err) {
+    console.error("Erro ao enviar e-mail via Brevo:", err);
+    throw err;
+  }
+}
+
+// ======================================================
 // Mapeamento de tipo de usuário
+// ======================================================
 const tiposUser = {
   1: "Técnico de Enfermagem",
   2: "Enfermeiro",
@@ -54,31 +77,19 @@ async function registerHospital(req, res) {
       },
     });
 
-    // Envia e-mail
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
-      text: `Olá,
-
-Seu hospital foi cadastrado no HealthTrack.
-Senha temporária: ${senhaTemporaria}
-
-Altere sua senha no primeiro login.
-
-Atenciosamente,
-Equipe HealthTrack`,
-      html: `<p>Olá,</p>
-<p>Seu hospital foi cadastrado no <strong>HealthTrack</strong>.</p>
-<p>🔐 <strong>Senha temporária:</strong> ${senhaTemporaria}</p>
-<p>⚠️ Altere sua senha no primeiro login.</p>
-<p>Atenciosamente,<br>Equipe HealthTrack</p>`,
-    };
-
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) console.error("Erro ao enviar e-mail:", err);
-      else console.log("E-mail enviado:", info.response);
-    });
+    // ======================================================
+    // Envia e-mail usando Brevo
+    // ======================================================
+    await enviarEmailBrevo(
+      email,
+      "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
+      `<p>Olá,</p>
+       <p>Seu hospital foi cadastrado no <strong>HealthTrack</strong>.</p>
+       <p>🔐 <strong>Senha temporária:</strong> ${senhaTemporaria}</p>
+       <p>⚠️ Altere sua senha no primeiro login.</p>
+       <p>Atenciosamente,<br>Equipe HealthTrack</p>`,
+      `Olá,\nSeu hospital foi cadastrado no HealthTrack.\nSenha temporária: ${senhaTemporaria}\nAltere sua senha no primeiro login.\nEquipe HealthTrack`
+    );
 
     res.status(201).json({
       message: "Hospital cadastrado com sucesso, senha temporária enviada por email.",
