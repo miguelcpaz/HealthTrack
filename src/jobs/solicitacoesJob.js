@@ -41,9 +41,10 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
 }
 
 // 🕒 Agendamento: toda segunda-feira às 9h
-cron.schedule("0 0 9 * * 1", async () => {
+// 🕒 Agendamento: todos os dias às 23:52
+cron.schedule("52 23 * * *", async () => {
   console.log("📨 Enviando e-mails de solicitações pendentes...");
-
+  
   try {
     // Busca todas as solicitações pendentes de aprovação
     const solicitacoesPendentes = await prisma.solicitation.findMany({
@@ -82,7 +83,7 @@ cron.schedule("0 0 9 * * 1", async () => {
     http://healthtrack-p6oq.onrender.com/solicitacao.html
   </a>
 </p>
-<p>🕒 Este e-mail é enviado automaticamente toda segunda-feira às 9h.</p>
+<p>🕒 Este e-mail é enviado automaticamente todos os dias às 23:52.</p>
 <p>Atenciosamente,<br>Equipe HealthTrack</p>
 `;
 
@@ -95,7 +96,7 @@ ${solicitacoes.map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) —
 
 Acesse as solicitações: http://healthtrack-p6oq.onrender.com/solicitacao.html
 
-Este e-mail é enviado automaticamente toda segunda-feira às 9h.
+Este e-mail é enviado automaticamente todos os dias às 23:52.
 
 Atenciosamente,
 Equipe HealthTrack
