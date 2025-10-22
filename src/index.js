@@ -9,6 +9,7 @@ const pacienteRoutes = require('./routes/pacienteRoutes');
 const hospitalRoutes = require('./routes/hospitalRoutes');
 const authRoutes = require('./routes/authRoutes');
 const solicitationRoutes = require('./routes/solicitacaoRoutes');
+const cronRoutes = require("./routes/cronRoutes");
 
 server.use(cors());
 server.use(express.json());
@@ -23,6 +24,9 @@ server.use('/api/pacientes', pacienteRoutes);
 server.use('/api/hospital', hospitalRoutes);
 server.use('/api/auth', authRoutes);
 server.use('/api/solicitacoes', solicitationRoutes);
+server.use("/api/cron", cronRoutes);
+
+
 
 require("./jobs/solicitacoesJob");
 require("./jobs/pacienteJob");
