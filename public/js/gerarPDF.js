@@ -134,7 +134,7 @@ function gerarPDF() {
             hospitalId: pacienteData.hospitalId
         }));
 
-        const qrData = `${window.location.origin}/paciente.html?session=${sessionId}`;
+        const qrData = `https://healthtrack-p6oq.onrender.com/paciente.html?session=${sessionId}`;
 
         QRCode.toDataURL(qrData, { width: 70 }, (err, url) => {
             if (!err) {

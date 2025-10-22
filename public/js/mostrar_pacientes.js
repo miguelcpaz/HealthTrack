@@ -85,7 +85,7 @@ inicializarFiltroGravidade();
 
 async function carregarPacientes() {
   try {
-    let urlBase = 'http://localhost:3000/api/pacientes/get';
+    let urlBase = '/api/pacientes/get';
 
     if (authData.tipo === 'hospital') {
       urlBase += `/${authData.dados.id}`;
