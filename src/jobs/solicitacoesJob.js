@@ -42,7 +42,7 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
 
 // 🕒 Agendamento: toda segunda-feira às 9h
 // 🕒 Agendamento: todos os dias às 23:52
-cron.schedule("59 23 * * *", async () => {
+cron.schedule("02 00 * * *", async () => {
   console.log("📨 Enviando e-mails de solicitações pendentes...");
   
   try {
