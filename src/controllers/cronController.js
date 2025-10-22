@@ -58,13 +58,48 @@ async function dispararSolicitacoes(req, res) {
       const hospitalEmail = solicitacoes[0].hospital.email;
       if (!hospitalEmail) continue;
 
-      const listaHtml = solicitacoes.map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`).join("<br>");
-      const listaTexto = solicitacoes.map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`).join("\n");
+      const listaHtml = solicitacoes
+        .map(
+          (s) =>
+            `• <strong>${s.user.nome}</strong> (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`
+        )
+        .join("<br>");
 
-      const html = `<p>Olá, ${hospitalNome}</p><p>${listaHtml}</p>`;
-      const texto = `Olá, ${hospitalNome}\n${listaTexto}`;
+      const listaTexto = solicitacoes
+        .map(
+          (s) =>
+            `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`
+        )
+        .join("\n");
 
-      await enviarEmailBrevo(hospitalEmail, hospitalNome, "Solicitações pendentes - HealthTrack", html, texto);
+      const html = `
+        <p>Olá, <strong>${hospitalNome}</strong>,</p>
+        <p>Você possui novas <strong>solicitações de cadastro pendentes</strong> no sistema <strong>HealthTrack</strong>:</p>
+        <p>${listaHtml}</p>
+        <p>Acesse o painel administrativo para analisar e aprovar ou rejeitar as solicitações.</p>
+        <p>Atenciosamente,<br><strong>Equipe HealthTrack</strong></p>
+      `;
+
+      const texto = `
+Olá, ${hospitalNome},
+
+Você possui novas solicitações de cadastro pendentes no sistema HealthTrack:
+
+${listaTexto}
+
+Acesse o painel administrativo para analisar e aprovar ou rejeitar as solicitações.
+
+Atenciosamente,
+Equipe HealthTrack
+`;
+
+      await enviarEmailBrevo(
+        hospitalEmail,
+        hospitalNome,
+        "Novas solicitações pendentes - HealthTrack",
+        html,
+        texto
+      );
     }
 
     res.json({ message: "E-mails de solicitações enviados com sucesso!" });
