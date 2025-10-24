@@ -14,13 +14,11 @@ const botoesPorTipo = {
     [TIPOS_USUARIO.ENFERMEIRO]: [
         { nome: 'Pacientes', icone: 'ri-user-heart-line' },
         { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
         { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
     ],
     [TIPOS_USUARIO.MEDICO]: [
         { nome: 'Pacientes', icone: 'ri-user-heart-line' },
         { nome: 'Quartos', icone: 'ri-hotel-bed-line' },
-        { nome: 'Remédios', icone: 'ri-capsule-line' },
         { nome: 'Sair', icone: 'ri-logout-box-line', funcao: sair }
     ],
     [TIPOS_USUARIO.HOSPITAL]: [
@@ -119,7 +117,7 @@ function configurarNavegacao() {
         if (botao) nav.appendChild(botao);
     });
 
-    // Sempre adiciona Tema e Sair no final
+    // Adiciona dropdown Tema e botão Sair no final
     nav.appendChild(dropdownTema);
     if (sairBotao) nav.appendChild(sairBotao);
 }
