@@ -1,7 +1,5 @@
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
-const nodemailer = require("nodemailer");
-const fetch = require("node-fetch");
 
 const prisma = new PrismaClient();
 
