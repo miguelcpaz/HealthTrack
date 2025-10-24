@@ -94,26 +94,35 @@ function configurarNavegacao() {
     let sairBotao = null;
 
     botoesPorTipo[tipoUsuario].forEach(item => {
-        let botao;
+    let botao;
 
-        if (item.nome === 'Quartos') {
-            // 🔹 Botão direto no início (à esquerda)
-            botao = criarBotao({
-                ...item,
-                funcao: visualizar_quartos
-            });
-            nav.insertBefore(botao, nav.firstChild);
-        } else if (item.nome === 'Pacientes') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
-        } else if (item.nome === 'Funcionários') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
-        } else if (item.nome === 'Sair') {
-            sairBotao = criarBotao(item);
+    if (item.nome === 'Quartos') {
+        // Botão direto antes do dropdown de Pacientes
+        botao = criarBotao({
+            ...item,
+            funcao: visualizar_quartos
+        });
+
+        // Procura o dropdown de Pacientes para inserir antes dele
+        const pacientesDropdown = nav.querySelector('.dropdown button:contains("Pacientes")');
+        if (pacientesDropdown) {
+            pacientesDropdown.parentNode.insertBefore(botao, pacientesDropdown);
         } else {
-            botao = criarBotao(item);
-            nav.insertBefore(botao, nav.querySelector('.dropdown'));
+            nav.appendChild(botao);
         }
-    });
+
+    } else if (item.nome === 'Pacientes') {
+        botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
+    } else if (item.nome === 'Funcionários') {
+        botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
+    } else if (item.nome === 'Sair') {
+        sairBotao = criarBotao(item);
+    } else {
+        botao = criarBotao(item);
+        nav.insertBefore(botao, nav.querySelector('.dropdown'));
+    }
+});
+
 
     if (sairBotao) nav.appendChild(sairBotao);
 }
