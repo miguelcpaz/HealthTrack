@@ -51,7 +51,8 @@ function configurarNavegacao() {
     if (!authData) return;
 
     const nav = document.getElementById('nav-buttons');
-    
+    if (!nav) return;
+
     // Dropdown de Tema
     const dropdownTema = document.createElement('div');
     dropdownTema.classList.add('dropdown');
@@ -76,7 +77,6 @@ function configurarNavegacao() {
     dropdownContentTema.appendChild(btnEscuro);
 
     dropdownTema.appendChild(dropdownContentTema);
-    nav.appendChild(dropdownTema);
 
     function toggleDropdownTema() {
         const dropdown = document.getElementById('dropdown-tema-content');
@@ -89,31 +89,38 @@ function configurarNavegacao() {
     }
 
     const tipoUsuario = authData.dados.tipo_user || TIPOS_USUARIO.HOSPITAL;
-    if (!nav) return;
-
     let sairBotao = null;
 
-    botoesPorTipo[tipoUsuario].forEach(item => {
+    let botoesParaCriar = botoesPorTipo[tipoUsuario];
+
+    // Ordem personalizada apenas para Hospital
+    if (tipoUsuario === TIPOS_USUARIO.HOSPITAL) {
+        const ordemDesejada = ['Solicitações', 'Funcionários', 'Quartos', 'Pacientes'];
+        botoesParaCriar = ordemDesejada
+            .map(nome => botoesPorTipo[tipoUsuario].find(b => b.nome === nome))
+            .filter(Boolean);
+    }
+
+    botoesParaCriar.forEach(item => {
         let botao;
+
         if (item.nome === 'Pacientes') {
             botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
         } else if (item.nome === 'Quartos') {
-            // Botão direto
-            botao = criarBotao({
-                ...item,
-                funcao: visualizar_quartos
-            });
-            nav.insertBefore(botao, nav.querySelector('.dropdown'));
+            botao = criarBotao({ ...item, funcao: visualizar_quartos });
         } else if (item.nome === 'Funcionários') {
             botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
         } else if (item.nome === 'Sair') {
             sairBotao = criarBotao(item);
         } else {
             botao = criarBotao(item);
-            nav.insertBefore(botao, nav.querySelector('.dropdown'));
         }
+
+        if (botao) nav.appendChild(botao);
     });
 
+    // Sempre adiciona Tema e Sair no final
+    nav.appendChild(dropdownTema);
     if (sairBotao) nav.appendChild(sairBotao);
 }
 
@@ -159,7 +166,6 @@ function criarDropdown(nav, item, tipoUsuario, tipo) {
     }
 
     dropdown.appendChild(content);
-    nav.insertBefore(dropdown, nav.querySelector('.dropdown'));
     return dropdown;
 }
 
