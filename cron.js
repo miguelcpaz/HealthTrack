@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
+const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ const tiposUser = {
   3: "Médico",
 };
 
-// Envio via Brevo
+// Envio via Brevo usando fetch nativo
 async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlContent, textoAlternativo) {
   if (!destinatario) return;
   try {
