@@ -94,35 +94,34 @@ function configurarNavegacao() {
     let sairBotao = null;
 
     botoesPorTipo[tipoUsuario].forEach(item => {
-    let botao;
+        let botao;
 
-    if (item.nome === 'Quartos') {
-        // Botão direto antes do dropdown de Pacientes
-        botao = criarBotao({
-            ...item,
-            funcao: visualizar_quartos
-        });
+        if (item.nome === 'Pacientes') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
 
-        // Procura o dropdown de Pacientes para inserir antes dele
-        const pacientesDropdown = nav.querySelector('.dropdown button:contains("Pacientes")');
-        if (pacientesDropdown) {
-            pacientesDropdown.parentNode.insertBefore(botao, pacientesDropdown);
+            // Se já tiver o botão "Quartos" criado, insere ele antes do dropdown de Pacientes
+            const quartosBotao = nav.querySelector('button[data-quartos]');
+            if (quartosBotao) {
+                botao.parentNode.insertBefore(quartosBotao, botao);
+            }
+
+        } else if (item.nome === 'Quartos') {
+            // Botão direto
+            botao = criarBotao({
+                ...item,
+                funcao: visualizar_quartos
+            });
+            botao.setAttribute('data-quartos', 'true'); // marca para localizar depois
+            nav.appendChild(botao); // inicialmente adiciona ao final, será reposicionado
+        } else if (item.nome === 'Funcionários') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
+        } else if (item.nome === 'Sair') {
+            sairBotao = criarBotao(item);
         } else {
-            nav.appendChild(botao);
+            botao = criarBotao(item);
+            nav.insertBefore(botao, nav.querySelector('.dropdown'));
         }
-
-    } else if (item.nome === 'Pacientes') {
-        botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
-    } else if (item.nome === 'Funcionários') {
-        botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
-    } else if (item.nome === 'Sair') {
-        sairBotao = criarBotao(item);
-    } else {
-        botao = criarBotao(item);
-        nav.insertBefore(botao, nav.querySelector('.dropdown'));
-    }
-});
-
+    });
 
     if (sairBotao) nav.appendChild(sairBotao);
 }
