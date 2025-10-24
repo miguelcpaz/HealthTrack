@@ -115,8 +115,13 @@ async function carregarPacientes() {
       selectQuarto.appendChild(option);
     });
 
+    // Adiciona os eventos para atualizar a tabela
     document.getElementById('search-input').addEventListener('input', atualizarTabela);
+    document.getElementById('filtro-quarto').addEventListener('change', atualizarTabela);
+    document.getElementById('filtro-sexo').addEventListener('change', atualizarTabela);
+    document.getElementById('ordenar').addEventListener('change', atualizarTabela);
 
+    // Mantém o filtro salvo (por 5 minutos)
     const filterData = localStorage.getItem('pacienteFilter');
     if (filterData) {
       const filter = JSON.parse(filterData);
