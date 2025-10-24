@@ -51,7 +51,7 @@ function configurarNavegacao() {
     if (!authData) return;
 
     const nav = document.getElementById('nav-buttons');
-    
+
     // Dropdown de Tema
     const dropdownTema = document.createElement('div');
     dropdownTema.classList.add('dropdown');
@@ -95,15 +95,16 @@ function configurarNavegacao() {
 
     botoesPorTipo[tipoUsuario].forEach(item => {
         let botao;
-        if (item.nome === 'Pacientes') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
-        } else if (item.nome === 'Quartos') {
-            // Botão direto
+
+        if (item.nome === 'Quartos') {
+            // 🔹 Botão direto no início (à esquerda)
             botao = criarBotao({
                 ...item,
                 funcao: visualizar_quartos
             });
-            nav.insertBefore(botao, nav.querySelector('.dropdown'));
+            nav.insertBefore(botao, nav.firstChild);
+        } else if (item.nome === 'Pacientes') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
         } else if (item.nome === 'Funcionários') {
             botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
         } else if (item.nome === 'Sair') {
