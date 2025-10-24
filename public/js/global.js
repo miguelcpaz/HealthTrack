@@ -51,42 +51,42 @@ function configurarNavegacao() {
     if (!authData) return;
 
     const nav = document.getElementById('nav-buttons');
-    // Antes de verificar tipoUsuario, adiciona dropdown do Tema
-const dropdownTema = document.createElement('div');
-dropdownTema.classList.add('dropdown');
+    
+    // Dropdown de Tema
+    const dropdownTema = document.createElement('div');
+    dropdownTema.classList.add('dropdown');
 
-const botaoTema = document.createElement('button');
-botaoTema.innerHTML = `<i class="ri-moon-clear-line"></i> Tema`;
-botaoTema.onclick = () => toggleDropdownTema();
-dropdownTema.appendChild(botaoTema);
+    const botaoTema = document.createElement('button');
+    botaoTema.innerHTML = `<i class="ri-moon-clear-line"></i> Tema`;
+    botaoTema.onclick = () => toggleDropdownTema();
+    dropdownTema.appendChild(botaoTema);
 
-const dropdownContentTema = document.createElement('div');
-dropdownContentTema.classList.add('dropdown-content');
-dropdownContentTema.id = 'dropdown-tema-content';
+    const dropdownContentTema = document.createElement('div');
+    dropdownContentTema.classList.add('dropdown-content');
+    dropdownContentTema.id = 'dropdown-tema-content';
 
-const btnClaro = document.createElement('button');
-btnClaro.innerHTML = `<i class="ri-sun-line"></i> Claro`;
-btnClaro.onclick = setLightMode;
-dropdownContentTema.appendChild(btnClaro);
+    const btnClaro = document.createElement('button');
+    btnClaro.innerHTML = `<i class="ri-sun-line"></i> Claro`;
+    btnClaro.onclick = setLightMode;
+    dropdownContentTema.appendChild(btnClaro);
 
-const btnEscuro = document.createElement('button');
-btnEscuro.innerHTML = `<i class="ri-moon-line"></i> Escuro`;
-btnEscuro.onclick = setDarkMode;
-dropdownContentTema.appendChild(btnEscuro);
+    const btnEscuro = document.createElement('button');
+    btnEscuro.innerHTML = `<i class="ri-moon-line"></i> Escuro`;
+    btnEscuro.onclick = setDarkMode;
+    dropdownContentTema.appendChild(btnEscuro);
 
-dropdownTema.appendChild(dropdownContentTema);
-nav.appendChild(dropdownTema);
+    dropdownTema.appendChild(dropdownContentTema);
+    nav.appendChild(dropdownTema);
 
-// Função para toggle
-function toggleDropdownTema() {
-    const dropdown = document.getElementById('dropdown-tema-content');
-    if (dropdown.classList.contains('show')) {
-        dropdown.classList.remove('show');
-    } else {
-        closeDropdown(); // fecha outros dropdowns
-        dropdown.classList.add('show');
+    function toggleDropdownTema() {
+        const dropdown = document.getElementById('dropdown-tema-content');
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        } else {
+            closeDropdown();
+            dropdown.classList.add('show');
+        }
     }
-}
 
     const tipoUsuario = authData.dados.tipo_user || TIPOS_USUARIO.HOSPITAL;
     if (!nav) return;
@@ -98,7 +98,12 @@ function toggleDropdownTema() {
         if (item.nome === 'Pacientes') {
             botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
         } else if (item.nome === 'Quartos') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'quartos');
+            // Botão direto
+            botao = criarBotao({
+                ...item,
+                funcao: visualizar_quartos
+            });
+            nav.insertBefore(botao, nav.querySelector('.dropdown'));
         } else if (item.nome === 'Funcionários') {
             botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
         } else if (item.nome === 'Sair') {
@@ -132,7 +137,6 @@ function criarDropdown(nav, item, tipoUsuario, tipo) {
     content.classList.add('dropdown-content');
     content.id = `dropdown-${tipo}-content`;
 
-    // Adicionar opções
     if (tipo === 'pacientes') {
         const visualizar = criarDropdownButton('Visualizar Pacientes', 'ri-eye-line', visualizar_pacientes);
         content.appendChild(visualizar);
@@ -144,13 +148,6 @@ function criarDropdown(nav, item, tipoUsuario, tipo) {
         if (tipoUsuario === 3) {
             const adicionar = criarDropdownButton('Adicionar Paciente', 'ri-user-add-line', cadastro_paciente);
             content.appendChild(adicionar);
-        }
-    } else if (tipo === 'quartos') {
-        const visualizar = criarDropdownButton('Visualizar Quartos', 'ri-eye-line', visualizar_quartos);
-        content.appendChild(visualizar);
-        if (tipoUsuario >= 2) {
-            const gerenciar = criarDropdownButton('Gerenciar Quartos', 'ri-settings-3-line', () => {});
-            content.appendChild(gerenciar);
         }
     } else if (tipo === 'funcionarios') {
         const visualizar = criarDropdownButton('Visualizar Funcionários', 'ri-eye-line', visualizar_funcionarios);
@@ -173,12 +170,10 @@ function criarDropdownButton(texto, icone, funcao) {
     return btn;
 }
 
-// Toggle genérico para qualquer dropdown
 function toggleDropdownById(id) {
     const dropdown = document.getElementById(id);
     if (!dropdown) return;
 
-    // Fecha todos os outros dropdowns
     document.querySelectorAll('.dropdown-content').forEach(dc => {
         if (dc !== dropdown) dc.classList.remove('show');
     });
@@ -210,7 +205,6 @@ function setLightMode() {
     closeDropdown();
 }
 
-// Funções de navegação
 function sair() {
     localStorage.removeItem('auth');
     localStorage.removeItem('theme');
@@ -218,6 +212,7 @@ function sair() {
     sessionStorage.removeItem('theme');
     window.location.href = 'login.html';
 }
+
 function cadastro_paciente() { window.location.href = 'cadastro_paciente.html'; }
 function gerenciar_paciente() { window.location.href = 'paciente.html'; }
 function visualizar_pacientes() { window.location.href = 'mostrar_pacientes.html'; }
@@ -226,13 +221,11 @@ function visualizar_funcionarios() { window.location.href = 'funcionarios.html';
 function cadastrar_funcionario() { window.location.href = 'cadastro_funcionario.html'; }
 function solicitacoes() { window.location.href = 'solicitacao.html'; }
 
-// Menu mobile
 function toggleMenu() {
     const nav = document.getElementById('nav-buttons');
     if (nav) nav.classList.toggle('show');
 }
 
-// Fecha dropdowns ao clicar fora
 function configurarEventosClique() {
     window.onclick = function (event) {
         if (!event.target.closest('.dropdown') && !event.target.closest('.hamburger')) {
@@ -245,7 +238,6 @@ function configurarEventosClique() {
     };
 }
 
-// Loading Screen opcional
 function configurarLoadingScreen() {
     window.addEventListener('load', function () {
         const loadingScreen = document.getElementById('loading-screen');
@@ -259,7 +251,6 @@ function configurarLoadingScreen() {
     });
 }
 
-// Inicialização
 document.addEventListener('DOMContentLoaded', function () {
     verificarAutenticacao();
     configurarNavegacao();
