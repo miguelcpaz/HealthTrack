@@ -2,7 +2,7 @@ name: Cron HealthTrack - Pacientes
 
 on:
   schedule:
-    - cron: "31 16 * * *" # Todo dia às 13:31 BRT
+    - cron: "0 3 * * *" # Todo dia à meia-noite (00:00 BRT)
   workflow_dispatch:
 
 jobs:
