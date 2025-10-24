@@ -92,38 +92,38 @@ function configurarNavegacao() {
     if (!nav) return;
 
     let sairBotao = null;
-    let quartosBotao = null;
 
-    botoesPorTipo[tipoUsuario].forEach(item => {
-        let botao;
+    // Primeiro criamos os elementos na ordem correta
+    let pacientesItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Pacientes');
+    let quartosItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Quartos');
+    let funcionariosItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Funcionários');
+    let solicitacoesItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Solicitações');
 
-        if (item.nome === 'Quartos') {
-            // Cria o botão de Quartos, mas não adiciona ainda
-            quartosBotao = criarBotao({
-                ...item,
-                funcao: visualizar_quartos
-            });
+    // 1️⃣ Cria o dropdown de Pacientes
+    const pacientesDropdown = criarDropdown(nav, pacientesItem, tipoUsuario, 'pacientes');
 
-        } else if (item.nome === 'Pacientes') {
-            // Cria o dropdown de Pacientes
-            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
+    // 2️⃣ Cria o botão de Quartos e insere antes do dropdown de Pacientes
+    if (quartosItem) {
+        const quartosBotao = criarBotao({
+            ...quartosItem,
+            funcao: visualizar_quartos
+        });
+        pacientesDropdown.parentNode.insertBefore(quartosBotao, pacientesDropdown);
+    }
 
-            // Insere o botão de Quartos imediatamente à esquerda do dropdown de Pacientes
-            if (quartosBotao) {
-                nav.insertBefore(quartosBotao, botao);
-            }
+    // 3️⃣ Cria Funcionários e Solicitações normalmente (à direita)
+    if (funcionariosItem) criarDropdown(nav, funcionariosItem, tipoUsuario, 'funcionarios');
+    if (solicitacoesItem) {
+        const solicitacoesBotao = criarBotao(solicitacoesItem);
+        nav.appendChild(solicitacoesBotao);
+    }
 
-        } else if (item.nome === 'Funcionários') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
-        } else if (item.nome === 'Sair') {
-            sairBotao = criarBotao(item);
-        } else {
-            botao = criarBotao(item);
-            nav.appendChild(botao);
-        }
-    });
-
-    if (sairBotao) nav.appendChild(sairBotao);
+    // 4️⃣ Botão Sair
+    const sairItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Sair');
+    if (sairItem) {
+        sairBotao = criarBotao(sairItem);
+        nav.appendChild(sairBotao);
+    }
 }
 
 function criarBotao(item) {
@@ -168,7 +168,7 @@ function criarDropdown(nav, item, tipoUsuario, tipo) {
     }
 
     dropdown.appendChild(content);
-    nav.insertBefore(dropdown, nav.querySelector('.dropdown'));
+    nav.insertBefore(dropdown, nav.querySelector('.dropdown')); // Antes do dropdown Tema
     return dropdown;
 }
 
