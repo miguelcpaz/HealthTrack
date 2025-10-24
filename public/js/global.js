@@ -51,7 +51,7 @@ function configurarNavegacao() {
     if (!authData) return;
 
     const nav = document.getElementById('nav-buttons');
-
+    
     // Dropdown de Tema
     const dropdownTema = document.createElement('div');
     dropdownTema.classList.add('dropdown');
@@ -93,37 +93,28 @@ function configurarNavegacao() {
 
     let sairBotao = null;
 
-    // Primeiro criamos os elementos na ordem correta
-    let pacientesItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Pacientes');
-    let quartosItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Quartos');
-    let funcionariosItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Funcionários');
-    let solicitacoesItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Solicitações');
+    botoesPorTipo[tipoUsuario].forEach(item => {
+        let botao;
+        if (item.nome === 'Pacientes') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
+        } else if (item.nome === 'Quartos') {
+            // Botão direto
+            botao = criarBotao({
+                ...item,
+                funcao: visualizar_quartos
+            });
+            nav.insertBefore(botao, nav.querySelector('.dropdown'));
+        } else if (item.nome === 'Funcionários') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
+        } else if (item.nome === 'Sair') {
+            sairBotao = criarBotao(item);
+        } else {
+            botao = criarBotao(item);
+            nav.insertBefore(botao, nav.querySelector('.dropdown'));
+        }
+    });
 
-    // 1️⃣ Cria o dropdown de Pacientes
-    const pacientesDropdown = criarDropdown(nav, pacientesItem, tipoUsuario, 'pacientes');
-
-    // 2️⃣ Cria o botão de Quartos e insere antes do dropdown de Pacientes
-    if (quartosItem) {
-        const quartosBotao = criarBotao({
-            ...quartosItem,
-            funcao: visualizar_quartos
-        });
-        pacientesDropdown.parentNode.insertBefore(quartosBotao, pacientesDropdown);
-    }
-
-    // 3️⃣ Cria Funcionários e Solicitações normalmente (à direita)
-    if (funcionariosItem) criarDropdown(nav, funcionariosItem, tipoUsuario, 'funcionarios');
-    if (solicitacoesItem) {
-        const solicitacoesBotao = criarBotao(solicitacoesItem);
-        nav.appendChild(solicitacoesBotao);
-    }
-
-    // 4️⃣ Botão Sair
-    const sairItem = botoesPorTipo[tipoUsuario].find(i => i.nome === 'Sair');
-    if (sairItem) {
-        sairBotao = criarBotao(sairItem);
-        nav.appendChild(sairBotao);
-    }
+    if (sairBotao) nav.appendChild(sairBotao);
 }
 
 function criarBotao(item) {
@@ -168,7 +159,7 @@ function criarDropdown(nav, item, tipoUsuario, tipo) {
     }
 
     dropdown.appendChild(content);
-    nav.insertBefore(dropdown, nav.querySelector('.dropdown')); // Antes do dropdown Tema
+    nav.insertBefore(dropdown, nav.querySelector('.dropdown'));
     return dropdown;
 }
 
