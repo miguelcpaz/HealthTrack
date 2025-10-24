@@ -1,0 +1,30 @@
+name: Cron HealthTrack
+
+on:
+  schedule:
+    - cron: "0 0 * * *"      # Todo dia à meia-noite UTC
+    - cron: "0 9 * * MON"    # Toda segunda às 09h UTC
+  workflow_dispatch:          # Permite rodar manualmente
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run cron
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_NAME: ${{ secrets.SENDER_NAME }}
+        run: node cron.js
