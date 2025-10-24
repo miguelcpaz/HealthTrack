@@ -92,38 +92,36 @@ function configurarNavegacao() {
     if (!nav) return;
 
     let sairBotao = null;
+    let quartosBotao = null;
 
     botoesPorTipo[tipoUsuario].forEach(item => {
-    let botao;
+        let botao;
 
-    if (item.nome === 'Quartos') {
-        botao = criarBotao({
-            ...item,
-            funcao: visualizar_quartos
-        });
+        if (item.nome === 'Quartos') {
+            // Cria o botão de Quartos, mas não adiciona ainda
+            quartosBotao = criarBotao({
+                ...item,
+                funcao: visualizar_quartos
+            });
 
-        // Procura o dropdown de Pacientes
-        const pacientesDropdownDiv = Array.from(nav.querySelectorAll('.dropdown'))
-            .find(d => d.querySelector('button')?.textContent.includes('Pacientes'));
+        } else if (item.nome === 'Pacientes') {
+            // Cria o dropdown de Pacientes
+            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
 
-        if (pacientesDropdownDiv) {
-            pacientesDropdownDiv.parentNode.insertBefore(botao, pacientesDropdownDiv);
+            // Insere o botão de Quartos imediatamente à esquerda do dropdown de Pacientes
+            if (quartosBotao) {
+                nav.insertBefore(quartosBotao, botao);
+            }
+
+        } else if (item.nome === 'Funcionários') {
+            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
+        } else if (item.nome === 'Sair') {
+            sairBotao = criarBotao(item);
         } else {
+            botao = criarBotao(item);
             nav.appendChild(botao);
         }
-
-    } else if (item.nome === 'Pacientes') {
-        botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
-    } else if (item.nome === 'Funcionários') {
-        botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
-    } else if (item.nome === 'Sair') {
-        sairBotao = criarBotao(item);
-    } else {
-        botao = criarBotao(item);
-        nav.insertBefore(botao, nav.querySelector('.dropdown'));
-    }
-});
-
+    });
 
     if (sairBotao) nav.appendChild(sairBotao);
 }
