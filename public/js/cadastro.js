@@ -46,7 +46,7 @@ async function carregarHospitais() {
     });
   } catch (error) {
     console.error('Erro ao carregar hospitais:', error);
-    alert('Não foi possível carregar os hospitais.');
+    showAlert('Não foi possível carregar os hospitais.');
   }
 }
 carregarHospitais();
@@ -103,12 +103,17 @@ document.querySelectorAll('form').forEach(form => {
         });
 
         if (response.ok) {
-          alert('Hospital cadastrado! Uma senha temporária foi enviada para o email informado.');
-          form.reset();
-          window.location.href = '/';
+          showAlert(
+            'Usuário cadastrado com sucesso! Uma senha temporária foi enviada para o email informado.',
+            () => {
+              form.reset();
+              window.location.href = '/';
+            }
+          );
+
         } else {
           const errorData = await response.json().catch(() => ({}));
-          alert(errorData.details || errorData.error || 'Erro ao cadastrar hospital.');
+          showAlert(errorData.details || errorData.error || 'Erro ao cadastrar hospital.');
         }
       } else {
         const hospitalId = data[`hospital_${form.id}`];
@@ -130,17 +135,22 @@ document.querySelectorAll('form').forEach(form => {
         });
 
         if (response.ok) {
-          alert('Usuário cadastrado com sucesso! Uma senha temporária foi enviada para o email informado.');
-          form.reset();
-          window.location.href = '/';
+          showAlert(
+            'Usuário cadastrado com sucesso! Uma senha temporária foi enviada para o email informado.',
+            () => {
+              form.reset();
+              window.location.href = '/';
+            }
+          );
+
         } else {
           const errorData = await response.json().catch(() => ({}));
-          alert(errorData.details || errorData.error || 'Erro ao cadastrar usuário.');
+          showAlert(errorData.details || errorData.error || 'Erro ao cadastrar usuário.');
         }
       }
     } catch (error) {
       console.error('❌ Erro de conexão com servidor:', error);
-      alert('Erro ao conectar com o servidor.');
+      showAlert('Erro ao conectar com o servidor.');
     } finally {
       hideMiniLoader(); // <-- Oculta o mini loader
     }
@@ -160,3 +170,26 @@ window.addEventListener('load', function () {
     }, randomDelay);
   }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}

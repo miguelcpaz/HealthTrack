@@ -2,8 +2,8 @@
 const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionStorage.getItem('auth'));
 
 if (!authData) {
-    alert('Usuário não autenticado!');
-    window.location.href = "/login";
+    showAlert('Usuário não autenticado!', () => {window.location.href = "/login";});
+    
 }
 
 // 👁️ Alternar visibilidade das senhas
@@ -32,8 +32,8 @@ form.addEventListener("submit", async function (event) {
     const confirmPassword = document.getElementById("confirm-password").value;
 
     if (newPassword !== confirmPassword) {
-        alert("As senhas não coincidem!");
-        return;
+        showAlert("As senhas não coincidem!", () => {return;});
+        
     }
 
     const data = { newPassword };
@@ -49,7 +49,7 @@ form.addEventListener("submit", async function (event) {
         const result = await response.json();
 
         if (response.ok) {
-            alert(result.message);
+            showAlert(result.message);
 
             // Atualiza o auth nos storages se vier atualizado
             if (result.authAtualizado) {
@@ -59,10 +59,33 @@ form.addEventListener("submit", async function (event) {
 
             window.location.href = "/";
         } else {
-            alert(result.error || "Erro ao atualizar a senha.");
+            showAlert(result.error || "Erro ao atualizar a senha.");
         }
     } catch (error) {
-        console.error('Erro ao atualizar senha:', error);
-        alert('Erro ao tentar atualizar a senha.');
+        showAlert('Erro ao tentar atualizar a senha.');
     }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}
+

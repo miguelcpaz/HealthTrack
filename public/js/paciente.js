@@ -116,15 +116,15 @@ if (tipoUsuario === 2 || tipoUsuario === 3) {
             });
 
             if (response.ok) {
-                alert('Paciente recebeu alta com sucesso!');
+                showAlert('Paciente recebeu alta com sucesso!');
                 window.location.href = 'mostrar_pacientes.html';
             } else {
                 const error = await response.json();
-                alert('Erro ao dar alta: ' + (error.message || 'Tente novamente.'));
+                showAlert('Erro ao dar alta: ' + (error.message || 'Tente novamente.'));
             }
         } catch (err) {
             console.error(err);
-            alert('Erro ao conectar com o servidor.');
+            showAlert('Erro ao conectar com o servidor.');
         }
     });
 }
@@ -142,3 +142,26 @@ window.addEventListener('load', function () {
         }, randomDelay);
     }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}

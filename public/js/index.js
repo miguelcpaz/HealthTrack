@@ -20,10 +20,10 @@ function prepararEGerarPDF(pacienteData) {
     } else if (typeof gerarPDF !== 'undefined') {
       gerarPDF();
     } else {
-      alert('Função de geração de PDF não encontrada.');
+      showAlert('Função de geração de PDF não encontrada.');
     }
   } else {
-    alert('Erro ao salvar dados do paciente. Não foi possível gerar o PDF.');
+    showAlert('Erro ao salvar dados do paciente. Não foi possível gerar o PDF.');
   }
 }
 
@@ -207,3 +207,26 @@ window.addEventListener('resize', function () {
 window.addEventListener('load', function () {
   carregarPacientesCriticos();
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}

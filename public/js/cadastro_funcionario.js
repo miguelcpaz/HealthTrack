@@ -96,15 +96,17 @@ document.getElementById('single-form').addEventListener('submit', async function
         });
 
         if (response.ok) {
-            alert('Usuário cadastrado com sucesso!');
-            e.target.reset();
+            showAlert(
+                'Usuário cadastrado com sucesso!',
+                 () =>  {e.target.reset(); }
+             );
         } else {
             const erro = await response.json();
-            alert('Erro ao cadastrar usuário: ' + erro.error);
+            showAlert('Erro ao cadastrar usuário: ' + erro.error);
         }
     } catch (err) {
         console.error(err);
-        alert('Erro na comunicação com o servidor.');
+        showAlert('Erro na comunicação com o servidor.');
     }
 });
 
@@ -114,7 +116,7 @@ document.getElementById('multiple-form').addEventListener('submit', async functi
 
     const fileInput = document.getElementById('file-input');
     if (!fileInput.files.length) {
-        alert('Por favor, selecione um arquivo Excel.');
+        showAlert('Por favor, selecione um arquivo Excel.');
         return;
     }
 
@@ -136,9 +138,9 @@ document.getElementById('multiple-form').addEventListener('submit', async functi
         const result = await response.json();
         
         if (response.ok) {
-            alert(`Cadastro em lote concluído!\nSucessos: ${result.sucessos}\nErros: ${result.erros}`);
+            showAlert(`Cadastro em lote concluído!\nSucessos: ${result.sucessos}\nErros: ${result.erros}`);
         } else {
-            alert('Erro ao processar arquivo: ' + result.error);
+            showAlert('Erro ao processar arquivo: ' + result.error);
         }
         
         fileInput.value = '';
@@ -146,7 +148,7 @@ document.getElementById('multiple-form').addEventListener('submit', async functi
         
     } catch (err) {
         console.error(err);
-        alert('Erro na comunicação com o servidor.');
+        showAlert('Erro na comunicação com o servidor.');
     } finally {
         toggleExcelLoading(false);
     }
@@ -206,4 +208,27 @@ window.onclick = function(event) {
             dropdown.style.display = 'none';
         }
     }
+}
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
 }

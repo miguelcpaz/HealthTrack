@@ -54,7 +54,7 @@ form.addEventListener("submit", async function (event) {
         sessionStorage.setItem("auth", JSON.stringify(authData));
       }
 
-      alert(result.message);
+      showAlert(result.message);
 
       if (authData.dados.status_senha === 1) {
         window.location.href = "senha_temporaria.html";
@@ -62,11 +62,11 @@ form.addEventListener("submit", async function (event) {
         window.location.href = "index.html";
       }
     } else {
-      alert(result.error || "Erro ao fazer login.");
+      showAlert(result.error || "Erro ao fazer login.");
     }
   } catch (error) {
     console.error("Erro ao fazer login:", error);
-    alert("Erro ao tentar fazer login.");
+    showAlert("Erro ao tentar fazer login.");
   } finally {
     // === Oculta o mini loader ===
     if (miniLoader) {
@@ -87,3 +87,26 @@ window.addEventListener("load", function () {
     }, randomDelay);
   }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}

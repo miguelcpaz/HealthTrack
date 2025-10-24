@@ -73,7 +73,7 @@ document.getElementById('form-editar-paciente').addEventListener('submit', async
   const id = paciente.id;
 
   if (isNaN(estadia) || estadia <= 1) {
-    alert('A estadia deve ser maior que 1 dia.');
+    showAlert('A estadia deve ser maior que 1 dia.');
     return;
   }
 
@@ -97,7 +97,7 @@ document.getElementById('form-editar-paciente').addEventListener('submit', async
     const data = await response.json();
 
     if (response.ok) {
-      alert('Paciente editado com sucesso!');
+      showAlert('Paciente editado com sucesso!');
       localStorage.removeItem('pacienteSelecionado');
 
       const pacienteAtualizado = {
@@ -116,10 +116,34 @@ document.getElementById('form-editar-paciente').addEventListener('submit', async
       window.location.href = 'paciente.html';
       e.target.reset();
     } else {
-      alert('Erro ao editar paciente: ' + (data.error || 'Erro desconhecido'));
+      showAlert('Erro ao editar paciente: ' + (data.error || 'Erro desconhecido'));
     }
   } catch (err) {
     console.error(err);
-    alert('Erro na comunicação com o servidor.');
+    showAlert('Erro na comunicação com o servidor.');
   }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}
+

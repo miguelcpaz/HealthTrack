@@ -91,13 +91,13 @@ async function aprovarSolicitacao(id, botao) {
     );
 
     const resultado = await resposta.json();
-    alert(resultado.message || 'Solicitação aprovada!');
+    showAlert(resultado.message || 'Solicitação aprovada!');
 
     const linha = botao.closest('tr');
     if (linha) linha.remove();
   } catch (error) {
     console.error('Erro ao aprovar:', error);
-    alert('Erro ao aprovar solicitação.');
+    showAlert('Erro ao aprovar solicitação.');
   }
 }
 
@@ -114,14 +114,39 @@ async function recusarSolicitacao(id, botao) {
     );
 
     const resultado = await resposta.json();
-    alert(resultado.message || 'Solicitação recusada.');
+    showAlert(resultado.message || 'Solicitação recusada.');
 
     const linha = botao.closest('tr');
     if (linha) linha.remove();
   } catch (error) {
     console.error('Erro ao recusar:', error);
-    alert('Erro ao recusar solicitação.');
+    showAlert('Erro ao recusar solicitação.');
   }
 }
 
 window.addEventListener('DOMContentLoaded', carregarSolicitacoes);
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}
+
+

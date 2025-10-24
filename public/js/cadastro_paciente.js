@@ -51,7 +51,7 @@ document.getElementById('paciente-form').addEventListener('submit', async functi
     const hospitalId = authData.dados.hospitalId;
 
     if (isNaN(estadia) || estadia <= 1) {
-        alert('A estadia deve ser maior que 1 dia.');
+        showAlert('A estadia deve ser maior que 1 dia.');
         return;
     }
 
@@ -73,14 +73,38 @@ document.getElementById('paciente-form').addEventListener('submit', async functi
         });
 
         if (response.ok) {
-            alert('Paciente cadastrado com sucesso!');
+            showAlert('Paciente cadastrado com sucesso!');
             e.target.reset();
         } else {
             const erro = await response.json();
-            alert('Erro ao cadastrar paciente: ' + erro.error);
+            showAlert('Erro ao cadastrar paciente: ' + erro.error);
         }
     } catch (err) {
         console.error(err);
-        alert('Erro na comunicação com o servidor.');
+        showAlert('Erro na comunicação com o servidor.');
     }
 });
+
+function showAlert(message = "", onConfirm = null) {
+  if (!message) return;
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertMessage = document.getElementById("alert-message");
+  const alertOk = document.getElementById("alert-ok");
+
+  alertMessage.textContent = message;
+  alertBox.style.display = "flex";
+
+  // Remove event listeners antigos (para evitar duplicação)
+  const newOkButton = alertOk.cloneNode(true);
+  alertOk.parentNode.replaceChild(newOkButton, alertOk);
+
+  // Adiciona novo evento
+  newOkButton.addEventListener("click", () => {
+    alertBox.style.display = "none";
+    if (typeof onConfirm === "function") {
+      onConfirm(); // executa o callback, se existir
+    }
+  });
+}
+
