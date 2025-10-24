@@ -1,7 +1,5 @@
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
-const nodemailer = require("nodemailer");
-
 const prisma = new PrismaClient();
 
 const tiposUser = {
@@ -10,7 +8,7 @@ const tiposUser = {
   3: "Médico",
 };
 
-// Envio via Brevo usando fetch nativo
+// Funções (copie as suas existentes)
 async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlContent, textoAlternativo) {
   if (!destinatario) return;
   try {
@@ -29,7 +27,6 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
         textContent: textoAlternativo,
       }),
     });
-
     const data = await resposta.json();
     console.log("Status:", resposta.status, data);
   } catch (err) {
@@ -37,7 +34,6 @@ async function enviarEmailBrevo(destinatario, nomeDestinatario, assunto, htmlCon
   }
 }
 
-// Disparar e-mails de solicitações
 async function dispararSolicitacoes() {
   const solicitacoesPendentes = await prisma.solicitation.findMany({
     where: { status: "pendente" },
@@ -64,26 +60,22 @@ async function dispararSolicitacoes() {
       .map(s => `• ${s.user.nome} (${tiposUser[s.user.tipo_user]}) — ${s.user.email}`)
       .join("\n");
 
-    const html = `
-      <p>Olá, <strong>${hospitalNome}</strong>,</p>
-      <p>Você possui novas <strong>solicitações de cadastro pendentes</strong> no sistema <strong>HealthTrack</strong>:</p>
-      <p>${listaHtml}</p>
-      <p>Acesse o painel administrativo para analisar e aprovar ou rejeitar as solicitações.</p>
-      <p>Atenciosamente,<br><strong>Equipe HealthTrack</strong></p>
-    `;
+    const html = `<p>Olá, <strong>${hospitalNome}</strong>,</p>
+<p>Você possui novas <strong>solicitações de cadastro pendentes</strong> no sistema <strong>HealthTrack</strong>:</p>
+<p>${listaHtml}</p>
+<p>Acesse o painel administrativo para analisar ou aprovar/rejeitar as solicitações.</p>
+<p>Atenciosamente,<br><strong>Equipe HealthTrack</strong></p>`;
 
-    const texto = `
-Olá, ${hospitalNome},
+    const texto = `Olá, ${hospitalNome},
 
 Você possui novas solicitações de cadastro pendentes no sistema HealthTrack:
 
 ${listaTexto}
 
-Acesse o painel administrativo para analisar e aprovar ou rejeitar as solicitações.
+Acesse o painel administrativo para analisar ou aprovar/rejeitar as solicitações.
 
 Atenciosamente,
-Equipe HealthTrack
-    `;
+Equipe HealthTrack`;
 
     await enviarEmailBrevo(hospitalEmail, hospitalNome, "Novas solicitações pendentes - HealthTrack", html, texto);
   }
@@ -91,7 +83,6 @@ Equipe HealthTrack
   console.log("E-mails de solicitações enviados!");
 }
 
-// Atualizar estadias
 async function atualizarPacientes() {
   const result = await prisma.paciente.updateMany({
     where: { estadia: { gt: 0 } },
@@ -100,10 +91,18 @@ async function atualizarPacientes() {
   console.log(`Estadias atualizadas! Pacientes afetados: ${result.count}`);
 }
 
-// Executar tarefas
+// ✅ Executar de acordo com argumento
 async function main() {
-  await dispararSolicitacoes();
-  await atualizarPacientes();
+  const tarefa = process.argv[2]; // recebe "emails" ou "pacientes"
+
+  if (tarefa === "emails") {
+    await dispararSolicitacoes();
+  } else if (tarefa === "pacientes") {
+    await atualizarPacientes();
+  } else {
+    console.log("Use: node cron.js [emails|pacientes]");
+  }
+
   await prisma.$disconnect();
 }
 
