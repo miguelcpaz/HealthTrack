@@ -89,36 +89,52 @@ function configurarNavegacao() {
     const tipoUsuario = authData.dados.tipo_user || TIPOS_USUARIO.HOSPITAL;
     let sairBotao = null;
 
-    let botoesParaCriar = botoesPorTipo[tipoUsuario];
+    let botoesParaCriar = [];
 
-    // Ordem personalizada apenas para Hospital
     if (tipoUsuario === TIPOS_USUARIO.HOSPITAL) {
+        // Ordem personalizada apenas para Hospital
         const ordemDesejada = ['Solicitações', 'Funcionários', 'Quartos', 'Pacientes'];
-        botoesParaCriar = ordemDesejada
-            .map(nome => botoesPorTipo[tipoUsuario].find(b => b.nome === nome))
-            .filter(Boolean);
+        ordemDesejada.forEach(nome => {
+            const item = botoesPorTipo[tipoUsuario].find(b => b.nome === nome);
+            if (!item) return;
+
+            let botao;
+            if (item.nome === 'Pacientes') botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
+            else if (item.nome === 'Quartos') botao = criarBotao({ ...item, funcao: visualizar_quartos });
+            else if (item.nome === 'Funcionários') botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
+            else botao = criarBotao(item);
+
+            if (botao) botoesParaCriar.push(botao);
+        });
+
+        // Botão Sair do Hospital
+        const itemSair = botoesPorTipo[tipoUsuario].find(b => b.nome === 'Sair');
+        if (itemSair) sairBotao = criarBotao(itemSair);
+
+    } else {
+        // Usuários padrão: apenas pega todos os botões
+        botoesPorTipo[tipoUsuario].forEach(item => {
+            if (item.nome === 'Sair') {
+                sairBotao = criarBotao(item);
+                return;
+            }
+
+            let botao;
+            if (item.nome === 'Pacientes') botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
+            else if (item.nome === 'Quartos') botao = criarBotao({ ...item, funcao: visualizar_quartos });
+            else botao = criarBotao(item);
+
+            if (botao) botoesParaCriar.push(botao);
+        });
     }
 
-    botoesParaCriar.forEach(item => {
-        let botao;
+    // Adiciona todos os botões na nav
+    botoesParaCriar.forEach(botao => nav.appendChild(botao));
 
-        if (item.nome === 'Pacientes') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'pacientes');
-        } else if (item.nome === 'Quartos') {
-            botao = criarBotao({ ...item, funcao: visualizar_quartos });
-        } else if (item.nome === 'Funcionários') {
-            botao = criarDropdown(nav, item, tipoUsuario, 'funcionarios');
-        } else if (item.nome === 'Sair') {
-            sairBotao = criarBotao(item);
-        } else {
-            botao = criarBotao(item);
-        }
-
-        if (botao) nav.appendChild(botao);
-    });
-
-    // Adiciona dropdown Tema e botão Sair no final
+    // Adiciona dropdown Tema
     nav.appendChild(dropdownTema);
+
+    // Adiciona botão Sair
     if (sairBotao) nav.appendChild(sairBotao);
 }
 
