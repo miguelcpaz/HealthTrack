@@ -2,7 +2,7 @@ name: Cron HealthTrack - Emails
 
 on:
   schedule:
-    - cron: "0 12 * * 1"  # Segunda às 09h BRT → 12h UTC
+    - cron: "30 11 * * 1"  # Segunda às 09h BRT → 12h UTC
   workflow_dispatch:
 
 jobs:
