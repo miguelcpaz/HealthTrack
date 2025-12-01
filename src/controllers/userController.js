@@ -169,6 +169,7 @@ async function registerUsersFromExcel(req, res) {
         const senhaTemporaria = crypto.randomBytes(6).toString("hex");
         const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
+
         const newUser = await prisma.user.create({
           data: {
             nome: row.nome,
@@ -179,6 +180,7 @@ async function registerUsersFromExcel(req, res) {
             hospitalId: parseInt(hospitalId),
             status_senha: 1,
             crm: tipoUser === 3 ? `${row.crm}/${row.uf}` : null,
+            status_cadastro: "aprovado"
           },
         });
 
@@ -220,9 +222,16 @@ async function getFuncionariosByHospital(req, res) {
   const { id } = req.params;
 
   try {
-    const funcionarios = await prisma.user.findMany({ where: { hospitalId: Number(id) } });
+    const funcionarios = await prisma.user.findMany({
+      where: {
+        hospitalId: Number(id),
+        status_cadastro: 'aprovado'  // ← FILTRO APLICADO AQUI
+      }
+    });
+
     if (!funcionarios || funcionarios.length === 0)
       return res.status(404).json({ error: 'Nenhum funcionário encontrado.' });
+
     return res.status(200).json(funcionarios);
   } catch (error) {
     console.error(error);
