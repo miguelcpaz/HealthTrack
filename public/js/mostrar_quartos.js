@@ -1,7 +1,7 @@
 // Função para obter informações do usuário autenticado
 function getAuthInfo() {
   try {
-    const authData = localStorage.getItem('auth');
+    const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionStorage.getItem('auth'));;
     if (authData) {
       return JSON.parse(authData);
     }
@@ -104,15 +104,14 @@ async function loadRooms(hospitalId, hospitalName) {
 
 // Inicialização quando a página carrega
 document.addEventListener('DOMContentLoaded', function () {
-  const auth = getAuthInfo();
 
-  if (!auth) {
+  if (!authData) {
     window.location.href = 'login.html';
     return;
   }
 
-  const hospitalId = getHospitalId(auth);
-  const hospitalName = getHospitalName(auth);
+  const hospitalId = getHospitalId(authData);
+  const hospitalName = getHospitalName(authData);
 
   if (!hospitalId) {
     document.getElementById('rooms-container').innerHTML = `
