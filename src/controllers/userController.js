@@ -225,7 +225,7 @@ async function getFuncionariosByHospital(req, res) {
     const funcionarios = await prisma.user.findMany({
       where: {
         hospitalId: Number(id),
-        status_cadastro: 'aprovado'  // ← FILTRO APLICADO AQUI
+        status_cadastro: 'aprovado'  
       }
     });
 

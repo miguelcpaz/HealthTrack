@@ -3,6 +3,7 @@ function getAuthInfo() {
   try {
     const authData = JSON.parse(localStorage.getItem('auth')) || JSON.parse(sessionStorage.getItem('auth'));;
     if (authData) {
+
       return JSON.parse(authData);
     }
   } catch (error) {
@@ -11,19 +12,41 @@ function getAuthInfo() {
   return null;
 }
 
-// Função para obter o hospitalId baseado no tipo de usuário
+
 function getHospitalId(auth) {
   if (!auth) return null;
   return auth.tipo === "hospital" ? auth.dados.id : auth.dados.hospitalId;
 }
 
-// Função para obter o nome do hospital (se disponível)
-function getHospitalName(auth) {
+async function getHospitalName(auth) {
   if (!auth) return "Hospital";
-  return auth.tipo === "hospital"
-    ? auth.dados.nome || "Hospital"
-    : auth.dados.hospitalNome || "Hospital";
+
+
+  if (auth.tipo === "hospital") {
+    return auth.dados?.nome || "Hospital";
+  }
+
+
+  if (auth.tipo === "usuario") {
+    const hospitalId = auth.dados?.hospitalId;
+    if (!hospitalId) return "Hospital";
+
+    try {
+      const response = await fetch(`/api/hospital/${hospitalId}`);
+      if (!response.ok) return "Hospital";
+
+      const hospital = await response.json();
+      return hospital.nome || "Hospital";
+
+    } catch (err) {
+      console.error("Erro ao buscar nome do hospital:", err);
+      return "Hospital";
+    }
+  }
+
+  return "Hospital";
 }
+
 
 async function loadRooms(hospitalId, hospitalName) {
   const roomsContainer = document.getElementById('rooms-container');
@@ -111,7 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const hospitalId = getHospitalId(authData);
-  const hospitalName = getHospitalName(authData);
+  (async () => {
+    const hospitalName = await getHospitalName(authData);
+    loadRooms(hospitalId, hospitalName);
+  })();
+
 
   if (!hospitalId) {
     document.getElementById('rooms-container').innerHTML = `

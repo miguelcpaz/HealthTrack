@@ -155,5 +155,27 @@ async function listarHospitaisFormatado(req, res) {
     res.status(500).json({ error: "Erro ao buscar hospitais." });
   }
 }
+// ======================================================
+// Buscar hospital por ID
+// ======================================================
+async function getHospitalById(req, res) {
+  try {
+    const { id } = req.params;
 
-module.exports = { registerHospital, loginHospital, listarHospitaisFormatado };
+    const hospital = await prisma.hospital.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital não encontrado." });
+    }
+
+    res.status(200).json(hospital);
+
+  } catch (error) {
+    console.error("Erro ao buscar hospital por ID:", error);
+    res.status(500).json({ error: "Erro interno do servidor." });
+  }
+}
+
+module.exports = { registerHospital, loginHospital, listarHospitaisFormatado, getHospitalById };
