@@ -5,7 +5,7 @@ O **HealthTrack** é um sistema web para **gerenciamento e acompanhamento de pac
 O projeto simula um ambiente hospitalar ou ambulatorial, permitindo que profissionais da saúde cadastrem, acompanhem e gerenciem pacientes de forma segura e estruturada.
 
 🔗 **Acesse o projeto online:**  
-👉 [https://seu-link-do-render.onrender.com](https://healthtrack-p6oq.onrender.com)
+👉 https://healthtrack-p6oq.onrender.com
 
 ---
 
