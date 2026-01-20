@@ -4,31 +4,6 @@ O **HealthTrack** é um sistema web para **gerenciamento e acompanhamento de pac
 
 O projeto simula um ambiente hospitalar ou ambulatorial, permitindo que profissionais da saúde cadastrem, acompanhem e gerenciem pacientes de forma segura e estruturada.
 
-🔗 **Acesse o projeto online:**  
-👉 https://healthtrack-p6oq.onrender.com
-
----
-
-## 🔑 Acesso ao Projeto Online (Contas de Demonstração)
-
-Para facilitar a avaliação do sistema, o HealthTrack disponibiliza **contas de demonstração**, permitindo o uso completo da aplicação sem necessidade de cadastro.
-
-As contas representam **diferentes perfis de uso**, simulando um ambiente real de gestão hospitalar:
-
-### 🏥 Conta Hospitalar
-- **Email:** `exemplo@gmail.com`
-- **Senha:** `123456`
-
-### 🧑‍⚕️ Conta Médica
-- **Email:** `medico@exemplo.com`
-- **Senha:** `123456`
-
-As contas são destinadas **exclusivamente para fins de demonstração e avaliação do projeto**.  
-Os dados cadastrados podem ser alterados ou removidos periodicamente.
-
----
-
-
 ## 🎯 Objetivo do Projeto
 
 O HealthTrack foi desenvolvido com fins **educacionais**, com o objetivo de:
