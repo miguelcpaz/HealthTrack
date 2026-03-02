@@ -6,7 +6,7 @@ require("dotenv").config();
 
 
 // ======================================================
-// Função envio de e-mail via Brevo
+// Função de envio de e-mail via Brevo (Sendinblue)
 // ======================================================
 async function enviarEmailBrevo(destinatario, assunto, htmlContent, textoAlternativo) {
   try {
@@ -18,20 +18,16 @@ async function enviarEmailBrevo(destinatario, assunto, htmlContent, textoAlterna
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: {
-          name: "HealthTrack",
-          email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com"
-        },
+        sender: { name: "HealthTrack", email: process.env.SENDER_EMAIL || "healthtrack.tcc@gmail.com" },
         to: [{ email: destinatario }],
         subject: assunto,
-        htmlContent,
+        htmlContent: htmlContent,
         textContent: textoAlternativo,
       }),
     });
 
     const data = await resposta.json();
     if (!resposta.ok) throw new Error(JSON.stringify(data));
-
     console.log("E-mail enviado via Brevo:", data);
     return data;
 
@@ -41,6 +37,14 @@ async function enviarEmailBrevo(destinatario, assunto, htmlContent, textoAlterna
   }
 }
 
+// ======================================================
+// Mapeamento de tipo de usuário
+// ======================================================
+const tiposUser = {
+  1: "Técnico de Enfermagem",
+  2: "Enfermeiro",
+  3: "Médico",
+};
 
 // ======================================================
 // Cadastro de hospital
@@ -48,9 +52,8 @@ async function enviarEmailBrevo(destinatario, assunto, htmlContent, textoAlterna
 async function registerHospital(req, res) {
   try {
     const {
-      nome, cnpj, cnes, cep, numero,
-      telefone, email, website,
-      tipoEstabelecimento
+      nome, cnpj, cnes, cep, numero, telefone, email,
+      website, tipoEstabelecimento, status_senha
     } = req.body;
 
     const hospitalExists = await prisma.hospital.findFirst({
@@ -60,33 +63,23 @@ async function registerHospital(req, res) {
     const emailExists = await prisma.user.findUnique({ where: { email } });
 
     if (hospitalExists || emailExists) {
-      return res.status(400).json({
-        error: "Hospital já cadastrado com esses dados."
-      });
+      return res.status(400).json({ error: "Hospital já cadastrado com esses dados." });
     }
 
-    const senhaTemporaria =
-      crypto.randomBytes(3).toString("hex") +
-      Math.floor(Math.random() * 1000);
-
+    // Gera senha temporária
+    const senhaTemporaria = crypto.randomBytes(3).toString("hex") + Math.floor(Math.random() * 1000);
     const senhaHash = await bcrypt.hash(senhaTemporaria, 10);
 
-    await prisma.hospital.create({
+    const hospital = await prisma.hospital.create({
       data: {
-        nome,
-        cnpj,
-        cnes,
-        cep,
-        numero,
-        telefone,
-        email,
-        senha: senhaHash,
-        website,
-        tipoEstabelecimento,
-        status_senha: 1
+        nome, cnpj, cnes, cep, numero, telefone,
+        email, senha: senhaHash, website, tipoEstabelecimento, status_senha
       },
     });
 
+    // ======================================================
+    // Envia e-mail usando Brevo
+    // ======================================================
     await enviarEmailBrevo(
       email,
       "📬 Bem-vindo ao HealthTrack - Acesso ao Sistema",
@@ -94,15 +87,12 @@ async function registerHospital(req, res) {
        <p>Seu hospital foi cadastrado no <strong>HealthTrack</strong>.</p>
        <p>🔐 <strong>Senha temporária:</strong> ${senhaTemporaria}</p>
        <p>⚠️ Altere sua senha no primeiro login.</p>
-       <p>Equipe HealthTrack</p>`,
-      `Olá,
-Seu hospital foi cadastrado no HealthTrack.
-Senha temporária: ${senhaTemporaria}
-Altere sua senha no primeiro login.`
+       <p>Atenciosamente,<br>Equipe HealthTrack</p>`,
+      `Olá,\nSeu hospital foi cadastrado no HealthTrack.\nSenha temporária: ${senhaTemporaria}\nAltere sua senha no primeiro login.\nEquipe HealthTrack`
     );
 
     res.status(201).json({
-      message: "Hospital cadastrado com sucesso."
+      message: "Hospital cadastrado com sucesso, senha temporária enviada por email.",
     });
 
   } catch (error) {
@@ -111,37 +101,22 @@ Altere sua senha no primeiro login.`
   }
 }
 
-
 // ======================================================
 // Login hospital
 // ======================================================
 async function loginHospital(req, res) {
   try {
     const { email, senha } = req.body;
+    const hospital = await prisma.hospital.findUnique({ where: { email } });
 
-    const hospital = await prisma.hospital.findUnique({
-      where: { email }
-    });
-
-    if (!hospital) {
-      return res.status(401).json({ error: "Credenciais inválidas." });
-    }
+    if (!hospital) return res.status(401).json({ error: "Credenciais inválidas." });
 
     const senhaValida = await bcrypt.compare(senha, hospital.senha);
-
-    if (!senhaValida) {
-      return res.status(401).json({ error: "Credenciais inválidas." });
-    }
+    if (!senhaValida) return res.status(401).json({ error: "Credenciais inválidas." });
 
     res.status(200).json({
       message: "Login realizado com sucesso.",
-      tipo: "hospital",
-      dados: {
-        id: hospital.id,
-        nome: hospital.nome,
-        email: hospital.email,
-        tipo_user: 4
-      }
+      hospital: { id: hospital.id, nome: hospital.nome, email: hospital.email },
     });
 
   } catch (error) {
@@ -150,38 +125,25 @@ async function loginHospital(req, res) {
   }
 }
 
-
 // ======================================================
-// Listar hospitais (PROTEGIDO - usuário logado)
+// Listagem de hospitais formatada
 // ======================================================
 async function listarHospitaisFormatado(req, res) {
   try {
-
-    if (!req.user) {
-      return res.status(401).json({ error: "Não autorizado." });
-    }
-
     const hospitais = await prisma.hospital.findMany();
+    const hospitaisFiltrados = hospitais.filter(h => h.id !== 0);
 
     const hospitaisComCidade = await Promise.all(
-      hospitais.map(async (hospital) => {
+      hospitaisFiltrados.map(async (hospital) => {
         try {
-          const response = await fetch(
-            `https://viacep.com.br/ws/${hospital.cep}/json/`
-          );
+          const response = await fetch(`https://viacep.com.br/ws/${hospital.cep}/json/`);
           const data = await response.json();
           const cidade = data.localidade || "Cidade Desconhecida";
 
-          return {
-            id: hospital.id,
-            nomeFormatado: `${hospital.nome} - ${cidade} ${hospital.numero}`
-          };
-
-        } catch {
-          return {
-            id: hospital.id,
-            nomeFormatado: `${hospital.nome} - Cidade Desconhecida`
-          };
+          return { id: hospital.id, nomeFormatado: `${hospital.nome} - ${cidade} ${hospital.numero}` };
+        } catch (err) {
+          console.error(`Erro ao buscar cidade do CEP ${hospital.cep}:`, err);
+          return { id: hospital.id, nomeFormatado: `${hospital.nome} - (Cidade Desconhecida) ${hospital.numero}` };
         }
       })
     );
@@ -193,18 +155,11 @@ async function listarHospitaisFormatado(req, res) {
     res.status(500).json({ error: "Erro ao buscar hospitais." });
   }
 }
-
-
 // ======================================================
-// Buscar hospital por ID (PROTEGIDO)
+// Buscar hospital por ID
 // ======================================================
 async function getHospitalById(req, res) {
   try {
-
-    if (!req.user) {
-      return res.status(401).json({ error: "Não autorizado." });
-    }
-
     const { id } = req.params;
 
     const hospital = await prisma.hospital.findUnique({
@@ -212,23 +167,15 @@ async function getHospitalById(req, res) {
     });
 
     if (!hospital) {
-      return res.status(404).json({
-        error: "Hospital não encontrado."
-      });
+      return res.status(404).json({ error: "Hospital não encontrado." });
     }
 
     res.status(200).json(hospital);
 
   } catch (error) {
-    console.error("Erro ao buscar hospital:", error);
+    console.error("Erro ao buscar hospital por ID:", error);
     res.status(500).json({ error: "Erro interno do servidor." });
   }
 }
 
-
-module.exports = {
-  registerHospital,
-  loginHospital,
-  listarHospitaisFormatado,
-  getHospitalById
-};
+module.exports = { registerHospital, loginHospital, listarHospitaisFormatado, getHospitalById };
