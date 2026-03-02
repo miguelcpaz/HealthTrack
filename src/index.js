@@ -6,9 +6,6 @@ require("dotenv").config();
 
 const server = express();
 
-// =============================
-// IMPORTS DE ROTAS
-// =============================
 const userRoutes = require("./routes/userRoutes");
 const pacienteRoutes = require("./routes/pacienteRoutes");
 const hospitalRoutes = require("./routes/hospitalRoutes");
@@ -37,7 +34,6 @@ function authMiddleware(req, res, next) {
 }
 
 
-// 🔒 CORS restrito (troque pelo domínio real em produção)
 server.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -47,18 +43,15 @@ server.use(cors({
 server.use(express.json());
 server.use(express.static(path.join(__dirname, "..", "public")));
 
-// 🔒 Rate Limit global
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // 100 requisições por IP
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
   message: "Muitas requisições. Tente novamente mais tarde."
 });
 
 server.use(limiter);
 
-// =============================
-// ROTAS PÚBLICAS (SEM TOKEN)
-// =============================
 server.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "..", "public", "index.html"))
 );
@@ -71,29 +64,20 @@ server.get("/cadastro", (req, res) =>
   res.sendFile(path.join(__dirname, "..", "public", "cadastro.html"))
 );
 
-// Login e autenticação
+
 server.use("/api/auth", authRoutes);
 
-// Cadastro hospital (se quiser deixar público, ok. Senão proteja.)
 server.use("/api/hospital", hospitalRoutes);
 
-// =============================
-// ROTAS PROTEGIDAS (OBRIGAM TOKEN)
-// =============================
 server.use("/api/usuarios", authMiddleware, userRoutes);
 server.use("/api/pacientes", authMiddleware, pacienteRoutes);
 server.use("/api/solicitacoes", authMiddleware, solicitationRoutes);
 server.use("/api/cron", authMiddleware, cronRoutes);
 
-// =============================
-// JOBS
-// =============================
 require("./jobs/solicitacoesJob");
 require("./jobs/pacienteJob");
 
-// =============================
-// START SERVER
-// =============================
+
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {

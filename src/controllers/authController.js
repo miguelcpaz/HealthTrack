@@ -3,6 +3,10 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
+// ========================
+// LOGIN
+// ========================
 async function loginGeral(req, res) {
     const { email, senha } = req.body;
 
@@ -11,7 +15,7 @@ async function loginGeral(req, res) {
     }
 
     try {
-        
+        // 🔎 Procura usuário
         const usuario = await prisma.user.findUnique({
             where: { email },
             select: {
@@ -56,7 +60,7 @@ async function loginGeral(req, res) {
             });
         }
 
-        
+        // 🔎 Procura hospital
         const hospital = await prisma.hospital.findUnique({
             where: { email },
             select: {
@@ -102,6 +106,10 @@ async function loginGeral(req, res) {
     }
 }
 
+
+// ========================
+// TROCAR SENHA TEMPORÁRIA
+// ========================
 async function trocar_senhatemp(req, res) {
     const { newPassword } = req.body;
 
@@ -112,7 +120,7 @@ async function trocar_senhatemp(req, res) {
     }
 
     try {
-        
+        // 🔐 Verifica token
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ error: "Não autorizado" });
