@@ -1,173 +1,143 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-
-// ========================
-// LOGIN
-// ========================
 async function loginGeral(req, res) {
     const { email, senha } = req.body;
 
-    if (!email || !senha) {
-        return res.status(400).json({ error: "Email e senha são obrigatórios" });
-    }
-
     try {
-        // 🔎 Procura usuário
-        const usuario = await prisma.user.findUnique({
-            where: { email },
-            select: {
-                id: true,
-                nome: true,
-                email: true,
-                senha: true,
-                tipo_user: true,
-                status_cadastro: true
-            }
+
+        console.log('Dados de login recebidos:', { email, senha });
+
+        const usuario = await prisma.user.findUnique({ 
+            where: { email } 
         });
-
+        
         if (usuario) {
-
-            if (usuario.status_cadastro === "pendente") {
+             if (usuario.status_cadastro === "pendente") {
                 return res.status(403).json({
-                    error: "Seu cadastro ainda não foi aprovado pelo hospital"
+                    error: 'Seu cadastro ainda não foi aprovado pelo hospital'
                 });
             }
 
             const senhaValida = await bcrypt.compare(senha, usuario.senha);
-
-            if (!senhaValida) {
-                return res.status(401).json({ error: "Email ou senha inválidos" });
+            if (senhaValida) {
+                return res.status(200).json({
+                    message: 'Login realizado com sucesso (usuário)',
+                    tipo: 'usuario',
+                    dados: { ...usuario, tipo_user: usuario.tipo_user }
+                });
             }
-
-            const token = jwt.sign(
-                { id: usuario.id, tipo: "usuario" },
-                process.env.JWT_SECRET,
-                { expiresIn: "1h" }
-            );
-
-            return res.status(200).json({
-                message: "Login realizado com sucesso",
-                token,
-                dados: {
-                    id: usuario.id,
-                    nome: usuario.nome,
-                    email: usuario.email,
-                    tipo_user: usuario.tipo_user
-                }
-            });
         }
 
-        // 🔎 Procura hospital
-        const hospital = await prisma.hospital.findUnique({
-            where: { email },
-            select: {
-                id: true,
-                nome: true,
-                email: true,
-                senha: true
-            }
+ 
+        const hospital = await prisma.hospital.findUnique({ 
+            where: { email } 
         });
 
         if (hospital) {
             const senhaValida = await bcrypt.compare(senha, hospital.senha);
-
-            if (!senhaValida) {
-                return res.status(401).json({ error: "Email ou senha inválidos" });
+            console.log('Password valid?', senhaValida); 
+            if (senhaValida) {
+                return res.status(200).json({
+                    message: 'Login realizado com sucesso (hospital)',
+                    tipo: 'hospital',
+                    dados: {
+                        ...hospital,
+                        tipo_user: 4 
+                    }
+                });
             }
-
-            const token = jwt.sign(
-                { id: hospital.id, tipo: "hospital" },
-                process.env.JWT_SECRET,
-                { expiresIn: "1h" }
-            );
-
-            return res.status(200).json({
-                message: "Login realizado com sucesso",
-                token,
-                dados: {
-                    id: hospital.id,
-                    nome: hospital.nome,
-                    email: hospital.email,
-                    tipo_user: 4
-                }
-            });
         }
 
-        return res.status(401).json({ error: "Email ou senha inválidos" });
+        // 3. Se não encontrou em nenhum, retorna erro
+        return res.status(401).json({ error: 'Email ou senha inválidos' });
 
     } catch (err) {
-        console.error("Erro no login:", err);
-        return res.status(500).json({
-            error: "Erro interno do servidor"
+        console.error('Erro no loginGeral:', err);
+        return res.status(500).json({ 
+            error: 'Erro no servidor',
+            details: err.message 
         });
     }
 }
 
-
-// ========================
-// TROCAR SENHA TEMPORÁRIA
-// ========================
 async function trocar_senhatemp(req, res) {
+    const { email } = req.params; // Obtém o email dos parâmetros da URL
     const { newPassword } = req.body;
 
+
+    // Verifica se o email foi fornecido
+    if (!email) {
+        return res.status(400).json({ error: 'Email é obrigatório'});
+    }
+
     if (!newPassword || newPassword.length < 6) {
-        return res.status(400).json({
-            error: "A nova senha deve ter pelo menos 6 caracteres"
-        });
+        return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres' });
     }
 
     try {
-        // 🔐 Verifica token
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-            return res.status(401).json({ error: "Não autorizado" });
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        let decoded;
-        try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET);
-        } catch {
-            return res.status(401).json({ error: "Token inválido ou expirado" });
-        }
-
         const senhaHash = await bcrypt.hash(newPassword, 10);
 
-        if (decoded.tipo === "usuario") {
-            await prisma.user.update({
-                where: { id: decoded.id },
-                data: {
-                    senha: senhaHash,
-                    status_senha: 0
-                }
-            });
-        }
-
-        if (decoded.tipo === "hospital") {
-            await prisma.hospital.update({
-                where: { id: decoded.id },
-                data: {
-                    senha: senhaHash,
-                    status_senha: 0
-                }
-            });
-        }
-
-        return res.status(200).json({
-            message: "Senha atualizada com sucesso"
+        // Primeiro verifica se é um usuário
+        let user = await prisma.user.findUnique({ 
+            where: { email: email } // Certifica-se de que o email está sendo passado
         });
 
+        if (user) {
+            // Atualiza usuário
+            const updatedUser = await prisma.user.update({
+                where: { email: email },
+                data: {
+                    senha: senhaHash,
+                    status_senha: 0
+                }
+            });
+
+            return res.status(200).json({
+                message: 'Senha atualizada com sucesso!',
+                authAtualizado: {
+                    dados: updatedUser,
+                    tipo: 'usuario'
+                }
+            });
+        }
+
+        // Se não for usuário, verifica se é um hospital
+        let hospital = await prisma.hospital.findUnique({ 
+            where: { email: email }
+        });
+
+        if (hospital) {
+            const updatedHospital = await prisma.hospital.update({
+                where: { email: email },
+                data: {
+                    senha: senhaHash,
+                    status_senha: 0
+                }
+            });
+
+            return res.status(200).json({
+                message: 'Senha atualizada com sucesso!',
+                authAtualizado: {
+                    dados: updatedHospital,
+                    tipo: 'hospital'
+                }
+            });
+        }
+
+        // Se não encontrou nem usuário nem hospital
+        return res.status(404).json({ error: 'Email não encontrado', email});
+
     } catch (error) {
-        console.error("Erro ao atualizar senha:", error);
-        return res.status(500).json({
-            error: "Erro interno do servidor"
+        console.error('Erro ao atualizar senha temporária:', error);
+        return res.status(500).json({ 
+            error: 'Erro ao atualizar a senha',
+            details: error.message 
         });
     }
 }
+
 
 
 module.exports = { loginGeral, trocar_senhatemp };
