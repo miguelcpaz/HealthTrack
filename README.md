@@ -4,6 +4,25 @@ O **HealthTrack** é um sistema web para **gerenciamento e acompanhamento de pac
 
 O projeto simula um ambiente hospitalar ou ambulatorial, permitindo que profissionais da saúde cadastrem, acompanhem e gerenciem pacientes de forma segura e estruturada.
 
+---
+
+## 🚀 Acesso ao Sistema (Deploy)
+
+🔗 **Acesse online:**  
+https://healthtrack-4u8v.onrender.com  
+
+### 🔐 Credenciais para Teste
+
+#### 🏨 Login Hospital
+- **Email:** exemplo@gmail.com  
+- **Senha:** 123456  
+
+#### 🧑‍⚕️ Login Médico
+- **Email:** medico@exemplo.com  
+- **Senha:** 123456  
+
+---
+
 ## 🎯 Objetivo do Projeto
 
 O HealthTrack foi desenvolvido com fins **educacionais**, com o objetivo de:
@@ -27,7 +46,6 @@ O HealthTrack foi desenvolvido com fins **educacionais**, com o objetivo de:
 - 🏨 Acompanhamento de estadia/internação
 - ✏️ Edição e exclusão de registros
 
-
 ---
 
 ## 🛠️ Tecnologias Utilizadas
@@ -44,11 +62,10 @@ O HealthTrack foi desenvolvido com fins **educacionais**, com o objetivo de:
 - HTML5
 - CSS3
 - JavaScript
-- BootStrap
+- Bootstrap
 - Layout responsivo
 
 ### Deploy
 - Render (Back-end e Front-end)
 - Banco de dados PostgreSQL em ambiente cloud
-
 
